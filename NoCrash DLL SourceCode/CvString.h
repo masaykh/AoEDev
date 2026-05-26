@@ -6,12 +6,19 @@
 #include <string>
 #pragma warning( disable: 4251 )		// needs to have dll-interface to be used by clients of class
 
-// CV4_NOINLINE: clang inlines variadic functions, which breaks va_start.
-// Apply to all variadic format/Format helpers.
-#if defined(__clang__)
-#  define CV4_NOINLINE __attribute__((noinline))
-#elif defined(_MSC_VER)
+// CV4_NOINLINE: variadic functions MUST NOT be inlined; inlining destroys
+// va_start's anchor to the real parameter list and produces wild va_lists.
+//
+// Order matters: prefer __declspec(noinline) when _MSC_VER is defined
+// (true for cl.exe AND for clang --target *-pc-windows-msvc).
+// Why not __attribute__((noinline)) first under __clang__?  MinGW's _mingw.h
+// does `#define __attribute__(x)` when __GNUC__ is undefined (our case),
+// silently erasing the attribute.  __declspec is not touched by MinGW
+// headers, so it survives unconditionally.
+#if defined(_MSC_VER)
 #  define CV4_NOINLINE __declspec(noinline)
+#elif defined(__clang__) || defined(__GNUC__)
+#  define CV4_NOINLINE __attribute__((noinline))
 #else
 #  define CV4_NOINLINE
 #endif
@@ -340,188 +347,9 @@ inline void CvString::getTokens(const CvString& delimiters, std::vector<CvString
 	}
 }
 
-//
-// static
-//
-CV4_NOINLINE inline bool CvString::formatv(std::string & out, const char * fmt, va_list args)
-{
-	char buf[2048];
-	char * pbuf = buf;
-	int len = 0;
-	int attempts = 0;
-	bool success = false;
-	const int kMaxAttempts = 40;
-
-	do
-	{
-		int maxlen = 2047+2048*attempts;
-		len = _vsnprintf(pbuf,maxlen,fmt,args);
-		attempts++;
-		success = (len>=0 && len<=maxlen);
-		if (!success)
-		{
-			if (pbuf!=buf)
-				delete [] pbuf;
-			pbuf = new char[2048+2048*attempts];
-		}
-	}
-	while (!success && attempts<kMaxAttempts);
-
-	if ( attempts==kMaxAttempts )
-	{
-		// dxPrintNL( "CvString::formatv - Max reallocs occurred while formatting string. Result is likely truncated!", 0 );
-	}
-
-	if (success)
-		out = pbuf;
-	else
-		out = "";
-
-	if (pbuf!=buf)
-		delete [] pbuf;
-
-	return success;
-}
-
-//
-// static
-//
-CV4_NOINLINE inline bool CvWString::formatv(std::wstring & out, const wchar * fmt, va_list args)
-{
-	wchar buf[2048];
-	wchar * pbuf = buf;
-	int len = 0;
-	int attempts = 0;
-	bool success = false;
-	const int kMaxAttempts = 40;
-
-	do
-	{
-		int maxlen = 2047+2048*attempts;
-		len = _vsnwprintf(pbuf,maxlen,fmt,args);
-		attempts++;
-		success = (len>=0 && len<=maxlen);
-		if (!success)
-		{
-			if (pbuf!=buf)
-				delete [] pbuf;
-			pbuf = new wchar[2048+2048*attempts];
-		}
-	}
-	while (!success && attempts<kMaxAttempts);
-
-	if ( attempts==kMaxAttempts )
-	{
-		// dxPrintNL( "CvString::formatv - Max reallocs occurred while formatting string. Result is likely truncated!", 0 );
-	}
-
-	if (success)
-		out = pbuf;
-	else
-		out = L"";
-
-	if (pbuf!=buf)
-		delete [] pbuf;
-
-	return success;
-}
-
-
-//
-// static
-//
-CV4_NOINLINE inline std::wstring CvWString::formatv(const wchar * fmt, va_list args)
-{
-	std::wstring result;
-	formatv( result, fmt, args );
-	return result;
-}
-
-//
-// static
-//
-CV4_NOINLINE inline CvWString CvWString::format(const wchar * fmt, ...)
-{
-	std::wstring result;
-	va_list args;
-	va_start(args,fmt);
-	formatv(result,fmt,args);
-	va_end(args);
-	return CvWString(result);
-}
-
-//
-// static
-//
-CV4_NOINLINE inline bool CvWString::format(std::wstring & out, const wchar * fmt, ...)
-{
-	va_list args;
-	va_start(args,fmt);
-	bool r = formatv(out,fmt,args);
-	va_end(args);
-	return r;
-}
-
-//
-//
-//
-CV4_NOINLINE inline void CvWString::Format( LPCWSTR lpszFormat, ... )
-{
-	std::wstring result;
-	va_list args;
-	va_start(args,lpszFormat);
-	formatv(result,lpszFormat,args);
-	va_end(args);
-	*this = result;
-}
-
-//
-// static
-//
-CV4_NOINLINE inline std::string CvString::formatv(const char * fmt, va_list args)
-{
-	std::string result;
-	formatv( result, fmt, args );
-	return result;
-}
-//
-// static
-//
-CV4_NOINLINE inline CvString CvString::format(const char * fmt, ...)
-{
-	std::string result;
-	va_list args;
-	va_start(args,fmt);
-	formatv(result,fmt,args);
-	va_end(args);
-	return CvString(result);
-}
-
-//
-// static
-//
-CV4_NOINLINE inline bool CvString::format(std::string & out, const char * fmt, ...)
-{
-	va_list args;
-	va_start(args,fmt);
-	bool r = formatv(out,fmt,args);
-	va_end(args);
-	return r;
-}
-
-
-//
-//
-//
-CV4_NOINLINE inline void CvString::Format( LPCSTR lpszFormat, ... )
-{
-	std::string result;
-	va_list args;
-	va_start(args,lpszFormat);
-	formatv(result,lpszFormat,args);
-	va_end(args);
-	*this = result;
-}
+// CvString / CvWString variadic format / Format / formatv helpers are
+// defined in CvString.cpp (out-of-line). Inlining the variadic dispatcher
+// corrupts va_start under some clang inlining-cost configurations.
 
 #endif	// CvString_h
 

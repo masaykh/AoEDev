@@ -112,6 +112,10 @@ public:
 	void doTurn();
 	void doTurnUnits();
 
+	// Defragment this player's FFreeListTrashArrays via CvFragHeap.
+	// Safe only from a quiescent state — see FFreeListTrashArray::Compact.
+	void compactArrays();
+
 	void verifyCivics();
 
 	void updatePlotGroups();
@@ -123,8 +127,8 @@ public:
 	void updateExtraBuildingHealth();
 	void updateFeatureHappiness();
 	void updateReligionHappiness();
-	void updateExtraSpecialistClassYield();
-	void updateExtraSpecialistClassCommerce();
+	void updateExtraSpecialistYield();
+	void updateExtraSpecialistCommerce();
 	void updateCommerce(CommerceTypes eCommerce);
 	void updateCommerce();
 	void updateBuildingCommerce();
@@ -157,9 +161,7 @@ public:
 	// Free Tech Popup Fix
 	bool isChoosingFreeTech() const;
 	void setChoosingFreeTech(bool bValue);
-	bool isUpdatePlotGroups() const;
-	void setUpdatePlotGroups(bool bValue);
-	/************************************************************************************************/
+/************************************************************************************************/
 /* UNOFFICIAL_PATCH                        END                                                  */
 /************************************************************************************************/
 	DllExport void chooseTech(int iDiscover = 0, CvWString szText = "", bool bFront = false);				// Exposed to Python
@@ -347,6 +349,8 @@ public:
 	void killGoldenAgeUnits(CvUnit* pUnitAlive);
 
 	DllExport int greatPeopleThreshold(bool bMilitary = false) const;																														// Exposed to Python
+	int specialistYield(SpecialistTypes eSpecialist, YieldTypes eYield) const;														// Exposed to Python
+	int specialistCommerce(SpecialistTypes eSpecialist, CommerceTypes eCommerce) const;										// Exposed to Python
 
 	DllExport CvPlot* getStartingPlot() const;																																			// Exposed to Python
 	DllExport void setStartingPlot(CvPlot* pNewValue, bool bUpdateStartDist);												// Exposed to Python
@@ -805,7 +809,8 @@ public:
 
 	int getStateReligionBuildingCommerce(CommerceTypes eIndex) const;																	// Exposed to Python
 	void changeStateReligionBuildingCommerce(CommerceTypes eIndex, int iChange);
-																				// Exposed to Python
+
+	int getSpecialistExtraCommerce(CommerceTypes eIndex) const;																				// Exposed to Python
 	void changeSpecialistExtraCommerce(CommerceTypes eIndex, int iChange);
 
 	int getCommerceFlexibleCount(CommerceTypes eIndex) const;
@@ -902,12 +907,12 @@ public:
 	int getUpkeepCount(UpkeepTypes eIndex) const;																											// Exposed to Python
 	void changeUpkeepCount(UpkeepTypes eIndex, int iChange);
 
-	int getSpecialistClassValidCount(SpecialistClassTypes eIndex) const;
-	DllExport bool isSpecialistClassValid(SpecialistClassTypes eIndex) const;																		// Exposed to Python
-	void changeSpecialistClassValidCount(SpecialistClassTypes eIndex, int iChange);
+	int getSpecialistValidCount(SpecialistTypes eIndex) const;
+	DllExport bool isSpecialistValid(SpecialistTypes eIndex) const;																		// Exposed to Python
+	void changeSpecialistValidCount(SpecialistTypes eIndex, int iChange);
 
-	DllExport int getSpecialistClassCount(SpecialistClassTypes eIndex) const;																// Exposed to Python
-	void changeSpecialistClassCount(SpecialistClassTypes eIndex, int iChange);
+	DllExport int getSpecialistCount(SpecialistTypes eIndex) const;																// Exposed to Python
+	void changeSpecialistCount(SpecialistTypes eIndex, int iChange);
 
 	DllExport bool isResearchingTech(TechTypes eIndex) const;																					// Exposed to Python
 	void setResearchingTech(TechTypes eIndex, bool bNewValue);
@@ -917,11 +922,11 @@ public:
 	int getCivicUpkeep(CivicTypes* paeCivics = NULL, bool bIgnoreAnarchy = false) const;							// Exposed to Python
 	void setCivics(CivicOptionTypes eIndex, CivicTypes eNewValue);															// Exposed to Python
 
-	int getSpecialistClassExtraYield(SpecialistClassTypes eIndex1, YieldTypes eIndex2) const;										// Exposed to Python
-	void changeSpecialistClassExtraYield(SpecialistClassTypes eIndex1, YieldTypes eIndex2, int iChange);
+	int getSpecialistExtraYield(SpecialistTypes eIndex1, YieldTypes eIndex2) const;										// Exposed to Python
+	void changeSpecialistExtraYield(SpecialistTypes eIndex1, YieldTypes eIndex2, int iChange);
 	
-	int getSpecialistClassExtraCommerce(SpecialistClassTypes eIndex1, CommerceTypes eIndex2) const;										// Exposed to Python
-	void changeSpecialistClassExtraCommerce(SpecialistClassTypes eIndex1, CommerceTypes eIndex2, int iChange);
+	int getSpecialistExtraCommerce(SpecialistTypes eIndex1, CommerceTypes eIndex2) const;										// Exposed to Python
+	void changeSpecialistExtraCommerce(SpecialistTypes eIndex1, CommerceTypes eIndex2, int iChange);
 
 	int getImprovementYieldChange(ImprovementTypes eIndex1, YieldTypes eIndex2) const;								// Exposed to Python
 	void changeImprovementYieldChange(ImprovementTypes eIndex1, YieldTypes eIndex2, int iChange);
@@ -1238,23 +1243,13 @@ public:
 	int getPlotEffectSpawnChance(int iI)const;
 	void changePlotEffectSpawnChance(int iChange, int iI);
 
-	int getFreeSpecialistClassNonStateReligion(SpecialistClassTypes eIndex) const;																							// Exposed to Python
-	void changeFreeSpecialistClassNonStateReligion(SpecialistClassTypes eIndex, int iChange);
+	int getFreeSpecialistNonStateReligion(SpecialistTypes eIndex) const;																							// Exposed to Python
+	void changeFreeSpecialistNonStateReligion(SpecialistTypes eIndex, int iChange);
 
-	int getFreeSpecialistClassStateReligion(SpecialistClassTypes eIndex) const;																							// Exposed to Python
-	void changeFreeSpecialistClassStateReligion(SpecialistClassTypes eIndex, int iChange);
-	int getFreeSpecialistClassCount(SpecialistClassTypes eIndex) const;																							// Exposed to Python
-	void changeFreeSpecialistClassCount(SpecialistClassTypes eIndex, int iChange);
-
-	void changeSpecialistClassExtraHappiness(SpecialistClassTypes eIndex1, int iChange);
-	int getSpecialistClassExtraHappiness(SpecialistClassTypes eIndex1) const;
-	void changeSpecialistClassExtraHealth(SpecialistClassTypes eIndex1, int iChange);
-	int getSpecialistClassExtraHealth(SpecialistClassTypes eIndex1) const;
-	void changeSpecialistClassExtraCrime(SpecialistClassTypes eIndex1, int iChange);
-	int getSpecialistClassExtraCrime(SpecialistClassTypes eIndex1) const;
-
-	void changeSpecialistClassExtraGPP(SpecialistClassTypes eIndex1, int iChange);
-	int getSpecialistClassExtraGPP(SpecialistClassTypes eIndex1) const;
+	int getFreeSpecialistStateReligion(SpecialistTypes eIndex) const;																							// Exposed to Python
+	void changeFreeSpecialistStateReligion(SpecialistTypes eIndex, int iChange);
+	int getFreeSpecialistCount(SpecialistTypes eIndex) const;																							// Exposed to Python
+	void changeFreeSpecialistCount(SpecialistTypes eIndex, int iChange);
 
 	void changeSpecialistTypeExtraHappiness(SpecialistTypes eIndex1, int iChange);
 	int getSpecialistTypeExtraHappiness(SpecialistTypes eIndex1) const;
@@ -1262,10 +1257,10 @@ public:
 	int getSpecialistTypeExtraHealth(SpecialistTypes eIndex1) const;
 	void changeSpecialistTypeExtraCrime(SpecialistTypes eIndex1, int iChange);
 	int getSpecialistTypeExtraCrime(SpecialistTypes eIndex1) const;
-	void changeSpecialistTypeExtraYield(SpecialistTypes eIndex1, YieldTypes index2, int iChange);
-	int getSpecialistTypeExtraYield(SpecialistTypes eIndex1, YieldTypes index2) const;
-	void changeSpecialistTypeExtraCommerce(SpecialistTypes eIndex1, CommerceTypes index2, int iChange);
-	int getSpecialistTypeExtraCommerce(SpecialistTypes eIndex1, CommerceTypes index2) const;
+
+	void changeSpecialistTypeExtraGPP(SpecialistTypes eIndex1, int iChange);
+	int getSpecialistTypeExtraGPP(SpecialistTypes eIndex1) const;
+
 
 	int getPotency();
 	void changePotency(int iChange);
@@ -1513,6 +1508,8 @@ public:
 	int getHealChangeEnemy() const;
 	void changeHealChangeEnemy(int iChange);
 	void setHasTrait(TraitTypes eTrait, bool bNewValue);
+	void changeSpecialistTypeExtraCommerce(SpecialistTypes eIndex1, CommerceTypes eIndex2, int iChange);
+	int getSpecialistTypeExtraCommerce(SpecialistTypes eIndex1, CommerceTypes eIndex2) const;
 	void setGreatPeopleCreated(int iNewValue);
 	void setGreatPeopleThresholdModifier(int iNewValue);
 //FfH: End Add
@@ -1788,7 +1785,6 @@ protected:
 /************************************************************************************************/
 	// Free Tech Popup Fix
 	bool m_bChoosingFreeTech;
-	bool m_bUpdatePlotGroups;
 /************************************************************************************************/
 /* UNOFFICIAL_PATCH                        END                                                  */
 /************************************************************************************************/
@@ -2008,6 +2004,7 @@ protected:
 	int* m_piNumMaxTraitPerClass;
 	bool* m_pbValidTraitTriggers;
 
+	int** m_ppaaiSpecialistTypeExtraCommerce;
 //FfH: End Add
 
 /*************************************************************************************************/
@@ -2059,6 +2056,7 @@ protected:
 	int* m_aiCommerceRateModifier;
 	int* m_aiCapitalCommerceRateModifier;
 	int* m_aiStateReligionBuildingCommerce;
+	int* m_aiSpecialistExtraCommerce;
 	int* m_aiCommerceFlexibleCount;
 	int* m_aiGoldPerTurnByPlayer;
 	int* m_aiTradeDefenderAttitudeByPlayer;
@@ -2094,24 +2092,18 @@ protected:
 	int* m_paiHasReligionCount;
 	int* m_paiHasCorporationCount;
 	int* m_paiUpkeepCount;
-	int* m_paiSpecialistClassValidCount;
-	int* m_paiSpecialistClassCount;
+	int* m_paiSpecialistValidCount;
+	int* m_paiSpecialistCount;
 
-	int* m_paiFreeSpecialistClassCount;
+	int* m_paiFreeSpecialistCount;
 
-	int* m_paiFreeSpecialistClassStateReligion;
-	int* m_paiFreeSpecialistClassNonStateReligion;
+	int* m_paiFreeSpecialistStateReligion;
+	int* m_paiFreeSpecialistNonStateReligion;
 
-	int* m_paiSpecialistClassExtraHappiness;
-	int* m_paiSpecialistClassExtraHealth;
-	int* m_paiSpecialistClassExtraCrime;
-	int* m_paiSpecialistClassExtraGPP;
-
-	int** m_ppaiSpecialistTypeExtraYield;
-	int** m_ppaiSpecialistTypeExtraCommerce;
 	int* m_paiSpecialistTypeExtraHappiness;
 	int* m_paiSpecialistTypeExtraHealth;
 	int* m_paiSpecialistTypeExtraCrime;
+	int* m_paiSpecialistTypeExtraGPP;
 
 	bool* m_pabResearchingTech;
 	bool* m_pabLoyalMember;
@@ -2120,8 +2112,8 @@ protected:
 
 	CivicTypes* m_paeCivics;
 
-	int** m_ppaaiSpecialistClassExtraYield;
-	int** m_ppaaiSpecialistClassExtraCommerce;
+	int** m_ppaaiSpecialistExtraYield;
+	int** m_ppaaiSpecialistExtraCommerce;
 	int** m_ppaaiImprovementYieldChange;
 	int** m_ppaaiTerrainYieldChange;
 

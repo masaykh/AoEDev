@@ -836,11 +836,6 @@ void CyCity::changeGreatPeopleProgress(int iChange)
 		m_pCity->changeGreatPeopleProgress(iChange);
 }
 
-int CyCity::getSpecialistTypeFromClass(int eIndex)
-{
-	return m_pCity ? m_pCity->getSpecialistTypeFromClass((SpecialistClassTypes)eIndex) : -1;
-}
-
 int CyCity::getNumWorldWonders()
 {
 	return m_pCity ? m_pCity->getNumWorldWonders() : -1;
@@ -1660,9 +1655,9 @@ int CyCity::getExtraSpecialistYield(int /*YieldTypes*/ eIndex)
 	return m_pCity ? m_pCity->getExtraSpecialistYield((YieldTypes) eIndex) : -1;
 }
 
-int CyCity::getExtraSpecialistClassYield(int /*YieldTypes*/ eIndex, int /*SpecialistClassTypes*/ eSpecialist)
+int CyCity::getExtraSpecialistYieldOfType(int /*YieldTypes*/ eIndex, int /*SpecialistTypes*/ eSpecialist)
 {
-	return m_pCity ? m_pCity->getExtraSpecialistClassYield((YieldTypes) eIndex, (SpecialistClassTypes) eSpecialist) : -1;
+	return m_pCity ? m_pCity->getExtraSpecialistYield((YieldTypes) eIndex, (SpecialistTypes) eSpecialist) : -1;
 }
 
 int CyCity::getCommerceRate(int /*CommerceTypes*/ eIndex)
@@ -2016,49 +2011,49 @@ void CyCity::changeGreatPeopleUnitProgress(int /*UnitTypes*/ iIndex, int iChange
 		m_pCity->changeGreatPeopleUnitProgress((UnitTypes) iIndex, iChange);
 }
 
-int CyCity::getSpecialistClassCount(int /*SpecialistClassTypes*/ eIndex)
+int CyCity::getSpecialistCount(int /*SpecialistTypes*/ eIndex)
 {
-	return m_pCity ? m_pCity->getSpecialistClassCount((SpecialistClassTypes)eIndex) : -1;
+	return m_pCity ? m_pCity->getSpecialistCount((SpecialistTypes)eIndex) : -1;
 }
 
-void CyCity::alterSpecialistClassCount(int /*SpecialistClassTypes*/ eIndex, int iChange)
+void CyCity::alterSpecialistCount(int /*SpecialistTypes*/ eIndex, int iChange)
 {
 	if (m_pCity)
-		m_pCity->alterSpecialistClassCount((SpecialistClassTypes)eIndex, iChange);
+		m_pCity->alterSpecialistCount((SpecialistTypes)eIndex, iChange);
 }
 
-int CyCity::getMaxSpecialistClassCount(int /*SpecialistClassTypes*/ eIndex)
+int CyCity::getMaxSpecialistCount(int /*SpecialistTypes*/ eIndex)
 {
-	return m_pCity ? m_pCity->getMaxSpecialistClassCount((SpecialistClassTypes)eIndex) : -1;
+	return m_pCity ? m_pCity->getMaxSpecialistCount((SpecialistTypes)eIndex) : -1;
 }
-bool CyCity::isSpecialistClassBlocked(int /*SpecialistClassTypes*/ eIndex)
+bool CyCity::isSpecialistBlocked(int /*SpecialistTypes*/ eIndex)
 {
-	return m_pCity ? m_pCity->isSpecialistClassBlocked((SpecialistClassTypes)eIndex) : false;
+	return m_pCity ? m_pCity->isSpecialistBlocked((SpecialistTypes)eIndex) : false;
 }
-void CyCity::setSpecialistClassBlocked(int /*SpecialistClassTypes*/ eIndex, bool iNewValue)
+void CyCity::setSpecialistBlocked(int /*SpecialistTypes*/ eIndex, bool iNewValue)
 {
 	if (m_pCity)
-		m_pCity->setSpecialistClassBlocked((SpecialistClassTypes)eIndex, iNewValue);
+		m_pCity->setSpecialistBlocked((SpecialistTypes)eIndex, iNewValue);
 }
 
-bool CyCity::isSpecialistClassValid(int /*SpecialistClassTypes*/ eIndex, int iExtra)
+bool CyCity::isSpecialistValid(int /*SpecialistTypes*/ eIndex, int iExtra)
 {
-	return m_pCity ? m_pCity->isSpecialistClassValid((SpecialistClassTypes) eIndex, iExtra) : false;
+	return m_pCity ? m_pCity->isSpecialistValid((SpecialistTypes) eIndex, iExtra) : false;
 }
 
-int CyCity::getForceSpecialistClassCount(int /*SpecialistClassTypes*/ eIndex)
+int CyCity::getForceSpecialistCount(int /*SpecialistTypes*/ eIndex)
 {
-	return m_pCity ? m_pCity->getForceSpecialistClassCount((SpecialistClassTypes)eIndex) : -1;
+	return m_pCity ? m_pCity->getForceSpecialistCount((SpecialistTypes)eIndex) : -1;
 }
 
 bool CyCity::isSpecialistForced()
 {
-	return m_pCity ? m_pCity->isSpecialistClassForced() : false;
+	return m_pCity ? m_pCity->isSpecialistForced() : false;
 }
 
 int CyCity::getImprovementFreeSpecialists(int /*ImprovementTypes*/ iIndex)
 {
-	return m_pCity ? m_pCity->getImprovementFreeSpecialistClasses((ImprovementTypes) iIndex) : -1;
+	return m_pCity ? m_pCity->getImprovementFreeSpecialists((ImprovementTypes) iIndex) : -1;
 }
 
 int CyCity::getReligionInfluence(int /*ReligionTypes*/ iIndex)
@@ -2066,44 +2061,44 @@ int CyCity::getReligionInfluence(int /*ReligionTypes*/ iIndex)
 	return m_pCity ? m_pCity->getReligionInfluence((ReligionTypes) iIndex) : -1;
 }
 
-void CyCity::setForceSpecialistCount(int /*SpecialistClassTypes*/ eIndex, int iNewValue)
+void CyCity::setForceSpecialistCount(int /*SpecialistTypes*/ eIndex, int iNewValue)
 {
 	if (m_pCity)
-		m_pCity->setForceSpecialistClassCount((SpecialistClassTypes)eIndex, iNewValue);
+		m_pCity->setForceSpecialistCount((SpecialistTypes)eIndex, iNewValue);
 }
 
-void CyCity::changeForceSpecialistCount(int /*SpecialistClassTypes*/ eIndex, int iChange)
+void CyCity::changeForceSpecialistCount(int /*SpecialistTypes*/ eIndex, int iChange)
 {
 	if (m_pCity)
-		m_pCity->changeForceSpecialistClassCount((SpecialistClassTypes)eIndex, iChange);
+		m_pCity->changeForceSpecialistCount((SpecialistTypes)eIndex, iChange);
 }
 
-int CyCity::getFreeSpecialistClassCount(int /*SpecialistClassTypes*/ eIndex)
+int CyCity::getFreeSpecialistCount(int /*SpecialistTypes*/ eIndex)
 {
-	return m_pCity ? m_pCity->getFreeSpecialistClassCount((SpecialistClassTypes)eIndex) : -1;
+	return m_pCity ? m_pCity->getFreeSpecialistCount((SpecialistTypes)eIndex) : -1;
 }
 
-void CyCity::setFreeSpecialistClassCount(int /*SpecialistClassTypes*/ eIndex, int iNewValue)
-{
-	if (m_pCity)
-		m_pCity->setFreeSpecialistClassCount((SpecialistClassTypes)eIndex, iNewValue);
-}
-
-void CyCity::changeFreeSpecialistClassCount(int /*SpecialistClassTypes*/ eIndex, int iChange)
+void CyCity::setFreeSpecialistCount(int /*SpecialistTypes*/ eIndex, int iNewValue)
 {
 	if (m_pCity)
-		m_pCity->changeFreeSpecialistClassCount((SpecialistClassTypes)eIndex, iChange);
+		m_pCity->setFreeSpecialistCount((SpecialistTypes)eIndex, iNewValue);
 }
 
-int CyCity::getAddedFreeSpecialistClassCount(int /*SpecialistClassTypes*/ eIndex)
+void CyCity::changeFreeSpecialistCount(int /*SpecialistTypes*/ eIndex, int iChange)
 {
-	return m_pCity ? m_pCity->getAddedFreeSpecialistClassCount((SpecialistClassTypes)eIndex) : -1;
+	if (m_pCity)
+		m_pCity->changeFreeSpecialistCount((SpecialistTypes)eIndex, iChange);
+}
+
+int CyCity::getAddedFreeSpecialistCount(int /*SpecialistTypes*/ eIndex)
+{
+	return m_pCity ? m_pCity->getAddedFreeSpecialistCount((SpecialistTypes)eIndex) : -1;
 }
 
 void CyCity::changeImprovementFreeSpecialists(int /*ImprovementTypes*/ iIndex, int iChange)
 {
 	if (m_pCity)
-		m_pCity->changeImprovementFreeSpecialistClasses((ImprovementTypes) iIndex, iChange);
+		m_pCity->changeImprovementFreeSpecialists((ImprovementTypes) iIndex, iChange);
 }
 
 void CyCity::changeReligionInfluence(int /*ReligionTypes*/ iIndex, int iChange)

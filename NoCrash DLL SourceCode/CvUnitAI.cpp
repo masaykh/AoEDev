@@ -343,11 +343,6 @@ bool CvUnitAI::AI_update()
 	}
 	else
 	{
-		if (isMustDie())
-		{
-			finishMoves();
-			return false;
-		}
 		switch (AI_getUnitAIType())
 		{
 		case UNITAI_UNKNOWN:
@@ -2275,10 +2270,6 @@ void CvUnitAI::AI_workerMove()
 /**			Not sure why you would want to avoid plots that you have more preference for...		**/
 /*************************************************************************************************/
 	if (AI_improveBonus(25, &pBestBonusPlot, &eBestBonusBuild, &iBestBonusValue))
-	{
-		return;
-	}
-	if (isMustDie())
 	{
 		return;
 	}
@@ -5728,7 +5719,7 @@ void CvUnitAI::AI_cityDefenseMove()
 /**																								**/
 /**			The AI has a tendency to lose workers... defended workers...						**/
 /*************************************************************************************************/
-		if (AI_group(UNITAI_WORKER, /*iMaxGroup*/ 2, -1, -1, false, false, false, /*iMaxPath*/ 2, /*bAllowRegrouping*/ false))
+		if (AI_group(UNITAI_WORKER, /*iMaxGroup*/ 2, -1, -1, false, false, false, /*iMaxPath*/ 2, /*bAllowRegrouping*/ true))
 		{
 			return;
 		}
@@ -13176,11 +13167,22 @@ int CvUnitAI::AI_promotionValue(PromotionTypes ePromotion, bool bSkipRandom, boo
 									(AI_getUnitAIType() == UNITAI_ASSAULT_SEA) ||
 									(AI_getUnitAIType() == UNITAI_PIRATE_SEA) ||
 									(AI_getUnitAIType() == UNITAI_ATTACK_CITY_LEMMING)))
+		{
 			if (combatLimit() + iTemp > (99 * GC.getDefineINT("HIT_POINT_FACTOR")))
 				iValue += 50;
 			else
 				iValue += iTemp * 3 / GC.getDefineINT("HIT_POINT_FACTOR");
+		}
+	// SUSPECTED BUG: the `else if (iTemp < 0)` below was originally written
+	// without braces above, causing it to attach (via C++ dangling-else) to
+	// the inner combat-limit check rather than to the outer `if (iTemp > 0)`
+	// at ~13133 — making this branch unreachable. Retail VC7.1 parses it the
+	// same way, so behaviour is preserved by adding braces *around the inner
+	// block only*. If you want to enable the negative-iTemp scoring the
+	// author likely intended, move the closing brace to enclose the `else if`
+	// as well.
 	else if (iTemp < 0)
+	{
 		if (combatLimit() > 0 && ((AI_getUnitAIType() == UNITAI_ATTACK) ||
 								(AI_getUnitAIType() == UNITAI_ATTACK_CITY) ||
 								(AI_getUnitAIType() == UNITAI_COLLATERAL) ||
@@ -13190,6 +13192,7 @@ int CvUnitAI::AI_promotionValue(PromotionTypes ePromotion, bool bSkipRandom, boo
 								(AI_getUnitAIType() == UNITAI_PIRATE_SEA) ||
 								(AI_getUnitAIType() == UNITAI_ATTACK_CITY_LEMMING)))
 			iValue -= iTemp * 5 / GC.getDefineINT("HIT_POINT_FACTOR");
+	}
 /*************************************************************************************************/
 /**	Higher hitpoints						END													**/
 /*************************************************************************************************/
@@ -16316,7 +16319,7 @@ bool CvUnitAI::AI_join(int iMaxCount)
 
 	CvCity* pLoopCity;
 	CvPlot* pBestPlot;
-	SpecialistClassTypes eBestSpecialist;
+	SpecialistTypes eBestSpecialist;
 	int iValue;
 	int iBestValue;
 	int iLoop;
@@ -16325,7 +16328,7 @@ bool CvUnitAI::AI_join(int iMaxCount)
 
 	iBestValue = 0;
 	pBestPlot = NULL;
-	eBestSpecialist = NO_SPECIALISTCLASS;
+	eBestSpecialist = NO_SPECIALIST;
 	iCount = 0;
 
 	for (pLoopCity = GET_PLAYER(getOwnerINLINE()).firstCity(&iLoop); pLoopCity != NULL; pLoopCity = GET_PLAYER(getOwnerINLINE()).nextCity(&iLoop))
@@ -16345,24 +16348,24 @@ bool CvUnitAI::AI_join(int iMaxCount)
 /* BETTER_BTS_AI_MOD                       END                                                  */
 /************************************************************************************************/
 				{
-					for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+					for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 					{
 						bool bDoesJoin = false;
-						SpecialistClassTypes eSpecialist = (SpecialistClassTypes)iI;
+						SpecialistTypes eSpecialist = (SpecialistTypes)iI;
 						if (m_pUnitInfo->getGreatPeoples(eSpecialist))
 						{
 							bDoesJoin = true;
 						}
 						if (bDoesJoin)
 						{
-							iCount += pLoopCity->getSpecialistClassCount(eSpecialist);
+							iCount += pLoopCity->getSpecialistCount(eSpecialist);
 							if (iCount >= iMaxCount)
 							{
 								return false;
 							}
 						}
 
-						if (canJoin(pLoopCity->plot(), ((SpecialistClassTypes)iI)))
+						if (canJoin(pLoopCity->plot(), ((SpecialistTypes)iI)))
 						{
 /************************************************************************************************/
 /* BETTER_BTS_AI_MOD                      08/20/09                                jdog5000      */
@@ -16375,12 +16378,12 @@ bool CvUnitAI::AI_join(int iMaxCount)
 /* BETTER_BTS_AI_MOD                       END                                                  */
 /************************************************************************************************/
 							{
-								iValue = pLoopCity->AI_specialistClassValue(((SpecialistClassTypes)iI), pLoopCity->AI_avoidGrowth(), false);
+								iValue = pLoopCity->AI_specialistValue(((SpecialistTypes)iI), pLoopCity->AI_avoidGrowth(), false);
 								if (iValue > iBestValue)
 								{
 									iBestValue = iValue;
 									pBestPlot = getPathEndTurnPlot();
-									eBestSpecialist = ((SpecialistClassTypes)iI);
+									eBestSpecialist = ((SpecialistTypes)iI);
 								}
 							}
 						}
@@ -17341,7 +17344,11 @@ bool CvUnitAI::AI_safety()
 						{
 							if (generatePath(pLoopPlot, ((iPass > 0) ? MOVE_IGNORE_DANGER : 0), true, &iPathTurns))
 /**								----  End Original Code  ----									**/
-	for (int iPass = 0; iPass < 3; iPass++)
+	// Reuse the outer iPass (declared above) so the after-loop check on
+	// iPass > 0 sees the pass that produced pBestPlot. With `int iPass`
+	// declared inside the for, clang scopes it to the loop body and the
+	// outer-scope read past the loop is uninitialized UB.
+	for (iPass = 0; iPass < 3; iPass++)
 	{
 		for (iDX = -(iSearchRange); iDX <= iSearchRange; iDX++)
 		{
@@ -23196,10 +23203,6 @@ bool CvUnitAI::AI_improveBonus(int iMinValue, CvPlot** ppBestPlot, BuildTypes* p
 
 			eBestBuild = AI_betterPlotBuild(pBestPlot, eBestBuild);
 			getGroup()->pushMission(eBestMission, pBestPlot->getX_INLINE(), pBestPlot->getY_INLINE(), 0, false, false, MISSIONAI_BUILD, pBestPlot);
-			if (isMustDie())
-			{
-				return false;
-			}
 			getGroup()->pushMission(MISSION_BUILD, eBestBuild, -1, 0, (getGroup()->getLengthMissionQueue() > 0), false, MISSIONAI_BUILD, pBestPlot);
 
 			return true;
@@ -24203,7 +24206,8 @@ bool CvUnitAI::AI_retreatToCity(bool bPrimary, bool bAirlift, int iMaxPath)
 		}
 	}
 
-	for (int iPass = 0; iPass < 4; iPass++)
+	// Reuse outer iPass (see canAirlift-class fix elsewhere).
+	for (iPass = 0; iPass < 4; iPass++)
 	{
 		for (pLoopCity = GET_PLAYER(getOwnerINLINE()).firstCity(&iLoop); pLoopCity != NULL; pLoopCity = GET_PLAYER(getOwnerINLINE()).nextCity(&iLoop))
 		{
@@ -27847,11 +27851,11 @@ bool CvUnitAI::AI_artistCultureVictoryMove()
 	CvCity* pLoopCity;
 	CvPlot* pBestPlot;
 	CvCity* pBestCity;
-	SpecialistClassTypes eBestSpecialist;
+	SpecialistTypes eBestSpecialist;
 	int iLoop, iValue, iBestValue;
 
 	pBestPlot = NULL;
-	eBestSpecialist = NO_SPECIALISTCLASS;
+	eBestSpecialist = NO_SPECIALIST;
 
 	pBestCity = NULL;
 
@@ -27899,16 +27903,16 @@ bool CvUnitAI::AI_artistCultureVictoryMove()
 						}
 					}
 
-					for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+					for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 					{
-						if (canJoin(pBestPlot, ((SpecialistClassTypes)iI)))
+						if (canJoin(pBestPlot, ((SpecialistTypes)iI)))
 						{
-							iValue = pLoopCity->AI_specialistClassValue(((SpecialistClassTypes)iI), pLoopCity->AI_avoidGrowth(), false);
+							iValue = pLoopCity->AI_specialistValue(((SpecialistTypes)iI), pLoopCity->AI_avoidGrowth(), false);
 
 							if (iValue > iBestValue)
 							{
 								iBestValue = iValue;
-								eBestSpecialist = ((SpecialistClassTypes)iI);
+								eBestSpecialist = ((SpecialistTypes)iI);
 							}
 						}
 					}
@@ -30759,7 +30763,8 @@ bool CvUnitAI::AI_AddPopToCity()
 	}
 
 
-	for (int iPass = 0; iPass < 4; iPass++)
+	// Reuse outer iPass (see canAirlift-class fix elsewhere).
+	for (iPass = 0; iPass < 4; iPass++)
 	{
 		for (pLoopCity = GET_PLAYER(getOwnerINLINE()).firstCity(&iLoop); pLoopCity != NULL; pLoopCity = GET_PLAYER(getOwnerINLINE()).nextCity(&iLoop))
 		{

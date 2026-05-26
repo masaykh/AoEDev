@@ -341,10 +341,6 @@ CvCorporationInfo* CyGlobalContext::getCorporationInfo(int i) const
 	return (i>=0 && i<GC.getNumCorporationInfos()) ? &GC.getCorporationInfo((CorporationTypes) i) : NULL;
 }
 
-CvSpecialistClassInfo* CyGlobalContext::getSpecialistClassInfo(int i) const
-{
-	return (i >= 0 && i < GC.getNumSpecialistClassInfos()) ? &GC.getSpecialistClassInfo((SpecialistClassTypes)i) : NULL;
-}
 
 CvSpecialistInfo* CyGlobalContext::getSpecialistInfo(int i) const
 {

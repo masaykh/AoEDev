@@ -29,8 +29,6 @@
 
 // Public Functions...
 
-#include "CvSnarkoProfiler.h"
-
 CvCity::CvCity()
 {
 	m_aiSeaPlotYield = new int[NUM_YIELD_TYPES];
@@ -123,11 +121,11 @@ CvCity::CvCity()
 /*************************************************************************************************/
 /**	GWSLocalSpecialist																		END	**/
 /*************************************************************************************************/
-	m_paiSpecialistClassCount = NULL;
-	m_paiMaxSpecialistClassCount = NULL;
-	m_pabBlockedSpecialistClass = NULL;
-	m_paiForceSpecialistClassCount = NULL;
-	m_paiFreeSpecialistClassCount = NULL;
+	m_paiSpecialistCount = NULL;
+	m_paiMaxSpecialistCount = NULL;
+	m_pabBlockedSpecialist = NULL;
+	m_paiForceSpecialistCount = NULL;
+	m_paiFreeSpecialistCount = NULL;
 /*************************************************************************************************/
 /**	Statesmen								02/05/10											**/
 /**																								**/
@@ -612,7 +610,7 @@ void CvCity::uninit()
 /*************************************************************************************************/
 	if (m_paaiLocalSpecialistYield != NULL)
 	{
-		for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+		for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 		{
 			SAFE_DELETE_ARRAY(m_paaiLocalSpecialistYield[iI]);
 		}
@@ -620,7 +618,7 @@ void CvCity::uninit()
 	}
 	if (m_paaiLocalSpecialistCommerce != NULL)
 	{
-		for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+		for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 		{
 			SAFE_DELETE_ARRAY(m_paaiLocalSpecialistCommerce[iI]);
 		}
@@ -633,11 +631,11 @@ void CvCity::uninit()
 /*************************************************************************************************/
 /**	GWSLocalSpecialist																		END	**/
 /*************************************************************************************************/
-	SAFE_DELETE_ARRAY(m_paiSpecialistClassCount);
-	SAFE_DELETE_ARRAY(m_paiMaxSpecialistClassCount);
-	SAFE_DELETE_ARRAY(m_pabBlockedSpecialistClass);
-	SAFE_DELETE_ARRAY(m_paiForceSpecialistClassCount);
-	SAFE_DELETE_ARRAY(m_paiFreeSpecialistClassCount);
+	SAFE_DELETE_ARRAY(m_paiSpecialistCount);
+	SAFE_DELETE_ARRAY(m_paiMaxSpecialistCount);
+	SAFE_DELETE_ARRAY(m_pabBlockedSpecialist);
+	SAFE_DELETE_ARRAY(m_paiForceSpecialistCount);
+	SAFE_DELETE_ARRAY(m_paiFreeSpecialistCount);
 /*************************************************************************************************/
 /**	Statesmen								02/05/10											**/
 /**																								**/
@@ -1187,65 +1185,65 @@ void CvCity::reset(int iID, PlayerTypes eOwner, int iX, int iY, bool bConstructo
 			m_paiGreatPeopleUnitProgress[iI] = 0;
 		}
 
-		FAssertMsg((0 < GC.getNumSpecialistClassInfos()),  "GC.getNumSpecialistClassInfos() is not greater than zero but an array is being allocated in CvCity::reset");
+		FAssertMsg((0 < GC.getNumSpecialistInfos()),  "GC.getNumSpecialistInfos() is not greater than zero but an array is being allocated in CvCity::reset");
 /*************************************************************************************************/
 /**	GWSLocalSpecialist																	Milaga	**/
 /** Buildings can change give bonuses to specialists in only one city							**/
 /*************************************************************************************************/
 		FAssertMsg(m_paaiLocalSpecialistYield==NULL, "About to leak memory, CvCity::m_paaiLocalSpecialistYield is NULL");
-		m_paaiLocalSpecialistYield = new int*[GC.getNumSpecialistClassInfos()];
-		for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+		m_paaiLocalSpecialistYield = new int*[GC.getNumSpecialistInfos()];
+		for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 		{
 			m_paaiLocalSpecialistYield[iI] = new int[NUM_YIELD_TYPES];
 			for (int iJ = 0; iJ < NUM_YIELD_TYPES; iJ++)
 			{
-				m_paaiLocalSpecialistYield[iI][iJ] = GET_PLAYER(getOwner()).getSpecialistTypeExtraYield((SpecialistTypes)getSpecialistTypeFromClass((SpecialistClassTypes)iI), (YieldTypes)iJ);
+				m_paaiLocalSpecialistYield[iI][iJ] = 0;
 			}
 		}
 		FAssertMsg(m_paaiLocalSpecialistCommerce==NULL, "About to leak memory, CvCity::m_paaiLocalSpecialistCommerce is NULL");
-		m_paaiLocalSpecialistCommerce = new int*[GC.getNumSpecialistClassInfos()];
-		for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+		m_paaiLocalSpecialistCommerce = new int*[GC.getNumSpecialistInfos()];
+		for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 		{
 			m_paaiLocalSpecialistCommerce[iI] = new int[NUM_COMMERCE_TYPES];
 			for (int iJ = 0; iJ < NUM_COMMERCE_TYPES; iJ++)
 			{
-				m_paaiLocalSpecialistCommerce[iI][iJ] = GET_PLAYER(getOwner()).getSpecialistTypeExtraCommerce((SpecialistTypes)getSpecialistTypeFromClass((SpecialistClassTypes)iI), (CommerceTypes)iJ);
+				m_paaiLocalSpecialistCommerce[iI][iJ] = 0;
 			}
 		}
-		m_paiLocalSpecialistHappiness = new int[GC.getNumSpecialistClassInfos()];
-		m_paiLocalSpecialistHealth = new int[GC.getNumSpecialistClassInfos()];
-		m_paiLocalSpecialistCrime = new int[GC.getNumSpecialistClassInfos()];
-		m_paiLocalSpecialistGPP = new int[GC.getNumSpecialistClassInfos()];
-		for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+		m_paiLocalSpecialistHappiness = new int[GC.getNumSpecialistInfos()];
+		m_paiLocalSpecialistHealth = new int[GC.getNumSpecialistInfos()];
+		m_paiLocalSpecialistCrime = new int[GC.getNumSpecialistInfos()];
+		m_paiLocalSpecialistGPP = new int[GC.getNumSpecialistInfos()];
+		for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 		{
-			m_paiLocalSpecialistHappiness[iI] = GET_PLAYER(getOwner()).getSpecialistTypeExtraHappiness((SpecialistTypes)getSpecialistTypeFromClass((SpecialistClassTypes)iI));
-			m_paiLocalSpecialistHealth[iI] = GET_PLAYER(getOwner()).getSpecialistTypeExtraHealth((SpecialistTypes)getSpecialistTypeFromClass((SpecialistClassTypes)iI));
-			m_paiLocalSpecialistCrime[iI] = GET_PLAYER(getOwner()).getSpecialistTypeExtraCrime((SpecialistTypes)getSpecialistTypeFromClass((SpecialistClassTypes)iI));
+			m_paiLocalSpecialistHappiness[iI] = 0;
+			m_paiLocalSpecialistHealth[iI] = 0;
+			m_paiLocalSpecialistCrime[iI] = 0;
 			m_paiLocalSpecialistGPP[iI] = 0;
 		}
 /*************************************************************************************************/
 /**	GWSLocalSpecialist																		END	**/
 /*************************************************************************************************/
-		m_paiSpecialistClassCount = new int[GC.getNumSpecialistClassInfos()];
-		m_paiMaxSpecialistClassCount = new int[GC.getNumSpecialistClassInfos()];
-		m_pabBlockedSpecialistClass = new bool[GC.getNumSpecialistClassInfos()];
-		m_paiForceSpecialistClassCount = new int[GC.getNumSpecialistClassInfos()];
-		m_paiFreeSpecialistClassCount = new int[GC.getNumSpecialistClassInfos()];
+		m_paiSpecialistCount = new int[GC.getNumSpecialistInfos()];
+		m_paiMaxSpecialistCount = new int[GC.getNumSpecialistInfos()];
+		m_pabBlockedSpecialist = new bool[GC.getNumSpecialistInfos()];
+		m_paiForceSpecialistCount = new int[GC.getNumSpecialistInfos()];
+		m_paiFreeSpecialistCount = new int[GC.getNumSpecialistInfos()];
 /*************************************************************************************************/
 /**	Statesmen								02/05/10											**/
 /**																								**/
 /**						Allows improvements to grant specific specialists						**/
 /*************************************************************************************************/
-		m_paiImprovementSpecialistCount = new int[GC.getNumSpecialistClassInfos()];
-		m_paiStateReligionSpecialistCount = new int[GC.getNumSpecialistClassInfos()];
-		m_paiNonStateReligionSpecialistCount = new int[GC.getNumSpecialistClassInfos()];
-		for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+		m_paiImprovementSpecialistCount = new int[GC.getNumSpecialistInfos()];
+		m_paiStateReligionSpecialistCount = new int[GC.getNumSpecialistInfos()];
+		m_paiNonStateReligionSpecialistCount = new int[GC.getNumSpecialistInfos()];
+		for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 		{
-			m_paiSpecialistClassCount[iI] = 0;
-			m_paiMaxSpecialistClassCount[iI] = 0;
-			m_pabBlockedSpecialistClass[iI] = false;
-			m_paiForceSpecialistClassCount[iI] = 0;
-			m_paiFreeSpecialistClassCount[iI] = 0;
+			m_paiSpecialistCount[iI] = 0;
+			m_paiMaxSpecialistCount[iI] = 0;
+			m_pabBlockedSpecialist[iI] = false;
+			m_paiForceSpecialistCount[iI] = 0;
+			m_paiFreeSpecialistCount[iI] = 0;
 			m_paiImprovementSpecialistCount[iI] = 0;
 			m_paiStateReligionSpecialistCount[iI] = 0;
 			m_paiNonStateReligionSpecialistCount[iI] = 0;
@@ -1426,15 +1424,15 @@ void CvCity::kill(bool bUpdatePlotGroups)
 		setNumFreeBuilding(((BuildingTypes)iI), 0);
 	}
 
-	for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+	for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 	{
-		setFreeSpecialistClassCount(((SpecialistClassTypes)iI), 0);
+		setFreeSpecialistCount(((SpecialistTypes)iI), 0);
 /*************************************************************************************************/
 /**	Statesmen								02/05/10											**/
 /**																								**/
 /**						Allows improvements to grant specific specialists						**/
 /*************************************************************************************************/
-		setImprovementSpecialistClassCount(((SpecialistClassTypes)iI), 0);
+		setImprovementSpecialistCount(((SpecialistTypes)iI), 0);
 /*************************************************************************************************/
 /**	Statesmen								END													**/
 /*************************************************************************************************/
@@ -1606,23 +1604,12 @@ void CvCity::doTurn()
 	CvPlot* pLoopPlot;
 	int iI;
 
-	CvSnarkoProfiler profiler;
-	CvSnarkoProfiler profiler2;
-	CvString szError;
-	szError.Format("City::doTurn Turn %i, City %s", GC.getGame().getGameTurn(), getNameKey());
-
-	profiler.profile(szError);
-
 	if (!isBombarded())
 	{
 		changeDefenseDamage(-(GC.getDefineINT("CITY_DEFENSE_DAMAGE_HEAL_RATE")));
 	}
 
 	//Crime
-	szError.Format("City::doTurn-AutoBuildings Turn %i, City %s", GC.getGame().getGameTurn(), getNameKey());
-
-	profiler2.profile(szError);
-
 	changeCrime(getCrimePerTurn());
 	for (int iLoopBuilding = 0; iLoopBuilding < GC.getNumBuildingClassInfos(); iLoopBuilding++)
 	{
@@ -1646,13 +1633,6 @@ void CvCity::doTurn()
 		}
 	}
 
-	profiler2.profile(NULL, true);
-
-
-	szError.Format("City::doTurn-damagereset Turn %i, City %s", GC.getGame().getGameTurn(), getNameKey());
-
-	profiler2.profile(szError);
-
 	setLastDefenseDamage(getDefenseDamage());
 	setBombarded(false);
 	setPlundered(false);
@@ -1669,33 +1649,16 @@ void CvCity::doTurn()
 /*************************************************************************************************/
 	setCurrAirlift(0);
 
-	profiler2.profile(NULL, true);
-
-
-	szError.Format("City::doTurn-AIdoTurn Turn %i, City %s", GC.getGame().getGameTurn(), getNameKey());
-
-	profiler2.profile(szError);
-
 	AI_doTurn();
-	profiler2.profile(NULL, true);
 
 	bool bAllowNoProduction = !doCheckProduction();
 
 //FfH: Modified by Kael 08/04/2007
 //	doGrowth();
-
-	szError.Format("City::doTurn-doGrowth Turn %i, City %s", GC.getGame().getGameTurn(), getNameKey());
-
-	profiler2.profile(szError);
-
-
 	if (!(GET_PLAYER(getOwnerINLINE()).isIgnoreFood()))
 	{
 		doGrowth();
 	}
-
-	profiler2.profile(NULL, true);
-
 	bool bValid = false;
 	CvUnit* pLoopUnit;
 	CLLNode<IDInfo>* pUnitNode;
@@ -1731,52 +1694,19 @@ void CvCity::doTurn()
 	}
 //FfH: End Add
 
-	szError.Format("City::doTurn-doCulture Turn %i, City %s", GC.getGame().getGameTurn(), getNameKey());
-
-	profiler2.profile(szError);
-
 	doCulture();
-	profiler2.profile(NULL, true);
-	szError.Format("City::doTurn-doPlotCulture Turn %i, City %s", GC.getGame().getGameTurn(), getNameKey());
-
-	profiler2.profile(szError);
 
 	doPlotCulture(false, getOwnerINLINE(), getCommerceRate(COMMERCE_CULTURE));
-	profiler2.profile(NULL, true);
-
-	szError.Format("City::doTurn-doProduction Turn %i, City %s", GC.getGame().getGameTurn(), getNameKey());
-
-	profiler2.profile(szError);
 
 	doProduction(bAllowNoProduction);
-	profiler2.profile(NULL, true);
-	szError.Format("City::doTurn-doDecay Turn %i, City %s", GC.getGame().getGameTurn(), getNameKey());
-
-	profiler2.profile(szError);
 
 	doDecay();
-	profiler2.profile(NULL, true);
-	szError.Format("City::doTurn-doReligion Turn %i, City %s", GC.getGame().getGameTurn(), getNameKey());
-
-	profiler2.profile(szError);
 
 	doReligion();
-	profiler2.profile(NULL, true);
-	szError.Format("City::doTurn-doGPP Turn %i, City %s", GC.getGame().getGameTurn(), getNameKey());
-
-	profiler2.profile(szError);
 
 	doGreatPeople();
-	profiler2.profile(NULL, true);
-	szError.Format("City::doTurn-doMeltdown Turn %i, City %s", GC.getGame().getGameTurn(), getNameKey());
-
-	profiler2.profile(szError);
 
 	doMeltdown();
-	profiler2.profile(NULL, true);
-	szError.Format("City::doTurn-doCounters Turn %i, City %s", GC.getGame().getGameTurn(), getNameKey());
-
-	profiler2.profile(szError);
 
 	updateEspionageVisibility(true);
 
@@ -1851,11 +1781,6 @@ void CvCity::doTurn()
 	{
 		setWeLoveTheKingDay(false);
 	}
-
-	profiler2.profile(NULL, true);
-	szError.Format("City::doTurn-diploupdate Turn %i, City %s", GC.getGame().getGameTurn(), getNameKey());
-
-	profiler2.profile(szError);
 /*************************************************************************************************/
 /**	People's Choice							08/02/08								Xienwolf	**/
 /**																								**/
@@ -1877,12 +1802,6 @@ void CvCity::doTurn()
 /**																								**/
 /**						Allows improvements to grant specific specialists						**/
 /*************************************************************************************************/
-
-	profiler2.profile(NULL, true);
-	szError.Format("City::doTurn-doimprovementcrime Turn %i, City %s", GC.getGame().getGameTurn(), getNameKey());
-
-	profiler2.profile(szError); 
-	
 	int improvementcrime = 0;
 	for (int iI = 0; iI < GC.getNumImprovementInfos(); iI++)
 	{
@@ -1901,17 +1820,12 @@ void CvCity::doTurn()
 		changeImprovementCrime(improvementcrime);
 	}
 
-	profiler2.profile(NULL, true);
-	szError.Format("City::doTurn-dofreespecialist Turn %i, City %s", GC.getGame().getGameTurn(), getNameKey());
-
-	profiler2.profile(szError);
-
-	for (int iJ = 0; iJ < GC.getNumSpecialistClassInfos(); iJ++)
+	for (int iJ = 0; iJ < GC.getNumSpecialistInfos(); iJ++)
 	{
 		int iNumFreeSpecialists = 0;
 		for (int iI = 0; iI < GC.getNumImprovementInfos(); iI++)
 		{
-			if (GC.getImprovementInfo((ImprovementTypes)iI).getFreeSpecialistClass() == iJ)
+			if (GC.getImprovementInfo((ImprovementTypes)iI).getFreeSpecialist() == iJ)
 			{
 				if (GC.getImprovementInfo((ImprovementTypes)iI).getPrereqCivilization() == NO_CIVILIZATION || (CivilizationTypes)GC.getImprovementInfo((ImprovementTypes)iI).getPrereqCivilization() == GET_PLAYER(getOwner()).getCivilizationType())
 				{
@@ -1923,11 +1837,11 @@ void CvCity::doTurn()
 				}
 			}
 		}
-		if (getImprovementSpecialistClassCount((SpecialistClassTypes)iJ) != iNumFreeSpecialists)
+		if (getImprovementSpecialistCount((SpecialistTypes)iJ) != iNumFreeSpecialists)
 		{
-			int iNewSpecialistCount = (iNumFreeSpecialists - getImprovementSpecialistClassCount((SpecialistClassTypes)iJ));
-			changeFreeSpecialistClassCount((SpecialistClassTypes)iJ, iNewSpecialistCount);
-			changeImprovementSpecialistClassCount((SpecialistClassTypes)iJ, iNewSpecialistCount);
+			int iNewSpecialistCount = (iNumFreeSpecialists - getImprovementSpecialistCount((SpecialistTypes)iJ));
+			changeFreeSpecialistCount((SpecialistTypes)iJ, iNewSpecialistCount);
+			changeImprovementSpecialistCount((SpecialistTypes)iJ, iNewSpecialistCount);
 		}
 		if ((GET_PLAYER(getOwner()).getStateReligion()) != NO_RELIGION)
 		{
@@ -1936,23 +1850,23 @@ void CvCity::doTurn()
 				int numNonStateReligion = getReligionCount() - 1;
 				if (numNonStateReligion > 0)
 				{
-					int numFreeSpecialist = GET_PLAYER(getOwner()).getFreeSpecialistClassNonStateReligion((SpecialistClassTypes)iJ);
-					int iNewSpecialistCount = numNonStateReligion * numFreeSpecialist - getNonStateReligionSpecialistClassCount((SpecialistClassTypes)iJ);
+					int numFreeSpecialist = GET_PLAYER(getOwner()).getFreeSpecialistNonStateReligion((SpecialistTypes)iJ);
+					int iNewSpecialistCount = numNonStateReligion * numFreeSpecialist - getNonStateReligionSpecialistCount((SpecialistTypes)iJ);
 					if (iNewSpecialistCount != 0)
 					{
-						changeFreeSpecialistClassCount((SpecialistClassTypes)iJ, iNewSpecialistCount);
-						changeNonStateReligionSpecialistClassCount((SpecialistClassTypes)iJ, iNewSpecialistCount);
+						changeFreeSpecialistCount((SpecialistTypes)iJ, iNewSpecialistCount);
+						changeNonStateReligionSpecialistCount((SpecialistTypes)iJ, iNewSpecialistCount);
 					}
 
 				}
 			
-				int numFreeSpecialist = GET_PLAYER(getOwner()).getFreeSpecialistClassStateReligion((SpecialistClassTypes)iJ);
+				int numFreeSpecialist = GET_PLAYER(getOwner()).getFreeSpecialistStateReligion((SpecialistTypes)iJ);
 
-				int iNewSpecialistCount = numFreeSpecialist - getStateReligionSpecialistClassCount((SpecialistClassTypes)iJ);
+				int iNewSpecialistCount = numFreeSpecialist - getStateReligionSpecialistCount((SpecialistTypes)iJ);
 				if (iNewSpecialistCount != 0)
 				{
-					changeFreeSpecialistClassCount((SpecialistClassTypes)iJ, iNewSpecialistCount);
-					changeStateReligionSpecialistClassCount((SpecialistClassTypes)iJ, iNewSpecialistCount);
+					changeFreeSpecialistCount((SpecialistTypes)iJ, iNewSpecialistCount);
+					changeStateReligionSpecialistCount((SpecialistTypes)iJ, iNewSpecialistCount);
 				}
 
 			}
@@ -1967,12 +1881,6 @@ void CvCity::doTurn()
 /*                                                                                              */
 /* Original Author Moctezuma              End                                                   */
 /************************************************************************************************/
-	profiler2.profile(NULL, true);
-	szError.Format("City::doTurn-doIDW Turn %i, City %s", GC.getGame().getGameTurn(), getNameKey());
-
-	profiler2.profile(szError);
-
-	
 	int iDX, iDY, iCultureRange;
 	if (isFixedBorders())
 	{
@@ -2004,11 +1912,6 @@ void CvCity::doTurn()
 /*************************************************************************************************/
 	changeDelayTimer(-1);
 	setHasCasted(false);
-	profiler2.profile(NULL, true);
-	szError.Format("City::doTurn-choosespell Turn %i, City %s", GC.getGame().getGameTurn(), getNameKey());
-
-	profiler2.profile(szError);
-
 
 	if (!isHuman())
 	{
@@ -2018,12 +1921,6 @@ void CvCity::doTurn()
 			cast(iSpell);
 		}
 	}
-
-	profiler2.profile(NULL, true);
-	szError.Format("City::doTurn-python Turn %i, City %s", GC.getGame().getGameTurn(), getNameKey());
-
-	profiler2.profile(szError);
-
 /*************************************************************************************************/
 /**	END																							**/
 /*************************************************************************************************/
@@ -2032,9 +1929,6 @@ void CvCity::doTurn()
 	CvEventReporter::getInstance().cityDoTurn(this, getOwnerINLINE());
 
 	// XXX
-	profiler2.profile(NULL, true);
-
-	profiler.profile(NULL, true);
 #ifdef _DEBUG
 	{
 		CvPlot* pPlot;
@@ -2064,9 +1958,9 @@ void CvCity::doTurn()
 				}
 			}
 
-			for (int iJ = 0; iJ < GC.getNumSpecialistClassInfos(); iJ++)
+			for (int iJ = 0; iJ < GC.getNumSpecialistInfos(); iJ++)
 			{
-				iCount += (GET_PLAYER(getOwnerINLINE()).getSpecialistClassExtraYield(((SpecialistClassTypes)iJ), ((YieldTypes)iI)) * (getSpecialistClassCount((SpecialistClassTypes)iJ) + getFreeSpecialistClassCount((SpecialistClassTypes)iJ)));
+				iCount += (GET_PLAYER(getOwnerINLINE()).specialistYield(((SpecialistTypes)iJ), ((YieldTypes)iI)) * (getSpecialistCount((SpecialistTypes)iJ) + getFreeSpecialistCount((SpecialistTypes)iJ)));
 			}
 
 			for (int iJ = 0; iJ < GC.getNumBuildingInfos(); iJ++)
@@ -2266,7 +2160,7 @@ void CvCity::doTask(TaskTypes eTask, int iData1, int iData2, bool bOption, bool 
 		break;
 
 	case TASK_CHANGE_SPECIALIST:
-		alterSpecialistClassCount(((SpecialistClassTypes)iData1), iData2);
+		alterSpecialistCount(((SpecialistTypes)iData1), iData2);
 		break;
 
 	case TASK_CHANGE_WORKING_PLOT:
@@ -5876,26 +5770,26 @@ void CvCity::processBuilding(BuildingTypes eBuilding, int iChange, bool bObsolet
 			changeReligionInfluence(((ReligionTypes)iI), (GC.getBuildingInfo(eBuilding).getReligionChange(iI) * iChange));
 		}
 
-		for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+		for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 		{
-			changeMaxSpecialistClassCount(((SpecialistClassTypes)iI), GC.getBuildingInfo(eBuilding).getSpecialistClassCount(iI) * iChange);
-			changeFreeSpecialistClassCount(((SpecialistClassTypes)iI), GC.getBuildingInfo(eBuilding).getFreeSpecialistClassCount(iI) * iChange);
+			changeMaxSpecialistCount(((SpecialistTypes)iI), GC.getBuildingInfo(eBuilding).getSpecialistCount(iI) * iChange);
+			changeFreeSpecialistCount(((SpecialistTypes)iI), GC.getBuildingInfo(eBuilding).getFreeSpecialistCount(iI) * iChange);
 /*************************************************************************************************/
 /**	GWSLocalSpecialist																	Milaga	**/
 /** Buildings can change give bonuses to specialists in only one city							**/
 /*************************************************************************************************/
 			for (int iJ = 0; iJ < NUM_YIELD_TYPES; iJ++)
 			{
-				changeLocalSpecialistClassYield(((SpecialistClassTypes)iI), ((YieldTypes)iJ), GC.getBuildingInfo(eBuilding).getLocalSpecialistClassYieldChange((SpecialistClassTypes)iI, (YieldTypes)iJ) * iChange);
+				changeLocalSpecialistYield(((SpecialistTypes)iI), ((YieldTypes)iJ), GC.getBuildingInfo(eBuilding).getLocalSpecialistYieldChange((SpecialistTypes)iI, (YieldTypes)iJ) * iChange);
 			}
 			for (int iJ = 0; iJ < NUM_COMMERCE_TYPES; iJ++)
 			{
-				changeLocalSpecialistClassCommerce(((SpecialistClassTypes)iI), ((CommerceTypes)iJ), GC.getBuildingInfo(eBuilding).getLocalSpecialistClassCommerceChange((SpecialistClassTypes)iI, (CommerceTypes)iJ) * iChange);
+				changeLocalSpecialistCommerce(((SpecialistTypes)iI), ((CommerceTypes)iJ), GC.getBuildingInfo(eBuilding).getLocalSpecialistCommerceChange((SpecialistTypes)iI, (CommerceTypes)iJ) * iChange);
 			}
-			changeLocalSpecialistClassHappiness((SpecialistClassTypes)iI, GC.getBuildingInfo(eBuilding).getLocalSpecialistClassHappinessChange((SpecialistClassTypes)iI) * iChange);
-			changeLocalSpecialistClassHealth((SpecialistClassTypes)iI, GC.getBuildingInfo(eBuilding).getLocalSpecialistClassHealthChange((SpecialistClassTypes)iI) * iChange);
-			changeLocalSpecialistClassCrime((SpecialistClassTypes)iI, GC.getBuildingInfo(eBuilding).getLocalSpecialistClassCrimeChange((SpecialistClassTypes)iI) * iChange);
-			changeLocalSpecialistClassGPP((SpecialistClassTypes)iI, GC.getBuildingInfo(eBuilding).getLocalSpecialistClassGPPChange((SpecialistClassTypes)iI) * iChange);
+			changeLocalSpecialistHappiness((SpecialistTypes)iI, GC.getBuildingInfo(eBuilding).getLocalSpecialistHappinessChange((SpecialistTypes)iI) * iChange);
+			changeLocalSpecialistHealth((SpecialistTypes)iI, GC.getBuildingInfo(eBuilding).getLocalSpecialistHealthChange((SpecialistTypes)iI) * iChange);
+			changeLocalSpecialistCrime((SpecialistTypes)iI, GC.getBuildingInfo(eBuilding).getLocalSpecialistCrimeChange((SpecialistTypes)iI) * iChange);
+			changeLocalSpecialistGPP((SpecialistTypes)iI, GC.getBuildingInfo(eBuilding).getLocalSpecialistGPPChange((SpecialistTypes)iI) * iChange);
 /*************************************************************************************************/
 /**	GWSLocalSpecialist																		END	**/
 /*************************************************************************************************/
@@ -5903,7 +5797,7 @@ void CvCity::processBuilding(BuildingTypes eBuilding, int iChange, bool bObsolet
 
 		for (int iI = 0; iI < GC.getNumImprovementInfos(); ++iI)
 		{
-			changeImprovementFreeSpecialistClasses((ImprovementTypes)iI, GC.getBuildingInfo(eBuilding).getImprovementFreeSpecialistClass(iI) * iChange);
+			changeImprovementFreeSpecialists((ImprovementTypes)iI, GC.getBuildingInfo(eBuilding).getImprovementFreeSpecialist(iI) * iChange);
 		}
 
 		FAssertMsg((0 < GC.getNumBonusInfos()) && "GC.getNumBonusInfos() is not greater than zero but an array is being allocated in CvPlotGroup::reset", "GC.getNumBonusInfos() is not greater than zero but an array is being allocated in CvPlotGroup::reset");
@@ -6070,21 +5964,15 @@ void CvCity::processProcess(ProcessTypes eProcess, int iChange)
 }
 
 
-void CvCity::processSpecialistClass(SpecialistClassTypes eSpecialistClass, int iChange)
+void CvCity::processSpecialist(SpecialistTypes eSpecialist, int iChange)
 {
 	UnitTypes eGreatPeopleUnit;
 	int iI;
-
-	SpecialistTypes eSpecialist = getSpecialistTypeFromClass(eSpecialistClass);
-	if (eSpecialist == NO_SPECIALIST)
-	{
-		return;
-	}
 /*************************************************************************************************/
 /**	GWSLocalSpecialist																	Milaga	**/
 /** Buildings can change give bonuses to specialists in only one city							**/
 /*************************************************************************************************/
-	int iSpecialistGPP = std::max(0, GC.getSpecialistInfo(eSpecialist).getGreatPeopleRateChange() + getLocalSpecialistClassGPP(eSpecialistClass)+GET_PLAYER(getOwner()).getSpecialistClassExtraGPP(eSpecialistClass));
+	int iSpecialistGPP = std::max(0, GC.getSpecialistInfo(eSpecialist).getGreatPeopleRateChange() + getLocalSpecialistGPP(eSpecialist)+GET_PLAYER(getOwner()).getSpecialistTypeExtraGPP(eSpecialist));
 /*************************************************************************************************/
 /**	GWSLocalSpecialist																		END	**/
 /*************************************************************************************************/
@@ -6132,6 +6020,8 @@ void CvCity::processSpecialistClass(SpecialistClassTypes eSpecialistClass, int i
 		changeSpecialistCommerce(((CommerceTypes)iI), (GC.getSpecialistInfo(eSpecialist).getCommerceChange(iI) * iChange));
 	}
 
+	updateExtraSpecialistYield();
+
 /*************************************************************************************************/
 /** Specialists Enhancements, by Supercheese 10/9/09           Imported by Valkrionn   10/22/09  */
 /**                                                                                              */
@@ -6160,12 +6050,12 @@ void CvCity::processSpecialistClass(SpecialistClassTypes eSpecialistClass, int i
 		changeSpecialistUnhappiness(GC.getSpecialistInfo(eSpecialist).getHappiness() * iChange);
 	}
 /**								----  End Original Code  ----									**/
-	int iSpecialistHappiness = GC.getSpecialistInfo(eSpecialist).getHappiness() + getLocalSpecialistClassHappiness(eSpecialistClass) + GET_PLAYER(getOwner()).getSpecialistClassExtraHappiness(eSpecialistClass);
+	int iSpecialistHappiness = GC.getSpecialistInfo(eSpecialist).getHappiness() + getLocalSpecialistHappiness(eSpecialist) + GET_PLAYER(getOwner()).getSpecialistTypeExtraHappiness(eSpecialist);
 
 	if (iSpecialistHappiness > 0) changeSpecialistHappiness(iSpecialistHappiness * iChange);
 	if (iSpecialistHappiness < 0) changeSpecialistUnhappiness(iSpecialistHappiness * iChange);
 
-	int iSpecialistHealth = GC.getSpecialistInfo(eSpecialist).getHealth() + getLocalSpecialistClassHealth(eSpecialistClass) + GET_PLAYER(getOwner()).getSpecialistClassExtraHealth(eSpecialistClass);
+	int iSpecialistHealth = GC.getSpecialistInfo(eSpecialist).getHealth() + getLocalSpecialistHealth(eSpecialist) + GET_PLAYER(getOwner()).getSpecialistTypeExtraHealth(eSpecialist);
 
 	if (iSpecialistHealth > 0) changeSpecialistGoodHealth(iSpecialistHealth * iChange);
 	if (iSpecialistHealth < 0) changeSpecialistBadHealth(iSpecialistHealth * iChange);
@@ -6177,24 +6067,6 @@ void CvCity::processSpecialistClass(SpecialistClassTypes eSpecialistClass, int i
 /*************************************************************************************************/
 
 	changeSpecialistFreeExperience(GC.getSpecialistInfo(eSpecialist).getExperience() * iChange);
-	for (int i = 0; i < GC.getNumUnitCombatInfos(); i++)
-	{
-		changeUnitCombatFreeExperience((UnitCombatTypes)i, GC.getSpecialistInfo(eSpecialist).getUnitCombatFreeXP(i) * iChange);
-		changeTrainXPCap(GC.getSpecialistInfo(eSpecialist).getTrainXPCap(i) * iChange, (UnitCombatTypes)i);
-		changeTrainXPRate(GC.getSpecialistInfo(eSpecialist).getTrainXPRate(i) * iChange, (UnitCombatTypes)i);
-	}
-	for (int i = 0; i < GC.getNumSpecialistClassInfos(); i++)
-	{
-		for(int j = 0; j < NUM_YIELD_TYPES; j++)
-			changeLocalSpecialistClassYield((SpecialistClassTypes)i, (YieldTypes)j, GC.getSpecialistInfo(eSpecialist).getSpecialistClassExtraYield(i, j) * iChange);
-		for (int j = 0; j < NUM_COMMERCE_TYPES; j++)
-			changeLocalSpecialistClassCommerce((SpecialistClassTypes)i, (CommerceTypes)j, GC.getSpecialistInfo(eSpecialist).getSpecialistClassExtraCommerce(i, j) * iChange);
-		changeLocalSpecialistClassCrime((SpecialistClassTypes)i, GC.getSpecialistInfo(eSpecialist).getSpecialistClassExtraCrime(i)* iChange);
-	}
-	changeBuildingDefense(GC.getSpecialistInfo(eSpecialist).getCityDefense() * iChange);
-	changeExtraTradeRoutes(GC.getSpecialistInfo(eSpecialist).getExtraTradeRoutes() * iChange);
-
-	updateExtraSpecialistYield();
 }
 
 
@@ -6794,7 +6666,7 @@ int CvCity::totalFreeSpecialists() const
 
 		for (int iImprovement = 0; iImprovement < GC.getNumImprovementInfos(); ++iImprovement)
 		{
-			int iNumSpecialistsPerImprovement = getImprovementFreeSpecialistClasses((ImprovementTypes)iImprovement);
+			int iNumSpecialistsPerImprovement = getImprovementFreeSpecialists((ImprovementTypes)iImprovement);
 			if (iNumSpecialistsPerImprovement > 0)
 			{
 				iCount += iNumSpecialistsPerImprovement * countNumImprovedPlots((ImprovementTypes)iImprovement);
@@ -10750,9 +10622,9 @@ void CvCity::setCitizensAutomated(bool bNewValue)
 		}
 		else
 		{
-			for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+			for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 			{
-				setForceSpecialistClassCount(((SpecialistClassTypes)iI), 0);
+				setForceSpecialistCount(((SpecialistTypes)iI), 0);
 			}
 		}
 
@@ -10907,11 +10779,6 @@ void CvCity::setCultureLevel(CultureLevelTypes eNewValue, bool bUpdatePlotGroups
 
 	if (eOldValue != eNewValue)
 	{
-		if (bUpdatePlotGroups)
-		{
-			GET_PLAYER(getOwner()).setUpdatePlotGroups(true);
-			bUpdatePlotGroups = false;
-		}
 		m_eCultureLevel = eNewValue;
 
 		if (eOldValue != NO_CULTURELEVEL)
@@ -11679,27 +11546,27 @@ int CvCity::getExtraSpecialistYield(YieldTypes eIndex) const
 }
 
 
-int CvCity::getExtraSpecialistClassYield(YieldTypes eIndex, SpecialistClassTypes eSpecialist) const
+int CvCity::getExtraSpecialistYield(YieldTypes eIndex, SpecialistTypes eSpecialist) const
 {
 	FAssertMsg(eIndex >= 0, "eIndex expected to be >= 0");
 	FAssertMsg(eIndex < NUM_YIELD_TYPES, "eIndex expected to be < NUM_YIELD_TYPES");
 	FAssertMsg(eSpecialist >= 0, "eSpecialist expected to be >= 0");
-	FAssertMsg(eSpecialist < GC.getNumSpecialistClassInfos(), "GC.getNumSpecialistClassInfos expected to be >= 0");
+	FAssertMsg(eSpecialist < GC.getNumSpecialistInfos(), "GC.getNumSpecialistInfos expected to be >= 0");
 
 /*************************************************************************************************/
 /**	GWSLocalSpecialist																	Milaga	**/
 /** Buildings can change give bonuses to specialists in only one city							**/
 /*************************************************************************************************/
 /**								---- Start Original Code ----									**
-	return ((getSpecialistClassCount(eSpecialist) + getFreeSpecialistClassCount(eSpecialist)) * GET_PLAYER(getOwnerINLINE()).getSpecialistClassExtraYield(eSpecialist, eIndex));
+	return ((getSpecialistCount(eSpecialist) + getFreeSpecialistCount(eSpecialist)) * GET_PLAYER(getOwnerINLINE()).getSpecialistExtraYield(eSpecialist, eIndex));
 /**								----  End Original Code  ----									**/
 	return (
 		(
-			getSpecialistClassCount(eSpecialist)
-			+ getFreeSpecialistClassCount(eSpecialist)
+			getSpecialistCount(eSpecialist)
+			+ getFreeSpecialistCount(eSpecialist)
 		) * (
-			GET_PLAYER(getOwnerINLINE()).getSpecialistClassExtraYield(eSpecialist, eIndex)
-			+ getLocalSpecialistClassYield(eSpecialist, eIndex)
+			GET_PLAYER(getOwnerINLINE()).getSpecialistExtraYield(eSpecialist, eIndex)
+			+ getLocalSpecialistYield(eSpecialist, eIndex)
 		)
 	);
 /*************************************************************************************************/
@@ -11721,9 +11588,9 @@ void CvCity::updateExtraSpecialistYield(YieldTypes eYield)
 
 	iNewYield = 0;
 
-	for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+	for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 	{
-		iNewYield += getExtraSpecialistClassYield(eYield, ((SpecialistClassTypes)iI));
+		iNewYield += getExtraSpecialistYield(eYield, ((SpecialistTypes)iI));
 	}
 
 	if (iOldYield != iNewYield)
@@ -11750,10 +11617,10 @@ void CvCity::updateExtraSpecialistYield()
 /**	GWSLocalSpecialist																	Milaga	**/
 /** Buildings can change give bonuses to specialists in only one city							**/
 /*************************************************************************************************/
-int CvCity::getLocalSpecialistClassYield(SpecialistClassTypes eSpecialist, YieldTypes eYield) const
+int CvCity::getLocalSpecialistYield(SpecialistTypes eSpecialist, YieldTypes eYield) const
 {
 	FAssertMsg(eSpecialist >= 0, "eSpecialist expected to be >= 0");
-	FAssertMsg(eSpecialist < GC.getNumSpecialistClassInfos(), "eSpecialist expected to be < GC.getNumSpecialistClassInfos");
+	FAssertMsg(eSpecialist < GC.getNumSpecialistInfos(), "eSpecialist expected to be < GC.getNumSpecialistInfos");
 	FAssertMsg(eYield >= 0, "eYield expected to be >= 0");
 	FAssertMsg(eYield < NUM_YIELD_TYPES, "eYield expected to be < NUM_YIELD_TYPES");
 
@@ -11762,53 +11629,53 @@ int CvCity::getLocalSpecialistClassYield(SpecialistClassTypes eSpecialist, Yield
 
 int CvCity::getLocalSpecialistYield(YieldTypes eYield) const
 {
-	FAssertMsg(0 < GC.getNumSpecialistClassInfos(), "GC.getNumSpecialistClassInfos expected to be >= 0");
+	FAssertMsg(0 < GC.getNumSpecialistInfos(), "GC.getNumSpecialistInfos expected to be >= 0");
 
 	int iYield = 0;
-	for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+	for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 	{
-		iYield += getLocalSpecialistClassYield((SpecialistClassTypes)iI, eYield);
+		iYield += getLocalSpecialistYield((SpecialistTypes)iI, eYield);
 	}
 
 	return iYield;
 }
 
-void CvCity::setLocalSpecialistClassYield(SpecialistClassTypes eSpecialist, YieldTypes eYield, int iValue)
+void CvCity::setLocalSpecialistYield(SpecialistTypes eSpecialist, YieldTypes eYield, int iValue)
 {
 	FAssertMsg(eSpecialist >= 0, "eSpecialist expected to be >= 0");
-	FAssertMsg(eSpecialist < GC.getNumSpecialistClassInfos(), "eSpecialist expected to be < GC.getNumSpecialistClassInfos");
+	FAssertMsg(eSpecialist < GC.getNumSpecialistInfos(), "eSpecialist expected to be < GC.getNumSpecialistInfos");
 	FAssertMsg(eYield >= 0, "eYield expected to be >= 0");
 	FAssertMsg(eYield < NUM_YIELD_TYPES, "eYield expected to be < NUM_YIELD_TYPES");
 
 	m_paaiLocalSpecialistYield[eSpecialist][eYield] = iValue;
 }
 
-void CvCity::changeLocalSpecialistClassYield(SpecialistClassTypes eSpecialist, YieldTypes eYield, int iChange)
+void CvCity::changeLocalSpecialistYield(SpecialistTypes eSpecialist, YieldTypes eYield, int iChange)
 {
 	if (iChange != 0)
 	{
-		setLocalSpecialistClassYield(eSpecialist, eYield, getLocalSpecialistClassYield(eSpecialist, eYield) + iChange);
+		setLocalSpecialistYield(eSpecialist, eYield, getLocalSpecialistYield(eSpecialist, eYield) + iChange);
 	}
 }
 
 void CvCity::changeLocalSpecialistYield(YieldTypes eYield, int iChange)
 {
-	FAssertMsg(0 < GC.getNumSpecialistClassInfos(), "GC.getNumSpecialistClassInfos() expected to be > 0");
+	FAssertMsg(0 < GC.getNumSpecialistInfos(), "GC.getNumSpecialistInfos() expected to be > 0");
 	if (iChange != 0)
 	{
-		for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+		for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 		{
-			changeLocalSpecialistClassYield((SpecialistClassTypes)iI, eYield, iChange);
+			changeLocalSpecialistYield((SpecialistTypes)iI, eYield, iChange);
 		}
 	}
 }
 
 /*************************************************************************************************/
 
-int CvCity::getLocalSpecialistClassCommerce(SpecialistClassTypes eSpecialist, CommerceTypes eCommerce) const
+int CvCity::getLocalSpecialistCommerce(SpecialistTypes eSpecialist, CommerceTypes eCommerce) const
 {
 	FAssertMsg(eSpecialist >= 0, "eSpecialist expected to be >= 0");
-	FAssertMsg(eSpecialist < GC.getNumSpecialistClassInfos(), "eSpecialist expected to be < GC.getNumSpecialistClassInfos");
+	FAssertMsg(eSpecialist < GC.getNumSpecialistInfos(), "eSpecialist expected to be < GC.getNumSpecialistInfos");
 	FAssertMsg(eCommerce >= 0, "eCommerce expected to be >= 0");
 	FAssertMsg(eCommerce < NUM_COMMERCE_TYPES, "eCommerce expected to be < NUM_COMMERCE_TYPES");
 
@@ -11817,120 +11684,120 @@ int CvCity::getLocalSpecialistClassCommerce(SpecialistClassTypes eSpecialist, Co
 
 int CvCity::getLocalSpecialistCommerce(CommerceTypes eCommerce) const
 {
-	FAssertMsg(0 < GC.getNumSpecialistClassInfos(), "GC.getNumSpecialistClassInfos expected to be >= 0");
+	FAssertMsg(0 < GC.getNumSpecialistInfos(), "GC.getNumSpecialistInfos expected to be >= 0");
 
 	int iCommerce = 0;
-	for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+	for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 	{
-		iCommerce += getLocalSpecialistClassCommerce((SpecialistClassTypes)iI, eCommerce);
+		iCommerce += getLocalSpecialistCommerce((SpecialistTypes)iI, eCommerce);
 	}
 
 	return iCommerce;
 }
 
-void CvCity::setLocalSpecialistClassCommerce(SpecialistClassTypes eSpecialist, CommerceTypes eCommerce, int iValue)
+void CvCity::setLocalSpecialistCommerce(SpecialistTypes eSpecialist, CommerceTypes eCommerce, int iValue)
 {
 	FAssertMsg(eSpecialist >= 0, "eSpecialist expected to be >= 0");
-	FAssertMsg(eSpecialist < GC.getNumSpecialistClassInfos(), "eSpecialist expected to be < GC.getNumSpecialistClassInfos");
+	FAssertMsg(eSpecialist < GC.getNumSpecialistInfos(), "eSpecialist expected to be < GC.getNumSpecialistInfos");
 	FAssertMsg(eCommerce >= 0, "eCommerce expected to be >= 0");
 	FAssertMsg(eCommerce < NUM_COMMERCE_TYPES, "eCommerce expected to be < NUM_COMMERCE_TYPES");
 
 	m_paaiLocalSpecialistCommerce[eSpecialist][eCommerce] = iValue;
 }
 
-void CvCity::changeLocalSpecialistClassCommerce(SpecialistClassTypes eSpecialist, CommerceTypes eCommerce, int iChange)
+void CvCity::changeLocalSpecialistCommerce(SpecialistTypes eSpecialist, CommerceTypes eCommerce, int iChange)
 {
 	if (iChange != 0)
 	{
-		setLocalSpecialistClassCommerce(eSpecialist, eCommerce, getLocalSpecialistClassCommerce(eSpecialist, eCommerce) + iChange);
+		setLocalSpecialistCommerce(eSpecialist, eCommerce, getLocalSpecialistCommerce(eSpecialist, eCommerce) + iChange);
 	}
 }
 
 void CvCity::changeLocalSpecialistCommerce(CommerceTypes eCommerce, int iChange)
 {
-	FAssertMsg(0 < GC.getNumSpecialistClassInfos(), "GC.getNumSpecialistClassInfos() expected to be > 0");
+	FAssertMsg(0 < GC.getNumSpecialistInfos(), "GC.getNumSpecialistInfos() expected to be > 0");
 	if (iChange != 0)
 	{
-		for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+		for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 		{
-			changeLocalSpecialistClassCommerce((SpecialistClassTypes)iI, eCommerce, iChange);
+			changeLocalSpecialistCommerce((SpecialistTypes)iI, eCommerce, iChange);
 		}
 	}
 }
 
 /*************************************************************************************************/
 
-int CvCity::getLocalSpecialistClassHappiness(SpecialistClassTypes eSpecialist) const
+int CvCity::getLocalSpecialistHappiness(SpecialistTypes eSpecialist) const
 {
 	FAssertMsg(eSpecialist >= 0, "eSpecialist expected to be >= 0");
-	FAssertMsg(eSpecialist < GC.getNumSpecialistClassInfos(), "eSpecialist expected to be < GC.getNumSpecialistClassInfos");
+	FAssertMsg(eSpecialist < GC.getNumSpecialistInfos(), "eSpecialist expected to be < GC.getNumSpecialistInfos");
 
 	return m_paiLocalSpecialistHappiness[eSpecialist];
 }
 
-void CvCity::setLocalSpecialistClassHappiness(SpecialistClassTypes eSpecialist, int iValue)
+void CvCity::setLocalSpecialistHappiness(SpecialistTypes eSpecialist, int iValue)
 {
 	FAssertMsg(eSpecialist >= 0, "eSpecialist expected to be >= 0");
-	FAssertMsg(eSpecialist < GC.getNumSpecialistClassInfos(), "eSpecialist expected to be < GC.getNumSpecialistClassInfos");
+	FAssertMsg(eSpecialist < GC.getNumSpecialistInfos(), "eSpecialist expected to be < GC.getNumSpecialistInfos");
 
 	m_paiLocalSpecialistHappiness[eSpecialist] = iValue;
 }
 
-void CvCity::changeLocalSpecialistClassHappiness(SpecialistClassTypes eSpecialist, int iChange)
+void CvCity::changeLocalSpecialistHappiness(SpecialistTypes eSpecialist, int iChange)
 {
 	if (iChange != 0)
 	{
-		setLocalSpecialistClassHappiness(eSpecialist, getLocalSpecialistClassHappiness(eSpecialist) + iChange);
+		setLocalSpecialistHappiness(eSpecialist, getLocalSpecialistHappiness(eSpecialist) + iChange);
 	}
 }
 
-int CvCity::getLocalSpecialistClassCrime(SpecialistClassTypes eSpecialist) const
+int CvCity::getLocalSpecialistCrime(SpecialistTypes eSpecialist) const
 {
 	FAssertMsg(eSpecialist >= 0, "eSpecialist expected to be >= 0");
-	FAssertMsg(eSpecialist < GC.getNumSpecialistClassInfos(), "eSpecialist expected to be < GC.getNumSpecialistClassInfos");
+	FAssertMsg(eSpecialist < GC.getNumSpecialistInfos(), "eSpecialist expected to be < GC.getNumSpecialistInfos");
 
 	return m_paiLocalSpecialistCrime[eSpecialist];
 }
 
-void CvCity::setLocalSpecialistClassCrime(SpecialistClassTypes eSpecialist, int iValue)
+void CvCity::setLocalSpecialistCrime(SpecialistTypes eSpecialist, int iValue)
 {
 	FAssertMsg(eSpecialist >= 0, "eSpecialist expected to be >= 0");
-	FAssertMsg(eSpecialist < GC.getNumSpecialistClassInfos(), "eSpecialist expected to be < GC.getNumSpecialistClassInfos");
+	FAssertMsg(eSpecialist < GC.getNumSpecialistInfos(), "eSpecialist expected to be < GC.getNumSpecialistInfos");
 
 	m_paiLocalSpecialistCrime[eSpecialist] = iValue;
 }
 
-void CvCity::changeLocalSpecialistClassCrime(SpecialistClassTypes eSpecialist, int iChange)
+void CvCity::changeLocalSpecialistCrime(SpecialistTypes eSpecialist, int iChange)
 {
 	if (iChange != 0)
 	{
-		setLocalSpecialistClassCrime(eSpecialist, getLocalSpecialistClassCrime(eSpecialist) + iChange);
+		setLocalSpecialistCrime(eSpecialist, getLocalSpecialistCrime(eSpecialist) + iChange);
 	}
 }
 
 /*************************************************************************************************/
 
-int CvCity::getLocalSpecialistClassHealth(SpecialistClassTypes eSpecialist) const
+int CvCity::getLocalSpecialistHealth(SpecialistTypes eSpecialist) const
 {
 	FAssertMsg(eSpecialist >= 0, "eSpecialist expected to be >= 0");
-	FAssertMsg(eSpecialist < GC.getNumSpecialistClassInfos(), "eSpecialist expected to be < GC.getNumSpecialistClassInfos");
+	FAssertMsg(eSpecialist < GC.getNumSpecialistInfos(), "eSpecialist expected to be < GC.getNumSpecialistInfos");
 
 	return m_paiLocalSpecialistHealth[eSpecialist];
 }
 
-void CvCity::setLocalSpecialistClassHealth(SpecialistClassTypes eSpecialist, int iValue)
+void CvCity::setLocalSpecialistHealth(SpecialistTypes eSpecialist, int iValue)
 {
 	FAssertMsg(eSpecialist >= 0, "eSpecialist expected to be >= 0");
-	FAssertMsg(eSpecialist < GC.getNumSpecialistClassInfos(), "eSpecialist expected to be < GC.getNumSpecialistClassInfos");
+	FAssertMsg(eSpecialist < GC.getNumSpecialistInfos(), "eSpecialist expected to be < GC.getNumSpecialistInfos");
 
 	m_paiLocalSpecialistHealth[eSpecialist] = iValue;
 }
 
-void CvCity::changeLocalSpecialistClassHealth(SpecialistClassTypes eSpecialist, int iChange)
+void CvCity::changeLocalSpecialistHealth(SpecialistTypes eSpecialist, int iChange)
 {
 	if (iChange != 0)
 	{
-		setLocalSpecialistClassHealth(eSpecialist, getLocalSpecialistClassHealth(eSpecialist) + iChange);
+		setLocalSpecialistHealth(eSpecialist, getLocalSpecialistHealth(eSpecialist) + iChange);
 		updateSpecialistHealth();
 	}
 }
@@ -11939,20 +11806,17 @@ void CvCity::updateSpecialistHealth()
 	changeSpecialistGoodHealth(-getSpecialistGoodHealth());
 	changeSpecialistBadHealth(-getSpecialistBadHealth());
 	
-	for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+	for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 	{
-		SpecialistTypes eSpecialist = getSpecialistTypeFromClass((SpecialistClassTypes)iI);
-		if (eSpecialist == NO_SPECIALIST)
-			continue;
-		int iSpecialistHealth = GC.getSpecialistInfo(eSpecialist).getHealth() + getLocalSpecialistClassHealth((SpecialistClassTypes)iI) + GET_PLAYER(getOwner()).getSpecialistClassExtraHealth((SpecialistClassTypes)iI);
+		int iSpecialistHealth = GC.getSpecialistInfo((SpecialistTypes)iI).getHealth() + getLocalSpecialistHealth((SpecialistTypes)iI) + GET_PLAYER(getOwner()).getSpecialistTypeExtraHealth((SpecialistTypes)iI);
 
 		if (iSpecialistHealth > 0)
 		{
-			changeSpecialistGoodHealth(iSpecialistHealth * getSpecialistClassCount((SpecialistClassTypes)iI));
+			changeSpecialistGoodHealth(iSpecialistHealth * getSpecialistCount((SpecialistTypes)iI));
 		}
 		else
 		{
-			changeSpecialistBadHealth(iSpecialistHealth * getSpecialistClassCount((SpecialistClassTypes)iI));
+			changeSpecialistBadHealth(iSpecialistHealth * getSpecialistCount((SpecialistTypes)iI));
 
 		}
 	}
@@ -11961,27 +11825,27 @@ void CvCity::updateSpecialistHealth()
 
 /*************************************************************************************************/
 
-int CvCity::getLocalSpecialistClassGPP(SpecialistClassTypes eSpecialist) const
+int CvCity::getLocalSpecialistGPP(SpecialistTypes eSpecialist) const
 {
 	FAssertMsg(eSpecialist >= 0, "eSpecialist expected to be >= 0");
-	FAssertMsg(eSpecialist < GC.getNumSpecialistClassInfos(), "eSpecialist expected to be < GC.getNumSpecialistClassInfos");
+	FAssertMsg(eSpecialist < GC.getNumSpecialistInfos(), "eSpecialist expected to be < GC.getNumSpecialistInfos");
 
 	return m_paiLocalSpecialistGPP[eSpecialist];
 }
 
-void CvCity::setLocalSpecialistClassGPP(SpecialistClassTypes eSpecialist, int iValue)
+void CvCity::setLocalSpecialistGPP(SpecialistTypes eSpecialist, int iValue)
 {
 	FAssertMsg(eSpecialist >= 0, "eSpecialist expected to be >= 0");
-	FAssertMsg(eSpecialist < GC.getNumSpecialistClassInfos(), "eSpecialist expected to be < GC.getNumSpecialistClassInfos");
+	FAssertMsg(eSpecialist < GC.getNumSpecialistInfos(), "eSpecialist expected to be < GC.getNumSpecialistInfos");
 
 	m_paiLocalSpecialistGPP[eSpecialist] = iValue;
 }
 
-void CvCity::changeLocalSpecialistClassGPP(SpecialistClassTypes eSpecialist, int iChange)
+void CvCity::changeLocalSpecialistGPP(SpecialistTypes eSpecialist, int iChange)
 {
 	if (iChange != 0)
 	{
-		setLocalSpecialistClassGPP(eSpecialist, getLocalSpecialistClassGPP(eSpecialist) + iChange);
+		setLocalSpecialistGPP(eSpecialist, getLocalSpecialistGPP(eSpecialist) + iChange);
 	}
 }
 
@@ -12063,25 +11927,26 @@ int CvCity::getBaseCommerceRateTimes100(CommerceTypes eIndex) const
 	iBaseCommerceRate = getCommerceFromPercent(eIndex, getYieldRate(YIELD_COMMERCE) * 100);
 
 //FfH: Modified by Kael 12/22/2007
-//	iBaseCommerceRate += 100 * ((getSpecialistPopulation() + getNumGreatPeople()) * GET_PLAYER(getOwnerINLINE()).getSpecialistClassExtraCommerce(eIndex));
-	for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+//	iBaseCommerceRate += 100 * ((getSpecialistPopulation() + getNumGreatPeople()) * GET_PLAYER(getOwnerINLINE()).getSpecialistExtraCommerce(eIndex));
+	for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 	{
 /*************************************************************************************************/
 /**	GWSLocalSpecialist																	Milaga	**/
 /** Buildings can change give bonuses to specialists in only one city							**/
 /*************************************************************************************************/
 /**								---- Start Original Code ----									**
-		iBaseCommerceRate += 100 * ((getSpecialistClassCount((SpecialistClassTypes)iI) + getFreeSpecialistClassCount((SpecialistClassTypes)iI)) * (GET_PLAYER(getOwnerINLINE()).getSpecialistClassExtraCommerce(eIndex) + GET_PLAYER(getOwnerINLINE()).getSpecialistClassExtraCommerce((SpecialistClassTypes)iI, eIndex)));
+		iBaseCommerceRate += 100 * ((getSpecialistCount((SpecialistTypes)iI) + getFreeSpecialistCount((SpecialistTypes)iI)) * (GET_PLAYER(getOwnerINLINE()).getSpecialistExtraCommerce(eIndex) + GET_PLAYER(getOwnerINLINE()).getSpecialistTypeExtraCommerce((SpecialistTypes)iI, eIndex)));
 /**								----  End Original Code  ----									**/
 		iBaseCommerceRate += 100 *
 			(
 				(
-					getSpecialistClassCount((SpecialistClassTypes)iI)
-					+ getFreeSpecialistClassCount((SpecialistClassTypes)iI)
+					getSpecialistCount((SpecialistTypes)iI)
+					+ getFreeSpecialistCount((SpecialistTypes)iI)
 				)
 				* (
-					GET_PLAYER(getOwnerINLINE()).getSpecialistClassExtraCommerce((SpecialistClassTypes)iI, eIndex)
-					+ getLocalSpecialistClassCommerce((SpecialistClassTypes)iI, eIndex)
+					GET_PLAYER(getOwnerINLINE()).getSpecialistExtraCommerce(eIndex)
+					+ GET_PLAYER(getOwnerINLINE()).getSpecialistTypeExtraCommerce((SpecialistTypes)iI, eIndex)
+					+ getLocalSpecialistCommerce((SpecialistTypes)iI, eIndex)
 				)
 			);
 /*************************************************************************************************/
@@ -13802,39 +13667,31 @@ void CvCity::changeGreatPeopleUnitProgress(UnitTypes eIndex, int iChange)
 	setGreatPeopleUnitProgress(eIndex, (getGreatPeopleUnitProgress(eIndex) + iChange));
 }
 
-SpecialistTypes CvCity::getSpecialistTypeFromClass(SpecialistClassTypes eIndex) const
+
+int CvCity::getSpecialistCount(SpecialistTypes eIndex) const
 {
 	FAssertMsg(eIndex >= 0, "eIndex expected to be >= 0");
-	FAssertMsg(eIndex < GC.getNumSpecialistClassInfos(), "eIndex expected to be < GC.getNumSpecialistClassInfos()");
-
-	SpecialistTypes eSpecialist = (SpecialistTypes)GC.getCivilizationInfo(getCivilizationType()).getCivilizationSpecialists((int)eIndex);
-	return eSpecialist != NO_SPECIALIST ? eSpecialist : (SpecialistTypes)GC.getCivilizationInfo(GET_PLAYER(getOwnerINLINE()).getCivilizationType()).getCivilizationSpecialists((int)eIndex);
-}
-
-int CvCity::getSpecialistClassCount(SpecialistClassTypes eIndex) const
-{
-	FAssertMsg(eIndex >= 0, "eIndex expected to be >= 0");
-	FAssertMsg(eIndex < GC.getNumSpecialistClassInfos(), "eIndex expected to be < GC.getNumSpecialistClassInfos()");
-	return m_paiSpecialistClassCount[eIndex];
+	FAssertMsg(eIndex < GC.getNumSpecialistInfos(), "eIndex expected to be < GC.getNumSpecialistInfos()");
+	return m_paiSpecialistCount[eIndex];
 }
 
 
-void CvCity::setSpecialistClassCount(SpecialistClassTypes eIndex, int iNewValue)
+void CvCity::setSpecialistCount(SpecialistTypes eIndex, int iNewValue)
 {
 	int iOldValue;
 
 	FAssertMsg(eIndex >= 0, "eIndex expected to be >= 0");
-	FAssertMsg(eIndex < GC.getNumSpecialistClassInfos(), "eIndex expected to be < GC.getNumSpecialistClassInfos()");
+	FAssertMsg(eIndex < GC.getNumSpecialistInfos(), "eIndex expected to be < GC.getNumSpecialistInfos()");
 
-	iOldValue = getSpecialistClassCount(eIndex);
+	iOldValue = getSpecialistCount(eIndex);
 
 	if (iOldValue != iNewValue)
 	{
-		m_paiSpecialistClassCount[eIndex] = iNewValue;
-		FAssert(getSpecialistClassCount(eIndex) >= 0);
+		m_paiSpecialistCount[eIndex] = iNewValue;
+		FAssert(getSpecialistCount(eIndex) >= 0);
 
 		changeSpecialistPopulation(iNewValue - iOldValue);
-		processSpecialistClass(eIndex, (iNewValue - iOldValue));
+		processSpecialist(eIndex, (iNewValue - iOldValue));
 
 		if (isCitySelected())
 		{
@@ -13844,18 +13701,18 @@ void CvCity::setSpecialistClassCount(SpecialistClassTypes eIndex, int iNewValue)
 }
 
 
-void CvCity::changeSpecialistClassCount(SpecialistClassTypes eIndex, int iChange)
+void CvCity::changeSpecialistCount(SpecialistTypes eIndex, int iChange)
 {
-	setSpecialistClassCount(eIndex, (getSpecialistClassCount(eIndex) + iChange));
+	setSpecialistCount(eIndex, (getSpecialistCount(eIndex) + iChange));
 }
 
 
-void CvCity::alterSpecialistClassCount(SpecialistClassTypes eIndex, int iChange)
+void CvCity::alterSpecialistCount(SpecialistTypes eIndex, int iChange)
 {
 	int iI;
-	if (iChange < 0 && getSpecialistClassCount(eIndex) == 0 && eIndex != GC.getInfoTypeForString("SPECIALISTCLASS_CITIZEN"))
+	if (iChange < 0 && getSpecialistCount(eIndex) == 0 && eIndex != GC.getInfoTypeForString("SPECIALIST_CITIZEN"))
 	{
-		setSpecialistClassBlocked(eIndex, true);
+		setSpecialistBlocked(eIndex, true);
 		if (isCitySelected())
 		{
 			gDLL->getInterfaceIFace()->setDirty(CitizenButtons_DIRTY_BIT, true);
@@ -13864,7 +13721,7 @@ void CvCity::alterSpecialistClassCount(SpecialistClassTypes eIndex, int iChange)
 	}
 	if (iChange > 0)
 	{
-		setSpecialistClassBlocked(eIndex, false);
+		setSpecialistBlocked(eIndex, false);
 		if (isCitySelected())
 		{
 			gDLL->getInterfaceIFace()->setDirty(CitizenButtons_DIRTY_BIT, true);
@@ -13875,7 +13732,7 @@ void CvCity::alterSpecialistClassCount(SpecialistClassTypes eIndex, int iChange)
 	{
 		if (isCitizensAutomated())
 		{
-			if ((getForceSpecialistClassCount(eIndex) + iChange) < 0)
+			if ((getForceSpecialistCount(eIndex) + iChange) < 0)
 			{
 				setCitizensAutomated(false);
 			}
@@ -13883,7 +13740,7 @@ void CvCity::alterSpecialistClassCount(SpecialistClassTypes eIndex, int iChange)
 
 		if (isCitizensAutomated())
 		{
-			changeForceSpecialistClassCount(eIndex, iChange);
+			changeForceSpecialistCount(eIndex, iChange);
 		}
 		else
 		{
@@ -13893,9 +13750,9 @@ void CvCity::alterSpecialistClassCount(SpecialistClassTypes eIndex, int iChange)
 				{
 					if ((extraPopulation() > 0) || AI_removeWorstCitizen(eIndex))
 					{
-						if (isSpecialistClassValid(eIndex, 1))
+						if (isSpecialistValid(eIndex, 1))
 						{
-							changeSpecialistClassCount(eIndex, 1);
+							changeSpecialistCount(eIndex, 1);
 						}
 					}
 				}
@@ -13904,13 +13761,13 @@ void CvCity::alterSpecialistClassCount(SpecialistClassTypes eIndex, int iChange)
 			{
 				for (int iI = 0; iI < -(iChange); iI++)
 				{
-					if (getSpecialistClassCount(eIndex) > 0)
+					if (getSpecialistCount(eIndex) > 0)
 					{
-						changeSpecialistClassCount(eIndex, -1);
+						changeSpecialistCount(eIndex, -1);
 
-						if ((eIndex != GC.getDefineINT("DEFAULT_SPECIALISTCLASS")) && (GC.getDefineINT("DEFAULT_SPECIALISTCLASS") != NO_SPECIALISTCLASS))
+						if ((eIndex != GC.getDefineINT("DEFAULT_SPECIALIST")) && (GC.getDefineINT("DEFAULT_SPECIALIST") != NO_SPECIALIST))
 						{
-							changeSpecialistClassCount(((SpecialistClassTypes)GC.getDefineINT("DEFAULT_SPECIALISTCLASS")), 1);
+							changeSpecialistCount(((SpecialistTypes)GC.getDefineINT("DEFAULT_SPECIALIST")), 1);
 						}
 						else if (extraFreeSpecialists() > 0)
 						{
@@ -13958,62 +13815,62 @@ void CvCity::alterSpecialistClassCount(SpecialistClassTypes eIndex, int iChange)
 }
 
 
-int CvCity::getMaxSpecialistClassCount(SpecialistClassTypes eIndex) const
+int CvCity::getMaxSpecialistCount(SpecialistTypes eIndex) const
 {
 	FAssertMsg(eIndex >= 0, "eIndex expected to be >= 0");
-	FAssertMsg(eIndex < GC.getNumSpecialistClassInfos(), "eIndex expected to be < GC.getNumSpecialistClassInfos()");
-	return m_paiMaxSpecialistClassCount[eIndex] + GET_PLAYER(getOwnerINLINE()).getSpecialistClassCount(eIndex);
+	FAssertMsg(eIndex < GC.getNumSpecialistInfos(), "eIndex expected to be < GC.getNumSpecialistInfos()");
+	return m_paiMaxSpecialistCount[eIndex] + GET_PLAYER(getOwnerINLINE()).getSpecialistCount(eIndex);
 }
 
-bool CvCity::isSpecialistClassBlocked(SpecialistClassTypes eIndex) const
+bool CvCity::isSpecialistBlocked(SpecialistTypes eIndex) const
 {
 	FAssertMsg(eIndex >= 0, "eIndex expected to be >= 0");
-	FAssertMsg(eIndex < GC.getNumSpecialistClassInfos(), "eIndex expected to be < GC.getNumSpecialistClassInfos()");
-	return m_pabBlockedSpecialistClass[eIndex];
+	FAssertMsg(eIndex < GC.getNumSpecialistInfos(), "eIndex expected to be < GC.getNumSpecialistInfos()");
+	return m_pabBlockedSpecialist[eIndex];
 }
-void CvCity::setSpecialistClassBlocked(SpecialistClassTypes eIndex, bool bValue)
+void CvCity::setSpecialistBlocked(SpecialistTypes eIndex, bool bValue)
 {
 	FAssertMsg(eIndex >= 0, "eIndex expected to be >= 0");
-	FAssertMsg(eIndex < GC.getNumSpecialistClassInfos(), "eIndex expected to be < GC.getNumSpecialistClassInfos()");
-	m_pabBlockedSpecialistClass[eIndex] = bValue;
-}
-
-
-bool CvCity::isSpecialistClassValid(SpecialistClassTypes eIndex, int iExtra) const
-{
-	return (!getSpecialistTypeFromClass(eIndex) != NO_SPECIALIST && !isSpecialistClassBlocked(eIndex) && (((getSpecialistClassCount(eIndex) + iExtra) <= getMaxSpecialistClassCount(eIndex)) || GET_PLAYER(getOwnerINLINE()).isSpecialistClassValid(eIndex) || (eIndex == GC.getDefineINT("DEFAULT_SPECIALISTCLASS"))));
+	FAssertMsg(eIndex < GC.getNumSpecialistInfos(), "eIndex expected to be < GC.getNumSpecialistInfos()");
+	m_pabBlockedSpecialist[eIndex] = bValue;
 }
 
 
-void CvCity::changeMaxSpecialistClassCount(SpecialistClassTypes eIndex, int iChange)
+bool CvCity::isSpecialistValid(SpecialistTypes eIndex, int iExtra) const
+{
+	return (!isSpecialistBlocked(eIndex) && (((getSpecialistCount(eIndex) + iExtra) <= getMaxSpecialistCount(eIndex)) || GET_PLAYER(getOwnerINLINE()).isSpecialistValid(eIndex) || (eIndex == GC.getDefineINT("DEFAULT_SPECIALIST"))));
+}
+
+
+void CvCity::changeMaxSpecialistCount(SpecialistTypes eIndex, int iChange)
 {
 	FAssertMsg(eIndex >= 0, "eIndex expected to be >= 0");
-	FAssertMsg(eIndex < GC.getNumSpecialistClassInfos(), "eIndex expected to be < GC.getNumSpecialistClassInfos()");
+	FAssertMsg(eIndex < GC.getNumSpecialistInfos(), "eIndex expected to be < GC.getNumSpecialistInfos()");
 
 	if (iChange != 0)
 	{
-		m_paiMaxSpecialistClassCount[eIndex] = std::max(0, (m_paiMaxSpecialistClassCount[eIndex] + iChange));
+		m_paiMaxSpecialistCount[eIndex] = std::max(0, (m_paiMaxSpecialistCount[eIndex] + iChange));
 
 		AI_setAssignWorkDirty(true);
 	}
 }
 
 
-int CvCity::getForceSpecialistClassCount(SpecialistClassTypes eIndex) const
+int CvCity::getForceSpecialistCount(SpecialistTypes eIndex) const
 {
 	FAssertMsg(eIndex >= 0, "eIndex expected to be >= 0");
-	FAssertMsg(eIndex < GC.getNumSpecialistClassInfos(), "eIndex expected to be < GC.getNumSpecialistClassInfos()");
-	return m_paiForceSpecialistClassCount[eIndex];
+	FAssertMsg(eIndex < GC.getNumSpecialistInfos(), "eIndex expected to be < GC.getNumSpecialistInfos()");
+	return m_paiForceSpecialistCount[eIndex];
 }
 
 
-bool CvCity::isSpecialistClassForced() const
+bool CvCity::isSpecialistForced() const
 {
 	int iI;
 
-	for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+	for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 	{
-		if (getForceSpecialistClassCount((SpecialistClassTypes)iI) > 0)
+		if (getForceSpecialistCount((SpecialistTypes)iI) > 0)
 		{
 			return true;
 		}
@@ -14023,14 +13880,14 @@ bool CvCity::isSpecialistClassForced() const
 }
 
 
-void CvCity::setForceSpecialistClassCount(SpecialistClassTypes eIndex, int iNewValue)
+void CvCity::setForceSpecialistCount(SpecialistTypes eIndex, int iNewValue)
 {
 	FAssertMsg(eIndex >= 0, "eIndex expected to be >= 0");
-	FAssertMsg(eIndex < GC.getNumSpecialistClassInfos(), "eIndex expected to be < GC.getNumSpecialistClassInfos()");
+	FAssertMsg(eIndex < GC.getNumSpecialistInfos(), "eIndex expected to be < GC.getNumSpecialistInfos()");
 
-	if (getForceSpecialistClassCount(eIndex) != iNewValue)
+	if (getForceSpecialistCount(eIndex) != iNewValue)
 	{
-		m_paiForceSpecialistClassCount[eIndex] = std::max(0, iNewValue);
+		m_paiForceSpecialistCount[eIndex] = std::max(0, iNewValue);
 
 		if (isCitySelected())
 		{
@@ -14042,29 +13899,29 @@ void CvCity::setForceSpecialistClassCount(SpecialistClassTypes eIndex, int iNewV
 }
 
 
-void CvCity::changeForceSpecialistClassCount(SpecialistClassTypes eIndex, int iChange)
+void CvCity::changeForceSpecialistCount(SpecialistTypes eIndex, int iChange)
 {
-	setForceSpecialistClassCount(eIndex, (getForceSpecialistClassCount(eIndex) + iChange));
+	setForceSpecialistCount(eIndex, (getForceSpecialistCount(eIndex) + iChange));
 }
 
 
-int CvCity::getFreeSpecialistClassCount(SpecialistClassTypes eIndex) const
+int CvCity::getFreeSpecialistCount(SpecialistTypes eIndex) const
 {
 	FAssertMsg(eIndex >= 0, "eIndex expected to be >= 0");
-	FAssertMsg(eIndex < GC.getNumSpecialistClassInfos(), "eIndex expected to be < GC.getNumSpecialistClassInfos()");
-	return m_paiFreeSpecialistClassCount[eIndex]+ GET_PLAYER(getOwner()).getFreeSpecialistClassCount(eIndex);
+	FAssertMsg(eIndex < GC.getNumSpecialistInfos(), "eIndex expected to be < GC.getNumSpecialistInfos()");
+	return m_paiFreeSpecialistCount[eIndex]+ GET_PLAYER(getOwner()).getFreeSpecialistCount(eIndex);
 }
 
-int CvCity::getAddedFreeSpecialistClassCount(SpecialistClassTypes eIndex) const
+int CvCity::getAddedFreeSpecialistCount(SpecialistTypes eIndex) const
 {
-	int iNumAddedSpecialists = getFreeSpecialistClassCount(eIndex);
+	int iNumAddedSpecialists = getFreeSpecialistCount(eIndex);
 
 	for (int iJ = 0; iJ < GC.getNumBuildingInfos(); ++iJ)
 	{
 		CvBuildingInfo& kBuilding = GC.getBuildingInfo((BuildingTypes)iJ);
-		if (kBuilding.getFreeSpecialistClassCount(eIndex) > 0)
+		if (kBuilding.getFreeSpecialistCount(eIndex) > 0)
 		{
-			iNumAddedSpecialists -= getNumActiveBuilding((BuildingTypes)iJ) * kBuilding.getFreeSpecialistClassCount(eIndex);
+			iNumAddedSpecialists -= getNumActiveBuilding((BuildingTypes)iJ) * kBuilding.getFreeSpecialistCount(eIndex);
 		}
 	}
 
@@ -14072,23 +13929,22 @@ int CvCity::getAddedFreeSpecialistClassCount(SpecialistClassTypes eIndex) const
 	return std::max(0, iNumAddedSpecialists);
 }
 
-void CvCity::setFreeSpecialistClassCount(SpecialistClassTypes eIndex, int iNewValue)
+void CvCity::setFreeSpecialistCount(SpecialistTypes eIndex, int iNewValue)
 {
 	int iOldValue;
 
 	FAssertMsg(eIndex >= 0, "eIndex expected to be >= 0");
-	FAssertMsg(eIndex < GC.getNumSpecialistClassInfos(), "eIndex expected to be < GC.getNumSpecialistClassInfos()");
-	if (getSpecialistTypeFromClass(eIndex) == NO_SPECIALIST)
-		return;
-	iOldValue = getFreeSpecialistClassCount(eIndex);
+	FAssertMsg(eIndex < GC.getNumSpecialistInfos(), "eIndex expected to be < GC.getNumSpecialistInfos()");
+
+	iOldValue = getFreeSpecialistCount(eIndex);
 
 	if (iOldValue != iNewValue)
 	{
-		m_paiFreeSpecialistClassCount[eIndex] = iNewValue;
-		FAssert(getFreeSpecialistClassCount(eIndex) >= 0);
+		m_paiFreeSpecialistCount[eIndex] = iNewValue;
+		FAssert(getFreeSpecialistCount(eIndex) >= 0);
 
 		changeNumGreatPeople(iNewValue - iOldValue);
-		processSpecialistClass(eIndex, (iNewValue - iOldValue));
+		processSpecialist(eIndex, (iNewValue - iOldValue));
 
 		if (isCitySelected())
 		{
@@ -14097,9 +13953,9 @@ void CvCity::setFreeSpecialistClassCount(SpecialistClassTypes eIndex, int iNewVa
 	}
 }
 
-void CvCity::changeFreeSpecialistClassCount(SpecialistClassTypes eIndex, int iChange)
+void CvCity::changeFreeSpecialistCount(SpecialistTypes eIndex, int iChange)
 {
-	setFreeSpecialistClassCount(eIndex, (getFreeSpecialistClassCount(eIndex) + iChange));
+	setFreeSpecialistCount(eIndex, (getFreeSpecialistCount(eIndex) + iChange));
 }
 
 /*************************************************************************************************/
@@ -14107,45 +13963,45 @@ void CvCity::changeFreeSpecialistClassCount(SpecialistClassTypes eIndex, int iCh
 /**																								**/
 /**						Allows improvements to grant specific specialists						**/
 /*************************************************************************************************/
-int CvCity::getImprovementSpecialistClassCount(SpecialistClassTypes eIndex) const
+int CvCity::getImprovementSpecialistCount(SpecialistTypes eIndex) const
 {
 	FAssertMsg(eIndex >= 0, "eIndex expected to be >= 0");
-	FAssertMsg(eIndex < GC.getNumSpecialistClassInfos(), "eIndex expected to be < GC.getNumSpecialistClassInfos()");
+	FAssertMsg(eIndex < GC.getNumSpecialistInfos(), "eIndex expected to be < GC.getNumSpecialistInfos()");
 	return m_paiImprovementSpecialistCount[eIndex];
 }
 
-void CvCity::setImprovementSpecialistClassCount(SpecialistClassTypes eIndex, int iNewValue)
+void CvCity::setImprovementSpecialistCount(SpecialistTypes eIndex, int iNewValue)
 {
 	int iOldValue;
 
 	FAssertMsg(eIndex >= 0, "eIndex expected to be >= 0");
-	FAssertMsg(eIndex < GC.getNumSpecialistClassInfos(), "eIndex expected to be < GC.getNumSpecialistClassInfos()");
+	FAssertMsg(eIndex < GC.getNumSpecialistInfos(), "eIndex expected to be < GC.getNumSpecialistInfos()");
 
-	iOldValue = getImprovementSpecialistClassCount(eIndex);
+	iOldValue = getImprovementSpecialistCount(eIndex);
 
 	if (iOldValue != iNewValue)
 	{
 		m_paiImprovementSpecialistCount[eIndex] = iNewValue;
-		FAssert(getImprovementSpecialistClassCount(eIndex) >= 0);
+		FAssert(getImprovementSpecialistCount(eIndex) >= 0);
 	}
 }
 
-void CvCity::changeImprovementSpecialistClassCount(SpecialistClassTypes eIndex, int iChange)
+void CvCity::changeImprovementSpecialistCount(SpecialistTypes eIndex, int iChange)
 {
-	setImprovementSpecialistClassCount(eIndex, (getImprovementSpecialistClassCount(eIndex) + iChange));
+	setImprovementSpecialistCount(eIndex, (getImprovementSpecialistCount(eIndex) + iChange));
 }
 /*************************************************************************************************/
 /**	Statesmen								END													**/
 /*************************************************************************************************/
 
-int CvCity::getImprovementFreeSpecialistClasses(ImprovementTypes eIndex) const
+int CvCity::getImprovementFreeSpecialists(ImprovementTypes eIndex) const
 {
 	FAssertMsg(eIndex >= 0, "eIndex expected to be >= 0");
 	FAssertMsg(eIndex < GC.getNumImprovementInfos(), "eIndex expected to be < GC.getNumImprovementInfos()");
 	return m_paiImprovementFreeSpecialists[eIndex];
 }
 
-void CvCity::changeImprovementFreeSpecialistClasses(ImprovementTypes eIndex, int iChange)
+void CvCity::changeImprovementFreeSpecialists(ImprovementTypes eIndex, int iChange)
 {
 	FAssertMsg(eIndex >= 0, "eIndex expected to be >= 0");
 	FAssertMsg(eIndex < GC.getNumImprovementInfos(), "eIndex expected to be < GC.getNumImprovementInfos()");
@@ -14405,9 +14261,9 @@ void CvCity::alterWorkingPlot(int iIndex)
 				{
 					setWorkingPlot(iIndex, false);
 
-					if (GC.getDefineINT("DEFAULT_SPECIALISTCLASS") != NO_SPECIALISTCLASS)
+					if (GC.getDefineINT("DEFAULT_SPECIALIST") != NO_SPECIALIST)
 					{
-						changeSpecialistClassCount(((SpecialistClassTypes)GC.getDefineINT("DEFAULT_SPECIALISTCLASS")), 1);
+						changeSpecialistCount(((SpecialistTypes)GC.getDefineINT("DEFAULT_SPECIALIST")), 1);
 					}
 					else
 					{
@@ -14858,12 +14714,12 @@ void CvCity::processVoteSourceBonus(VoteSourceTypes eVoteSource, bool bActive)
 	{
 		ReligionTypes eReligion = GC.getGameINLINE().getVoteSourceReligion(eVoteSource);
 
-		SpecialistClassTypes eSpecialist = (SpecialistClassTypes)GC.getVoteSourceInfo(eVoteSource).getFreeSpecialistClass();
+		SpecialistTypes eSpecialist = (SpecialistTypes)GC.getVoteSourceInfo(eVoteSource).getFreeSpecialist();
 		if (NO_SPECIALIST != eSpecialist)
 		{
 			if (NO_RELIGION == eReligion || isHasReligion(eReligion))
 			{
-				changeFreeSpecialistClassCount(eSpecialist, bActive ? 1 : -1);
+				changeFreeSpecialistCount(eSpecialist, bActive ? 1 : -1);
 			}
 		}
 
@@ -17392,34 +17248,34 @@ void CvCity::read(FDataStreamBase* pStream)
 /**	GWSLocalSpecialist																	Milaga	**/
 /** Buildings can change give bonuses to specialists in only one city							**/
 /*************************************************************************************************/
-	for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+	for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 	{
 		pStream->Read(NUM_YIELD_TYPES, m_paaiLocalSpecialistYield[iI]);
 	}
-	for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+	for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 	{
 		pStream->Read(NUM_COMMERCE_TYPES, m_paaiLocalSpecialistCommerce[iI]);
 	}
-	pStream->Read(GC.getNumSpecialistClassInfos(), m_paiLocalSpecialistHappiness);
-	pStream->Read(GC.getNumSpecialistClassInfos(), m_paiLocalSpecialistHealth);
-	pStream->Read(GC.getNumSpecialistClassInfos(), m_paiLocalSpecialistCrime);
-	pStream->Read(GC.getNumSpecialistClassInfos(), m_paiLocalSpecialistGPP);
+	pStream->Read(GC.getNumSpecialistInfos(), m_paiLocalSpecialistHappiness);
+	pStream->Read(GC.getNumSpecialistInfos(), m_paiLocalSpecialistHealth);
+	pStream->Read(GC.getNumSpecialistInfos(), m_paiLocalSpecialistCrime);
+	pStream->Read(GC.getNumSpecialistInfos(), m_paiLocalSpecialistGPP);
 /*************************************************************************************************/
 /**	GWSLocalSpecialist																		END	**/
 /*************************************************************************************************/
-	pStream->Read(GC.getNumSpecialistClassInfos(), m_paiSpecialistClassCount);
-	pStream->Read(GC.getNumSpecialistClassInfos(), m_paiMaxSpecialistClassCount);
-	pStream->Read(GC.getNumSpecialistClassInfos(), m_pabBlockedSpecialistClass);
-	pStream->Read(GC.getNumSpecialistClassInfos(), m_paiForceSpecialistClassCount);
-	pStream->Read(GC.getNumSpecialistClassInfos(), m_paiFreeSpecialistClassCount);
+	pStream->Read(GC.getNumSpecialistInfos(), m_paiSpecialistCount);
+	pStream->Read(GC.getNumSpecialistInfos(), m_paiMaxSpecialistCount);
+	pStream->Read(GC.getNumSpecialistInfos(), m_pabBlockedSpecialist);
+	pStream->Read(GC.getNumSpecialistInfos(), m_paiForceSpecialistCount);
+	pStream->Read(GC.getNumSpecialistInfos(), m_paiFreeSpecialistCount);
 /*************************************************************************************************/
 /**	Statesmen								02/05/10											**/
 /**																								**/
 /**						Allows improvements to grant specific specialists						**/
 /*************************************************************************************************/
-	pStream->Read(GC.getNumSpecialistClassInfos(), m_paiImprovementSpecialistCount);
-	pStream->Read(GC.getNumSpecialistClassInfos(), m_paiStateReligionSpecialistCount);
-	pStream->Read(GC.getNumSpecialistClassInfos(), m_paiNonStateReligionSpecialistCount);
+	pStream->Read(GC.getNumSpecialistInfos(), m_paiImprovementSpecialistCount);
+	pStream->Read(GC.getNumSpecialistInfos(), m_paiStateReligionSpecialistCount);
+	pStream->Read(GC.getNumSpecialistInfos(), m_paiNonStateReligionSpecialistCount);
 /*************************************************************************************************/
 /**	Statesmen								END													**/
 /*************************************************************************************************/
@@ -17836,34 +17692,34 @@ void CvCity::write(FDataStreamBase* pStream)
 /**	GWSLocalSpecialist																	Milaga	**/
 /** Buildings can change give bonuses to specialists in only one city							**/
 /*************************************************************************************************/
-	for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+	for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 	{
 		pStream->Write(NUM_YIELD_TYPES, m_paaiLocalSpecialistYield[iI]);
 	}
-	for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+	for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 	{
 		pStream->Write(NUM_COMMERCE_TYPES, m_paaiLocalSpecialistCommerce[iI]);
 	}
-	pStream->Write(GC.getNumSpecialistClassInfos(), m_paiLocalSpecialistHappiness);
-	pStream->Write(GC.getNumSpecialistClassInfos(), m_paiLocalSpecialistHealth);
-	pStream->Write(GC.getNumSpecialistClassInfos(), m_paiLocalSpecialistCrime);
-	pStream->Write(GC.getNumSpecialistClassInfos(), m_paiLocalSpecialistGPP);
+	pStream->Write(GC.getNumSpecialistInfos(), m_paiLocalSpecialistHappiness);
+	pStream->Write(GC.getNumSpecialistInfos(), m_paiLocalSpecialistHealth);
+	pStream->Write(GC.getNumSpecialistInfos(), m_paiLocalSpecialistCrime);
+	pStream->Write(GC.getNumSpecialistInfos(), m_paiLocalSpecialistGPP);
 /*************************************************************************************************/
 /**	GWSLocalSpecialist																		END	**/
 /*************************************************************************************************/
-	pStream->Write(GC.getNumSpecialistClassInfos(), m_paiSpecialistClassCount);
-	pStream->Write(GC.getNumSpecialistClassInfos(), m_paiMaxSpecialistClassCount);
-	pStream->Write(GC.getNumSpecialistClassInfos(), m_pabBlockedSpecialistClass);
-	pStream->Write(GC.getNumSpecialistClassInfos(), m_paiForceSpecialistClassCount);
-	pStream->Write(GC.getNumSpecialistClassInfos(), m_paiFreeSpecialistClassCount);
+	pStream->Write(GC.getNumSpecialistInfos(), m_paiSpecialistCount);
+	pStream->Write(GC.getNumSpecialistInfos(), m_paiMaxSpecialistCount);
+	pStream->Write(GC.getNumSpecialistInfos(), m_pabBlockedSpecialist);
+	pStream->Write(GC.getNumSpecialistInfos(), m_paiForceSpecialistCount);
+	pStream->Write(GC.getNumSpecialistInfos(), m_paiFreeSpecialistCount);
 /*************************************************************************************************/
 /**	Statesmen								02/05/10											**/
 /**																								**/
 /**						Allows improvements to grant specific specialists						**/
 /*************************************************************************************************/
-	pStream->Write(GC.getNumSpecialistClassInfos(), m_paiImprovementSpecialistCount);
-	pStream->Write(GC.getNumSpecialistClassInfos(), m_paiStateReligionSpecialistCount);
-	pStream->Write(GC.getNumSpecialistClassInfos(), m_paiNonStateReligionSpecialistCount);
+	pStream->Write(GC.getNumSpecialistInfos(), m_paiImprovementSpecialistCount);
+	pStream->Write(GC.getNumSpecialistInfos(), m_paiStateReligionSpecialistCount);
+	pStream->Write(GC.getNumSpecialistInfos(), m_paiNonStateReligionSpecialistCount);
 /*************************************************************************************************/
 /**	Statesmen								END													**/
 /*************************************************************************************************/
@@ -18714,11 +18570,11 @@ void CvCity::applyEvent(EventTypes eEvent, const EventTriggeredData& kTriggeredD
 			}
 		}
 
-		for (int i = 0; i < GC.getNumSpecialistClassInfos(); ++i)
+		for (int i = 0; i < GC.getNumSpecialistInfos(); ++i)
 		{
-			if (kEvent.getFreeSpecialistClassCount(i) > 0)
+			if (kEvent.getFreeSpecialistCount(i) > 0)
 			{
-				changeFreeSpecialistClassCount((SpecialistClassTypes)i, kEvent.getFreeSpecialistClassCount(i));
+				changeFreeSpecialistCount((SpecialistTypes)i, kEvent.getFreeSpecialistCount(i));
 			}
 		}
 
@@ -19541,11 +19397,11 @@ int CvCity::getBestYieldAvailable(YieldTypes eYield) const
 		}
 	}
 
-	for (int iJ = 0; iJ < GC.getNumSpecialistClassInfos(); ++iJ)
+	for (int iJ = 0; iJ < GC.getNumSpecialistInfos(); ++iJ)
 	{
-		if (isSpecialistClassValid((SpecialistClassTypes)iJ, 1) && getSpecialistTypeFromClass((SpecialistClassTypes)iJ)!=NO_SPECIALIST)
+		if (isSpecialistValid((SpecialistTypes)iJ, 1))
 		{
-			int iYield = GC.getSpecialistInfo(getSpecialistTypeFromClass((SpecialistClassTypes)iJ)).getYieldChange(eYield);
+			int iYield = GC.getSpecialistInfo((SpecialistTypes)iJ).getYieldChange(eYield);
 			if (iYield > iBestYieldAvailable)
 			{
 				iBestYieldAvailable = iYield;
@@ -20150,16 +20006,16 @@ bool CvCity::isHasBuildingClass(int iBuildingClass) const
 int CvCity::getExtraSpecialistCommerce(CommerceTypes eIndex) const
 {
 	int iCount = 0;
-	for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+	for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 	{
-		iCount += getExtraSpecialistClassCommerce(eIndex, (SpecialistClassTypes)iI);
+		iCount += getExtraSpecialistCommerce(eIndex, (SpecialistTypes)iI);
 	}
 	return iCount;
 }
 
-int CvCity::getExtraSpecialistClassCommerce(CommerceTypes eIndex, SpecialistClassTypes eSpecialist) const
+int CvCity::getExtraSpecialistCommerce(CommerceTypes eIndex, SpecialistTypes eSpecialist) const
 {
-	return (getSpecialistClassCount(eSpecialist) + getFreeSpecialistClassCount(eSpecialist)) * GET_PLAYER(getOwnerINLINE()).getSpecialistClassExtraCommerce(eSpecialist, eIndex);
+	return (getSpecialistCount(eSpecialist) + getFreeSpecialistCount(eSpecialist)) * GET_PLAYER(getOwnerINLINE()).getSpecialistTypeExtraCommerce(eSpecialist, eIndex);
 }
 //FfH: End Add
 /*************************************************************************************************/
@@ -22421,59 +22277,59 @@ bool CvCity::canJoinPop() const
 	return false;
 }
 
-int CvCity::getStateReligionSpecialistClassCount(SpecialistClassTypes eIndex) const
+int CvCity::getStateReligionSpecialistCount(SpecialistTypes eIndex) const
 {
 	FAssertMsg(eIndex >= 0, "eIndex expected to be >= 0");
-	FAssertMsg(eIndex < GC.getNumSpecialistClassInfos(), "eIndex expected to be < GC.getNumSpecialistClassInfos()");
+	FAssertMsg(eIndex < GC.getNumSpecialistInfos(), "eIndex expected to be < GC.getNumSpecialistInfos()");
 	return m_paiStateReligionSpecialistCount[eIndex];
 }
 
-void CvCity::setStateReligionSpecialistClassCount(SpecialistClassTypes eIndex, int iNewValue)
+void CvCity::setStateReligionSpecialistCount(SpecialistTypes eIndex, int iNewValue)
 {
 	int iOldValue;
 
 	FAssertMsg(eIndex >= 0, "eIndex expected to be >= 0");
-	FAssertMsg(eIndex < GC.getNumSpecialistClassInfos(), "eIndex expected to be < GC.getNumSpecialistClassInfos()");
+	FAssertMsg(eIndex < GC.getNumSpecialistInfos(), "eIndex expected to be < GC.getNumSpecialistInfos()");
 
-	iOldValue = getStateReligionSpecialistClassCount(eIndex);
+	iOldValue = getStateReligionSpecialistCount(eIndex);
 
 	if (iOldValue != iNewValue)
 	{
 		m_paiStateReligionSpecialistCount[eIndex] = iNewValue;
-		FAssert(getStateReligionSpecialistClassCount(eIndex) >= 0);
+		FAssert(getStateReligionSpecialistCount(eIndex) >= 0);
 	}
 }
 
-void CvCity::changeStateReligionSpecialistClassCount(SpecialistClassTypes eIndex, int iChange)
+void CvCity::changeStateReligionSpecialistCount(SpecialistTypes eIndex, int iChange)
 {
-	setStateReligionSpecialistClassCount(eIndex, (getStateReligionSpecialistClassCount(eIndex) + iChange));
+	setStateReligionSpecialistCount(eIndex, (getStateReligionSpecialistCount(eIndex) + iChange));
 }
-int CvCity::getNonStateReligionSpecialistClassCount(SpecialistClassTypes eIndex) const
+int CvCity::getNonStateReligionSpecialistCount(SpecialistTypes eIndex) const
 {
 	FAssertMsg(eIndex >= 0, "eIndex expected to be >= 0");
-	FAssertMsg(eIndex < GC.getNumSpecialistClassInfos(), "eIndex expected to be < GC.getNumSpecialistClassInfos()");
+	FAssertMsg(eIndex < GC.getNumSpecialistInfos(), "eIndex expected to be < GC.getNumSpecialistInfos()");
 	return m_paiNonStateReligionSpecialistCount[eIndex];
 }
 
-void CvCity::setNonStateReligionSpecialistClassCount(SpecialistClassTypes eIndex, int iNewValue)
+void CvCity::setNonStateReligionSpecialistCount(SpecialistTypes eIndex, int iNewValue)
 {
 	int iOldValue;
 
 	FAssertMsg(eIndex >= 0, "eIndex expected to be >= 0");
-	FAssertMsg(eIndex < GC.getNumSpecialistClassInfos(), "eIndex expected to be < GC.getNumSpecialistClassInfos()");
+	FAssertMsg(eIndex < GC.getNumSpecialistInfos(), "eIndex expected to be < GC.getNumSpecialistInfos()");
 
-	iOldValue = getNonStateReligionSpecialistClassCount(eIndex);
+	iOldValue = getNonStateReligionSpecialistCount(eIndex);
 
 	if (iOldValue != iNewValue)
 	{
 		m_paiNonStateReligionSpecialistCount[eIndex] = iNewValue;
-		FAssert(getNonStateReligionSpecialistClassCount(eIndex) >= 0);
+		FAssert(getNonStateReligionSpecialistCount(eIndex) >= 0);
 	}
 }
 
-void CvCity::changeNonStateReligionSpecialistClassCount(SpecialistClassTypes eIndex, int iChange)
+void CvCity::changeNonStateReligionSpecialistCount(SpecialistTypes eIndex, int iChange)
 {
-	setNonStateReligionSpecialistClassCount(eIndex, (getNonStateReligionSpecialistClassCount(eIndex) + iChange));
+	setNonStateReligionSpecialistCount(eIndex, (getNonStateReligionSpecialistCount(eIndex) + iChange));
 }
 //PerPopEffect
 float CvCity::getPerPopCulture() const
@@ -22670,11 +22526,9 @@ void CvCity::changePerPopTrainXPRate(float fChange, int iI)
 int CvCity::getSpecialistCrime() const
 {
 	int iCrimePerTurn = 0;
-	for (int iSpe = 0; iSpe < GC.getNumSpecialistClassInfos(); iSpe++)
+	for (int iSpe = 0; iSpe < GC.getNumSpecialistInfos(); iSpe++)
 	{
-		SpecialistTypes eSpecialist = getSpecialistTypeFromClass((SpecialistClassTypes)iSpe);
-		if(eSpecialist != NO_SPECIALIST)
-			iCrimePerTurn += (GC.getSpecialistInfo(eSpecialist).getCrime() + getLocalSpecialistClassCrime((SpecialistClassTypes)iSpe) + GET_PLAYER(getOwner()).getSpecialistClassExtraCrime((SpecialistClassTypes)iSpe)) * getSpecialistClassCount((SpecialistClassTypes)iSpe);
+		iCrimePerTurn += (GC.getSpecialistInfo((SpecialistTypes)iSpe).getCrime() + getLocalSpecialistCrime((SpecialistTypes)iSpe) + GET_PLAYER(getOwner()).getSpecialistTypeExtraCrime((SpecialistTypes)iSpe)) * getSpecialistCount((SpecialistTypes)iSpe);
 	}
 	return iCrimePerTurn;
 }

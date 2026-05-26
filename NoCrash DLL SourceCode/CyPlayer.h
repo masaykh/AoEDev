@@ -423,6 +423,7 @@ public:
 	int getCommerceRateModifier(CommerceTypes eIndex);
 	int getCapitalCommerceRateModifier(CommerceTypes eIndex);
 	int getStateReligionBuildingCommerce(CommerceTypes eIndex);
+	int getSpecialistExtraCommerce(CommerceTypes eIndex);
 
 	bool isCommerceFlexible(int /*CommerceTypes*/ eIndex);
 	int getGoldPerTurnByPlayer(int /*PlayerTypes*/ eIndex);
@@ -471,8 +472,8 @@ public:
 	int countTotalHasCorporation();
 
 	int getUpkeepCount(int /*UpkeepTypes*/ eIndex);
-	bool isSpecialistClassValid(int /*SpecialistTypes*/ iIndex);
-	int getSpecialistClassCount(int /*SpecialistTypes*/ iIndex);
+	bool isSpecialistValid(int /*SpecialistTypes*/ iIndex);
+	int getSpecialistCount(int /*SpecialistTypes*/ iIndex);
 	bool isResearchingTech(int /*TechTypes*/ iIndex);
 	int /*CivicTypes*/ getCivics(int /*CivicOptionTypes*/ iIndex);
 	int getSingleCivicUpkeep(int /*CivicTypes*/ eCivic, bool bIgnoreAnarchy);

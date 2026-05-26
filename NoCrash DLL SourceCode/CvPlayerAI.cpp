@@ -14796,10 +14796,10 @@ int CvPlayerAI::AI_civicValue(CivicTypes eCivic) const
 		}
 	}
 
-	for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+	for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
 	{
 		iTempValue = 0;
-		if (kCivic.isSpecialistClassUnlimited(iI))
+		if (kCivic.isSpecialistUnlimited(iI))
 		{
 			iTempValue += ((getNumCities() *  (bCultureVictory3 ? 10 : 1)) + 6);
 		}
@@ -19020,11 +19020,11 @@ int CvPlayerAI::AI_eventValue(EventTypes eEvent, const EventTriggeredData& kTrig
 		if (NULL != pCity)
 		{
 			iCityPopulation = pCity->getPopulation();
-			for (int iSpecialistClass = 0; iSpecialistClass < GC.getNumSpecialistClassInfos(); ++iSpecialistClass)
+			for (int iSpecialist = 0; iSpecialist < GC.getNumSpecialistInfos(); ++iSpecialist)
 			{
-				if (kEvent.getFreeSpecialistClassCount(iSpecialistClass) > 0)
+				if (kEvent.getFreeSpecialistCount(iSpecialist) > 0)
 				{
-					iCityTurnValue += (pCity->AI_specialistClassValue((SpecialistClassTypes)iSpecialistClass, false, false) / 300);
+					iCityTurnValue += (pCity->AI_specialistValue((SpecialistTypes)iSpecialist, false, false) / 300);
 				}
 			}
 		}
@@ -23185,6 +23185,7 @@ void CvPlayerAI::AI_calculateAverages() const
 		int iExtraCommerce = 0;
 		for (int iI = 0; iI < NUM_COMMERCE_TYPES; iI++)
 		{
+			iExtraCommerce +=((pLoopCity->getSpecialistPopulation() + pLoopCity->getNumGreatPeople()) * getSpecialistExtraCommerce((CommerceTypes)iI));
 			iExtraCommerce += (pLoopCity->getBuildingCommerce((CommerceTypes)iI) + pLoopCity->getSpecialistCommerce((CommerceTypes)iI) + pLoopCity->getReligionCommerce((CommerceTypes)iI) + getFreeCityCommerce((CommerceTypes)iI));
 		}
 		iTotalCommerce += iExtraCommerce;

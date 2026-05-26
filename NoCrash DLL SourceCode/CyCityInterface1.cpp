@@ -187,7 +187,6 @@ void CyCityPythonInterface1(python::class_<CyCity>& x)
 		.def("getTotalGreatPeopleRateModifier", &CyCity::getTotalGreatPeopleRateModifier, "int ()")
 		.def("changeBaseGreatPeopleRate", &CyCity::changeBaseGreatPeopleRate)
 		.def("getGreatPeopleProgress", &CyCity::getGreatPeopleProgress, "int () - current great person progress")
-		.def("getSpecialistTypeFromClass", &CyCity::getSpecialistTypeFromClass, "int (int /*SpecialistClassTypes*/ eIndex)")
 		.def("getGreatPeopleRateModifier", &CyCity::getGreatPeopleRateModifier, "int ()")
 		.def("getNumWorldWonders", &CyCity::getNumWorldWonders, "int ()")
 		.def("getNumTeamWonders", &CyCity::getNumTeamWonders, "int ()")
@@ -360,7 +359,7 @@ void CyCityPythonInterface1(python::class_<CyCity>& x)
 /**	END																							**/
 /*************************************************************************************************/
 		.def("getExtraSpecialistYield", &CyCity::getExtraSpecialistYield, "int (int /*YieldTypes*/ eIndex)")
-		.def("getExtraSpecialistClassYield", &CyCity::getExtraSpecialistClassYield, "int (int /*YieldTypes*/ eIndex, int /*SpecialistClassTypes*/ eSpecialist)")
+		.def("getExtraSpecialistYieldOfType", &CyCity::getExtraSpecialistYieldOfType, "int (int /*YieldTypes*/ eIndex, int /*SpecialistTypes*/ eSpecialist)")
 
 		.def("getCommerceRate", &CyCity::getCommerceRate, "int (int /*CommerceTypes*/) - total Commerce rate")
 		.def("getCommerceRateTimes100", &CyCity::getCommerceRateTimes100, "int (int /*CommerceTypes*/) - total Commerce rate")

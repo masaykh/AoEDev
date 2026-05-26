@@ -7006,6 +7006,12 @@ bool CvUnit::canAirlift(const CvPlot* pPlot) const
 			return false;
 		}
 	}
+
+	// Upstream bug: function fell off end without returning. VC7.1 cl.exe
+	// happened to emit "mov al, 1; ret" so retail worked by accident;
+	// clang/modern compilers treat fall-off as UB and return false on the
+	// success path, hiding the airlift button.
+	return true;
 }
 
 
@@ -8254,27 +8260,13 @@ bool CvUnit::pillage()
 				}
 			}
 		}
-		if (GC.getImprovementInfo(pPlot->getImprovementType()).getImprovementClassPillage() != NO_IMPROVEMENTCLASS)
+		if (pPlot->isOwned())
 		{
-			if (pPlot->isOwned())
-			{
-				if (GET_PLAYER(pPlot->getOwner()).getPlayerImprovement((ImprovementClassTypes)(GC.getImprovementInfo(pPlot->getImprovementType()).getImprovementClassPillage())) != NO_IMPROVEMENT)
-				{
-					pPlot->setImprovementType((ImprovementTypes)GET_PLAYER(pPlot->getOwner()).getPlayerImprovement((ImprovementClassTypes)(GC.getImprovementInfo(pPlot->getImprovementType()).getImprovementClassPillage())));
-				}
-				else
-				{
-					pPlot->setImprovementType(NO_IMPROVEMENT);
-				}
-			}
-			else
-			{
-				pPlot->setImprovementType((ImprovementTypes)(GC.getImprovementClassInfo((ImprovementClassTypes)(GC.getImprovementInfo(pPlot->getImprovementType()).getImprovementClassPillage())).getDefaultImprovementIndex()));
-			}
+			pPlot->setImprovementType((ImprovementTypes)GET_PLAYER(pPlot->getOwner()).getPlayerImprovement((ImprovementClassTypes)(GC.getImprovementInfo(pPlot->getImprovementType()).getImprovementClassPillage())));
 		}
 		else
 		{
-			pPlot->setImprovementType(NO_IMPROVEMENT);
+			pPlot->setImprovementType((ImprovementTypes)(GC.getImprovementClassInfo((ImprovementClassTypes)(GC.getImprovementInfo(pPlot->getImprovementType()).getImprovementClassPillage())).getDefaultImprovementIndex()));
 		}
 /*************************************************************************************************/
 /**	Improvements Mods by Jeckel		imported by Ahwaric	20.09.09 | Valkrionn	09.24.09		**/
@@ -9419,16 +9411,16 @@ bool CvUnit::spreadCorporation(CorporationTypes eCorporation)
 }
 
 
-bool CvUnit::canJoin(const CvPlot* pPlot, SpecialistClassTypes eSpecialistClass) const
+bool CvUnit::canJoin(const CvPlot* pPlot, SpecialistTypes eSpecialist) const
 {
 	CvCity* pCity;
 
-	if (eSpecialistClass == NO_SPECIALISTCLASS)
+	if (eSpecialist == NO_SPECIALIST)
 	{
 		return false;
 	}
 
-	if (!(m_pUnitInfo->getGreatPeoples(eSpecialistClass)))
+	if (!(m_pUnitInfo->getGreatPeoples(eSpecialist)))
 	{
 		return false;
 	}
@@ -9436,11 +9428,6 @@ bool CvUnit::canJoin(const CvPlot* pPlot, SpecialistClassTypes eSpecialistClass)
 	pCity = pPlot->getPlotCity();
 
 	if (pCity == NULL)
-	{
-		return false;
-	}
-
-	if (pCity->getSpecialistTypeFromClass(eSpecialistClass) == NO_SPECIALIST)
 	{
 		return false;
 	}
@@ -9471,11 +9458,11 @@ bool CvUnit::canJoin(const CvPlot* pPlot, SpecialistClassTypes eSpecialistClass)
 }
 
 
-bool CvUnit::join(SpecialistClassTypes eSpecialistClass)
+bool CvUnit::join(SpecialistTypes eSpecialist)
 {
 	CvCity* pCity;
 
-	if (!canJoin(plot(), eSpecialistClass))
+	if (!canJoin(plot(), eSpecialist))
 	{
 		return false;
 	}
@@ -9484,7 +9471,7 @@ bool CvUnit::join(SpecialistClassTypes eSpecialistClass)
 
 	if (pCity != NULL)
 	{
-		pCity->changeFreeSpecialistClassCount(eSpecialistClass, 1);
+		pCity->changeFreeSpecialistCount(eSpecialist, 1);
 	}
 
 	if (plot()->isActiveVisible(false))
@@ -13141,7 +13128,7 @@ int CvUnit::maxCombatStr(const CvPlot* pPlot, const CvUnit* pAttacker, CombatDet
 			{
 				if ((isHasPromotion((PromotionTypes)iJ)) && (GC.getPromotionInfo((PromotionTypes)iJ).getNumPromotionCombatMods() > 0))
 				{
-					for (int iK = 0; iK < GC.getPromotionInfo((PromotionTypes)iJ).getNumPromotionCombatMods() > 0; iK++)
+					for (int iK = 0; iK < GC.getPromotionInfo((PromotionTypes)iJ).getNumPromotionCombatMods(); iK++)
 					{
 						if (pAttacker->isHasPromotion((PromotionTypes)GC.getPromotionInfo((PromotionTypes)iJ).getPromotionCombatMods(iK,false)))
 							{
@@ -13152,7 +13139,7 @@ int CvUnit::maxCombatStr(const CvPlot* pPlot, const CvUnit* pAttacker, CombatDet
 				}
 				if ((pAttacker->isHasPromotion((PromotionTypes)iJ)) && (GC.getPromotionInfo((PromotionTypes)iJ).getNumPromotionCombatMods() > 0))
 				{
-					for (int iK = 0; iK < GC.getPromotionInfo((PromotionTypes)iJ).getNumPromotionCombatMods() > 0; iK++)
+					for (int iK = 0; iK < GC.getPromotionInfo((PromotionTypes)iJ).getNumPromotionCombatMods(); iK++)
 					{
 						if (isHasPromotion((PromotionTypes)GC.getPromotionInfo((PromotionTypes)iJ).getPromotionCombatMods(iK, false)))
 						{
@@ -18073,7 +18060,7 @@ std::list<int> CvUnit::getAllMinionUnits() const
 CvUnit* CvUnit::getMinionUnit(int iI) const
 {
 	int iCount = 0;
-	int iIDTemp;
+	int iIDTemp = -1;
 	for (std::list<int>::const_iterator iter = m_pMinionUnitList.begin(); iter != m_pMinionUnitList.end(); ++iter)
 	{
 		if (iCount == iI)
@@ -18083,7 +18070,11 @@ CvUnit* CvUnit::getMinionUnit(int iI) const
 		}
 		iCount++;
 	}
-	return getUnit(IDInfo (getOwner(), iIDTemp));
+	if (iIDTemp == -1)
+	{
+		return NULL;
+	}
+	return getUnit(IDInfo(getOwner(), iIDTemp));
 }
 void CvUnit::validateCommanderMinion()
 {
@@ -24249,7 +24240,9 @@ int CvUnit::getFortifySpellDefenderValue(CvUnit* pLoopUnit, CvPlot* pTargetplot)
 	int iValue = 0;
 
 	
-	if (!pLoopUnit->getTeam() == getTeam())
+	// Original: `if (!pLoopUnit->getTeam() == getTeam())` — parses as
+	// `(!getTeam()) == getTeam()`. Author intent is clearly "different team".
+	if (pLoopUnit->getTeam() != getTeam())
 	{
 		iValue = 2;
 	}
@@ -24754,7 +24747,11 @@ bool CvUnit::canCreatePlotEffect(int spell, CvPlot* pTargetPlot) const
 			pLoopPlot = ::plotXY(pTargetPlot->getX_INLINE(), pTargetPlot->getY_INLINE(), i, j);
 			if (NULL != pLoopPlot && canCastTargetPlot(spell,false,pLoopPlot))
 			{
-				if (pLoopPlot->canHavePlotEffect((PlotEffectTypes)GC.getSpellInfo((SpellTypes)spell).getCreatePlotEffectType()) && !pLoopPlot->getPlotEffectType() != NO_PLOT_EFFECT)
+				// Original: `&& !pLoopPlot->getPlotEffectType() != NO_PLOT_EFFECT` —
+				// parses as `(!effectType) != NO_PLOT_EFFECT`. Author intent is
+				// clearly "plot has no current effect", i.e. effectType ==
+				// NO_PLOT_EFFECT. Inverted to match intent (was always firing).
+				if (pLoopPlot->canHavePlotEffect((PlotEffectTypes)GC.getSpellInfo((SpellTypes)spell).getCreatePlotEffectType()) && pLoopPlot->getPlotEffectType() == NO_PLOT_EFFECT)
 				{
 					bValid = true;
 				}
@@ -27685,28 +27682,32 @@ void CvUnit::mutate()
 
 			if (iBestPromotion != -1)
 			{
-				iMax = GC.getPromotionInfo((PromotionTypes)iBestPromotion).getMutationMax();
-				iMin = GC.getPromotionInfo((PromotionTypes)iBestPromotion).getMutationMin();
+				// Original code referenced uninitialized loop-counter iJ after the
+				// for-loop scope ended. iJ should be iBestPromotion here (the
+				// promotion just selected). Same canAirlift-class bug.
+				const PromotionTypes ePromo = (PromotionTypes)iBestPromotion;
+				iMax = GC.getPromotionInfo(ePromo).getMutationMax();
+				iMin = GC.getPromotionInfo(ePromo).getMutationMin();
 
 				iNumApplied = GC.getGameINLINE().getSorenRandNum((iMax - iMin), "Num Effects") + iMin;
 
-				if (isHasPromotion((PromotionTypes)iJ))
+				if (isHasPromotion(ePromo))
 				{
-					iNumApplications = countHasPromotion((PromotionTypes)iJ);
+					iNumApplications = countHasPromotion(ePromo);
 
-					if (GC.getPromotionInfo((PromotionTypes)iJ).getMutationMaxApplications() >= iNumApplications)
+					if (GC.getPromotionInfo(ePromo).getMutationMaxApplications() >= iNumApplications)
 					{
 						iNumApplied = 1;
 					}
-					else if ((iNumApplied + countHasPromotion((PromotionTypes)iJ)) > GC.getPromotionInfo((PromotionTypes)iJ).getMutationMaxApplications())
+					else if ((iNumApplied + countHasPromotion(ePromo)) > GC.getPromotionInfo(ePromo).getMutationMaxApplications())
 					{
-						iNumApplied = GC.getPromotionInfo((PromotionTypes)iJ).getMutationMaxApplications() - countHasPromotion((PromotionTypes)iJ);
+						iNumApplied = GC.getPromotionInfo(ePromo).getMutationMaxApplications() - countHasPromotion(ePromo);
 					}
 				}
 
 				for (int iK = 0; iK < iNumApplied; iK++)
 				{
-					setHasPromotion(((PromotionTypes)iBestPromotion), true);
+					setHasPromotion(ePromo, true);
 				}
 			}
 		}
@@ -27779,28 +27780,32 @@ void CvUnit::mutate()
 
 			if (iBestPromotion != -1)
 			{
-				iMax = GC.getPromotionInfo((PromotionTypes)iBestPromotion).getMutationMax();
-				iMin = GC.getPromotionInfo((PromotionTypes)iBestPromotion).getMutationMin();
+				// Original code referenced uninitialized loop-counter iJ after the
+				// for-loop scope ended. iJ should be iBestPromotion here (the
+				// promotion just selected). Same canAirlift-class bug.
+				const PromotionTypes ePromo = (PromotionTypes)iBestPromotion;
+				iMax = GC.getPromotionInfo(ePromo).getMutationMax();
+				iMin = GC.getPromotionInfo(ePromo).getMutationMin();
 
 				iNumApplied = GC.getGameINLINE().getSorenRandNum((iMax - iMin), "Num Effects") + iMin;
 
-				if (isHasPromotion((PromotionTypes)iJ))
+				if (isHasPromotion(ePromo))
 				{
-					iNumApplications = countHasPromotion((PromotionTypes)iJ);
+					iNumApplications = countHasPromotion(ePromo);
 
-					if (GC.getPromotionInfo((PromotionTypes)iJ).getMutationMaxApplications() >= iNumApplications)
+					if (GC.getPromotionInfo(ePromo).getMutationMaxApplications() >= iNumApplications)
 					{
 						iNumApplied = 1;
 					}
-					else if ((iNumApplied + countHasPromotion((PromotionTypes)iJ)) > GC.getPromotionInfo((PromotionTypes)iJ).getMutationMaxApplications())
+					else if ((iNumApplied + countHasPromotion(ePromo)) > GC.getPromotionInfo(ePromo).getMutationMaxApplications())
 					{
-						iNumApplied = GC.getPromotionInfo((PromotionTypes)iJ).getMutationMaxApplications() - countHasPromotion((PromotionTypes)iJ);
+						iNumApplied = GC.getPromotionInfo(ePromo).getMutationMaxApplications() - countHasPromotion(ePromo);
 					}
 				}
 
 				for (int iK = 0; iK < iNumApplied; iK++)
 				{
-					setHasPromotion(((PromotionTypes)iBestPromotion), true);
+					setHasPromotion(ePromo, true);
 				}
 			}
 		}
@@ -32158,6 +32163,10 @@ const CvArtInfoUnit* CvUnit::getArtInfo(int i, EraTypes eEra) const
 
 		return ARTFILEMGR.getUnitArtInfo(getExtraArtDefineTag3());
 	}
+	// Same UB pattern as canAirlift: original cl.exe returned NULL via fall-off;
+	// clang's UB-aware optimizer may return garbage. Make NULL explicit so
+	// callers (which already null-check via the ART_INFO_DEFN fallback) work.
+	return NULL;
 }
 
 const TCHAR* CvUnit::getButton() const

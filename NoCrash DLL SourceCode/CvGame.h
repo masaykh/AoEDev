@@ -825,6 +825,11 @@ protected:
 
 	void doTurn();
 	void doDeals();
+
+	// Defragment all FFreeListTrashArrays held by CvGame and every player.
+	// Routed through CvFragHeap (private LFH). Safe only when no in-flight
+	// renderer/Python state holds CvX* pointers — caller's responsibility.
+	void compactArrays();
 	void doGlobalWarming();
 	void doHolyCity();
 	void doHeadquarters();

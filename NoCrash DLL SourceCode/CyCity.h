@@ -196,7 +196,6 @@ public:
 	int getGreatPeopleRateModifier();
 	int getGreatPeopleProgress();
 	void changeGreatPeopleProgress(int iChange);
-	int getSpecialistTypeFromClass(int eIndex);
 	int getNumWorldWonders();
 	int getNumTeamWonders();
 	int getNumNationalWonders();
@@ -394,7 +393,7 @@ public:
 /*************************************************************************************************/
 
 	int getExtraSpecialistYield(int /*YieldTypes*/ eIndex);
-	int getExtraSpecialistClassYield(int /*YieldTypes*/ eIndex, int /*SpecialistClassTypes*/ eSpecialist);
+	int getExtraSpecialistYieldOfType(int /*YieldTypes*/ eIndex, int /*SpecialistTypes*/ eSpecialist);
 
 	int getCommerceRate(int /*CommerceTypes*/ eIndex);
 	int getCommerceRateTimes100(int /*CommerceTypes*/ eIndex);
@@ -471,20 +470,20 @@ public:
 	int getGreatPeopleUnitProgress(int /*UnitTypes*/ iIndex);
 	void setGreatPeopleUnitProgress(int /*UnitTypes*/ iIndex, int iNewValue);
 	void changeGreatPeopleUnitProgress(int /*UnitTypes*/ iIndex, int iChange);
-	int getSpecialistClassCount(int /*SpecialistClassTypes*/ eIndex);
-	void alterSpecialistClassCount(int /*SpecialistClassTypes*/ eIndex, int iChange);
-	int getMaxSpecialistClassCount(int /*SpecialistClassTypes*/ eIndex);
-	bool isSpecialistClassBlocked(int /*SpecialistClassTypes*/ eIndex);
-	void setSpecialistClassBlocked(int /*SpecialistClassTypes*/ eIndex, bool iNewValue);
-	bool isSpecialistClassValid(int /*SpecialistClassTypes*/ eIndex, int iExtra);
-	int getForceSpecialistClassCount(int /*SpecialistClassTypes*/ eIndex);
+	int getSpecialistCount(int /*SpecialistTypes*/ eIndex);
+	void alterSpecialistCount(int /*SpecialistTypes*/ eIndex, int iChange);
+	int getMaxSpecialistCount(int /*SpecialistTypes*/ eIndex);
+	bool isSpecialistBlocked(int /*SpecialistTypes*/ eIndex);
+	void setSpecialistBlocked(int /*SpecialistTypes*/ eIndex, bool iNewValue);
+	bool isSpecialistValid(int /*SpecialistTypes*/ eIndex, int iExtra);
+	int getForceSpecialistCount(int /*SpecialistTypes*/ eIndex);
 	bool isSpecialistForced();
-	void setForceSpecialistCount(int /*SpecialistClassTypes*/ eIndex, int iNewValue);
-	void changeForceSpecialistCount(int /*SpecialistClassTypes*/ eIndex, int iChange);
-	int getFreeSpecialistClassCount(int /*SpecialistClassTypes*/ eIndex);
-	void setFreeSpecialistClassCount(int /*SpecialistClassTypes*/ eIndex, int iNewValue);
-	void changeFreeSpecialistClassCount(int /*SpecialistClassTypes*/ eIndex, int iChange);
-	int getAddedFreeSpecialistClassCount(int /*SpecialistClassTypes*/ eIndex);
+	void setForceSpecialistCount(int /*SpecialistTypes*/ eIndex, int iNewValue);
+	void changeForceSpecialistCount(int /*SpecialistTypes*/ eIndex, int iChange);
+	int getFreeSpecialistCount(int /*SpecialistTypes*/ eIndex);
+	void setFreeSpecialistCount(int /*SpecialistTypes*/ eIndex, int iNewValue);
+	void changeFreeSpecialistCount(int /*SpecialistTypes*/ eIndex, int iChange);
+	int getAddedFreeSpecialistCount(int /*SpecialistTypes*/ eIndex);
 	int getImprovementFreeSpecialists(int /*ImprovementTypes*/ iIndex);
 	void changeImprovementFreeSpecialists(int /*ImprovementTypes*/ iIndex, int iChange);
 	int getReligionInfluence(int /*ReligionTypes*/ iIndex);

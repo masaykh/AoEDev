@@ -21,6 +21,7 @@
 #include "FProfiler.h"
 #include "CvReplayInfo.h"
 #include "CvGameTextMgr.h"
+#include "CvFragHeap.h"
 /*************************************************************************************************/
 /**	Xienwolf Tweak							02/01/09											**/
 /**																								**/
@@ -1778,7 +1779,11 @@ void CvGame::normalizeRemoveBadFeatures()
 										}
 										else
 										{
-											if (!(iDistance == iMaxRange) && (getSorenRandNum((2 + (pLoopPlot->getBonusType() == NO_BONUS) ? 0 : 2), "Remove Bad Feature") == 0))
+											// Original: `2 + (bonus==NO_BONUS) ? 0 : 2` — `+` binds tighter than `?:`,
+											// so this was `(2 + bool) ? 0 : 2` → always 0, so the rand call was
+											// always getSorenRandNum(0, ...). Parens added around the ternary
+											// to match author intent: 2 if bonus present, 4 if absent.
+											if (!(iDistance == iMaxRange) && (getSorenRandNum((2 + ((pLoopPlot->getBonusType() == NO_BONUS) ? 0 : 2)), "Remove Bad Feature") == 0))
 											{
 												pLoopPlot->setFeatureType(NO_FEATURE);
 											}
@@ -6568,6 +6573,27 @@ void CvGame::addGreatPersonBornName(const CvWString& szName)
 // Protected Functions...
 
 
+void CvGame::compactArrays()
+{
+	// Compact game-level FFreeListTrashArrays first, then every live player's.
+	m_deals.Compact();
+	m_voteSelections.Compact();
+	m_votesTriggered.Compact();
+
+	for (int iI = 0; iI < MAX_PLAYERS; ++iI)
+	{
+		CvPlayer& kP = GET_PLAYER((PlayerTypes)iI);
+		if (kP.isEverAlive())
+		{
+			kP.compactArrays();
+		}
+	}
+
+	// Coalesce now-empty pages in our private LFH heap back to the OS.
+	CvFragHeap::get().compact();
+}
+
+
 void CvGame::doTurn()
 {
 	//Snarko temp
@@ -6824,6 +6850,21 @@ void CvGame::doTurn()
 	profiler.profile(NULL,true);
 
 	gDLL->getEngineIFace()->AutoSave();
+
+	// Field-confirmed (turn 10 crash): the EXE renderer's city-billboard path
+	// caches CvCity* across the per-turn boundary. Relocating those objects
+	// via FFreeListTrashArray::Compact() leaves the renderer with stale
+	// pointers — CvCity::getCityBillboardSizeIconColors() → foodDifference()
+	// → getBaseYieldRate() crashes reading m_aiBaseYieldRate through a NULL
+	// this. Until we have a way to notify the renderer of relocations, the
+	// FLTA-relocating path is disabled. The CvFragHeap allocation routing
+	// (the larger fragmentation win) is unaffected and remains active.
+	//
+	// Safe heap maintenance only: coalesce empty pages back to the OS.
+	if ((getGameTurn() % 10) == 0)
+	{
+		CvFragHeap::get().compact();
+	}
 }
 
 
@@ -6843,8 +6884,31 @@ void CvGame::doDeals()
 
 void CvGame::doGlobalWarming()
 {
+	// Bail out early if the XML defines that drive warming are missing or
+	// invalid. Without these, setTerrainType / feature-id comparison can
+	// reference negative or out-of-range enum values and corrupt the map.
+	TerrainTypes eWarmingTerrain = (TerrainTypes)GC.getDefineINT("GLOBAL_WARMING_TERRAIN");
+	if (eWarmingTerrain == NO_TERRAIN)
+	{
+		return;
+	}
+
+	const int iNumPlots = GC.getMapINLINE().numPlotsINLINE();
+	if (iNumPlots <= 0)
+	{
+		return;
+	}
+
+	// Hoist XML lookups out of the inner loop. getDefineINT is a hash query;
+	// re-running it per iteration adds avoidable cost on Huge maps.
+	const int iNukeFeature   = GC.getDefineINT("NUKE_FEATURE");
+	const int iWarmingProb   = GC.getDefineINT("GLOBAL_WARMING_PROB");
+	const int iForestWeight  = GC.getDefineINT("GLOBAL_WARMING_FOREST");
+	const int iUnhealthWeight = GC.getDefineINT("GLOBAL_WARMING_UNHEALTH_WEIGHT");
+	const int iNukeWeight    = GC.getDefineINT("GLOBAL_WARMING_NUKE_WEIGHT");
+
 	int iGlobalWarmingDefense = 0;
-	for (int i = 0; i < GC.getMapINLINE().numPlotsINLINE(); ++i)
+	for (int i = 0; i < iNumPlots; ++i)
 	{
 		CvPlot* pPlot = GC.getMapINLINE().plotByIndexINLINE(i);
 
@@ -6859,9 +6923,8 @@ void CvGame::doGlobalWarming()
 			}
 		}
 	}
-	iGlobalWarmingDefense = iGlobalWarmingDefense * GC.getDefineINT("GLOBAL_WARMING_FOREST") / std::max(1, GC.getMapINLINE().getLandPlots());
+	iGlobalWarmingDefense = iGlobalWarmingDefense * iForestWeight / std::max(1, GC.getMapINLINE().getLandPlots());
 
-	int iUnhealthWeight = GC.getDefineINT("GLOBAL_WARMING_UNHEALTH_WEIGHT");
 	int iGlobalWarmingValue = 0;
 	for (int iPlayer = 0; iPlayer < MAX_PLAYERS; ++iPlayer)
 	{
@@ -6875,15 +6938,13 @@ void CvGame::doGlobalWarming()
 			}
 		}
 	}
-	iGlobalWarmingValue /= GC.getMapINLINE().numPlotsINLINE();
+	iGlobalWarmingValue /= iNumPlots;
 
-	iGlobalWarmingValue += getNukesExploded() * GC.getDefineINT("GLOBAL_WARMING_NUKE_WEIGHT") / 100;
-
-	TerrainTypes eWarmingTerrain = ((TerrainTypes)(GC.getDefineINT("GLOBAL_WARMING_TERRAIN")));
+	iGlobalWarmingValue += getNukesExploded() * iNukeWeight / 100;
 
 	for (int iI = 0; iI < iGlobalWarmingValue; iI++)
 	{
-		if (getSorenRandNum(100, "Global Warming") + iGlobalWarmingDefense < GC.getDefineINT("GLOBAL_WARMING_PROB"))
+		if (getSorenRandNum(100, "Global Warming") + iGlobalWarmingDefense < iWarmingProb)
 		{
 			CvPlot* pPlot = GC.getMapINLINE().syncRandPlot(RANDPLOT_LAND | RANDPLOT_NOT_CITY);
 
@@ -6893,7 +6954,7 @@ void CvGame::doGlobalWarming()
 
 				if (pPlot->getFeatureType() != NO_FEATURE)
 				{
-					if (pPlot->getFeatureType() != GC.getDefineINT("NUKE_FEATURE"))
+					if (pPlot->getFeatureType() != iNukeFeature)
 					{
 						pPlot->setFeatureType(NO_FEATURE);
 						bChanged = true;

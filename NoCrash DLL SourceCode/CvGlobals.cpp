@@ -2687,23 +2687,6 @@ CvCorporationInfo& CvGlobals::getCorporationInfo(CorporationTypes eCorporationNu
 	return *(m_paCorporationInfo[eCorporationNum]);
 }
 
-int CvGlobals::getNumSpecialistClassInfos()
-{
-	return (int)m_paSpecialistClassInfo.size();
-}
-
-std::vector<CvSpecialistClassInfo*>& CvGlobals::getSpecialistClassInfo()	// For Moose - XML Load Util, CvInfos
-{
-	return m_paSpecialistClassInfo;
-}
-
-CvSpecialistClassInfo& CvGlobals::getSpecialistClassInfo(SpecialistClassTypes eSpecialistClassNum)
-{
-	FAssert(eSpecialistClassNum > -1);
-	FAssert(eSpecialistClassNum < GC.getNumSpecialistClassInfos());
-	return *(m_paSpecialistClassInfo[eSpecialistClassNum]);
-}
-
 int CvGlobals::getNumSpecialistInfos()
 {
 	return (int)m_paSpecialistInfo.size();
@@ -4678,11 +4661,7 @@ void CvGlobals::LoadExeSettings()
 // Global Infos Hash Map
 //
 
-#if defined(__clang__) || defined(__GNUC__)
 __attribute__((noinline))
-#elif defined(_MSC_VER)
-__declspec(noinline)
-#endif
 int CvGlobals::getInfoTypeForString(const char* szType, bool hideAssert) const
 	{
 	FAssertMsg(szType, "null info type string");
@@ -4694,8 +4673,6 @@ int CvGlobals::getInfoTypeForString(const char* szType, bool hideAssert) const
 
 	if(!hideAssert && szType[0] != 0 && strcmp(szType, "NONE") != 0)
 	{
-#if defined(__clang__) || defined(__GNUC__)
-		// Caller-offset logging — clang/GCC only.
 		void* caller = __builtin_return_address(0);
 		MEMORY_BASIC_INFORMATION mbi;
 		void* base = NULL;
@@ -4728,30 +4705,6 @@ int CvGlobals::getInfoTypeForString(const char* szType, bool hideAssert) const
 			FAssertMsg(false, szError.c_str());
 			gDLL->logMsg("xml.log", szError);
 		}
-#else
-		// MSVC (and other compilers without __builtin_return_address): log without caller offset.
-		// Dedup on (type, file) to keep volume manageable.
-		char szKey[320];
-		_snprintf(szKey, sizeof(szKey)-1, "%s@%s", szType, GC.getCurrentXMLFile().GetCString());
-		szKey[sizeof(szKey)-1] = 0;
-
-		static std::set<std::string> s_seen;
-		static CRITICAL_SECTION s_cs;
-		static bool s_csInit = (InitializeCriticalSection(&s_cs), true);
-		(void)s_csInit;
-
-		EnterCriticalSection(&s_cs);
-		bool bFirstTime = s_seen.insert(szKey).second;
-		LeaveCriticalSection(&s_cs);
-
-		if (bFirstTime)
-		{
-			CvString szError;
-			szError.Format("info type %s not found, Current XML file is: %s", szType, GC.getCurrentXMLFile().GetCString());
-			FAssertMsg(false, szError.c_str());
-			gDLL->logMsg("xml.log", szError);
-		}
-#endif
 	}
 
 	return -1;
