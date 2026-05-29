@@ -248,8 +248,13 @@ T* FFreeListTrashArray<T>::add()
 		iIndex = m_iLastIndex;
 	}
 
-	m_pArray[iIndex].pData = (T*) CvFragHeap::get().alloc(sizeof(T));
-	new (m_pArray[iIndex].pData) T();
+	// Route T-object allocations through the private CvFragHeap (anti-fragmentation:
+	// keeps the EXE's largest committed free block from collapsing into bad_alloc in
+	// long/late games). Pointers stay stable -- CvFragHeap never relocates a live
+	// block on its own; only Compact() would, and it stays DISABLED so the EXE's and
+	// renderer's cached CvX* pointers remain valid. Pairs with the placement-delete
+	// (explicit ~T() + CvFragHeap::free) in removeAt()/removeAll().
+	m_pArray[iIndex].pData = new (CvFragHeap::get().alloc(sizeof(T))) T();
 	m_pArray[iIndex].iNextFreeIndex = FFreeList::INVALID_INDEX;
 
 	m_pArray[iIndex].pData->setID(m_iCurrentID + iIndex);
@@ -327,8 +332,8 @@ bool FFreeListTrashArray<T>::removeAt(int iID)
 	{
 		if (((iID & FLTA_ID_MASK) == 0) || (m_pArray[iIndex].pData->getID() == iID))
 		{
-			m_pArray[iIndex].pData->~T();
-			CvFragHeap::get().free(m_pArray[iIndex].pData);
+			m_pArray[iIndex].pData->~T();					// pairs with add()'s CvFragHeap placement new
+			CvFragHeap::get().free(m_pArray[iIndex].pData);	// return the slot to CvFragHeap
 			m_pArray[iIndex].pData = NULL;
 
 			m_pArray[iIndex].iNextFreeIndex = m_iFreeListHead;
@@ -366,8 +371,8 @@ void FFreeListTrashArray<T>::removeAll()
 		m_pArray[iI].iNextFreeIndex = FFreeList::INVALID_INDEX;
 		if (m_pArray[iI].pData != NULL)
 		{
-			m_pArray[iI].pData->~T();
-			CvFragHeap::get().free(m_pArray[iI].pData);
+			m_pArray[iI].pData->~T();					// pairs with add()'s CvFragHeap placement new
+			CvFragHeap::get().free(m_pArray[iI].pData);	// return the slot to CvFragHeap
 		}
 		m_pArray[iI].pData = NULL;
 	}
@@ -459,8 +464,7 @@ inline void FFreeListTrashArray< T >::Read( FDataStreamBase* pStream )
 
 	for ( i = 0; i < iCount; i++ )
 	{
-		T* pData = (T*) CvFragHeap::get().alloc(sizeof(T));
-		new (pData) T();
+		T* pData = new (CvFragHeap::get().alloc(sizeof(T))) T();	// CvFragHeap slot; load() hands it to the engine
 		pStream->Read( sizeof ( T ), ( byte* )pData );
 		load( pData );
 	}
@@ -508,34 +512,14 @@ inline void FFreeListTrashArray< T >::Write( FDataStreamBase* pStream )
 template <class T>
 inline void FFreeListTrashArray<T>::Compact()
 {
-	if (m_pArray == NULL || m_iLastIndex < 0)
-	{
-		return;
-	}
-
-	for (int i = 0; i <= m_iLastIndex; ++i)
-	{
-		T* pOld = m_pArray[i].pData;
-		if (pOld == NULL)
-		{
-			continue;
-		}
-		T* pFresh = (T*) CvFragHeap::get().alloc(sizeof(T));
-		memcpy(pFresh, pOld, sizeof(T));
-		CvFragHeap::get().free(pOld);
-		m_pArray[i].pData = pFresh;
-	}
-
-	// Reseat the index array itself so its old fragment can be coalesced too.
-	if (m_iNumSlots > 0)
-	{
-		size_t bytes = sizeof(FFreeListTrashArrayNode) * (size_t)m_iNumSlots;
-		FFreeListTrashArrayNode* pFreshArr =
-			(FFreeListTrashArrayNode*) CvFragHeap::get().alloc(bytes);
-		memcpy(pFreshArr, m_pArray, bytes);
-		CvFragHeap::get().free(m_pArray);
-		m_pArray = pFreshArr;
-	}
+	// DISABLED. T objects now live on the engine-shared heap and the EXE caches
+	// their raw pointers (renderer billboards, AI scratch). Byte-relocating them
+	// invalidates those external pointers (the field-confirmed turn-10 renderer
+	// crash). No live caller exists: CvGame::compactArrays / CvPlayer::compactArrays
+	// only call this recursively and are themselves unreferenced. The fragmentation
+	// win now comes from CvFragHeap routing the node arrays + CvFragHeap::compact()
+	// in doTurn, not from relocating live objects.
+	return;
 }
 
 //-------------------------------
@@ -573,8 +557,7 @@ inline void ReadStreamableFFreeListTrashArray( FFreeListTrashArray< T >& flist, 
 
 	for ( i = 0; i < iCount; i++ )
 	{
-		T* pData = (T*) CvFragHeap::get().alloc(sizeof(T));
-		new (pData) T();
+		T* pData = new (CvFragHeap::get().alloc(sizeof(T))) T();	// CvFragHeap slot; load() hands it to the engine
 		pData->read( pStream );
 		flist.load( pData );
 	}
