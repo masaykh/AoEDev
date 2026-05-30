@@ -66,6 +66,9 @@
     <ClCompile Include="CvGameAI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CvEngineMemoryPatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="CvGameCoreDLL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -429,6 +432,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CvGameAI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CvEngineMemoryPatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CvGameCoreDLL.h">

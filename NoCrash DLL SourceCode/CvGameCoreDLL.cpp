@@ -7,6 +7,7 @@
 #include "CvGlobals.h"
 #include "FProfiler.h"
 #include "CvDLLInterfaceIFaceBase.h"
+#include "CvEngineMemoryPatch.h"
 
 //
 // operator global new and delete override for gamecore DLL
@@ -91,6 +92,11 @@ BOOL APIENTRY DllMain(HANDLE hModule,
 		{
 		// The DLL is being loaded into the virtual address space of the current process as a result of the process starting up
 		OutputDebugString("DLL_PROCESS_ATTACH\n");
+
+		// Repair engine-side defects we cannot fix in the EXE source. Must run
+		// here, before the engine constructs any of the patched objects.
+		installEngineMemoryPatches();
+
 
 		// set timer precision
 		MMRESULT iTimeSet = timeBeginPeriod(1);		// set timeGetTime and sleep resolution to 1 ms, otherwise it's 10-16ms
