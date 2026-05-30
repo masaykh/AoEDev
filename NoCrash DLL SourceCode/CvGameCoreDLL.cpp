@@ -9,6 +9,7 @@
 #include "CvDLLInterfaceIFaceBase.h"
 #include "CvFragHeap.h"
 #include "CvReservePool.h"
+#include "CvEngineMemoryPatch.h"
 
 //
 // operator global new and delete override for gamecore DLL
@@ -93,6 +94,10 @@ BOOL APIENTRY DllMain(HANDLE hModule,
 		{
 		// The DLL is being loaded into the virtual address space of the current process as a result of the process starting up
 		OutputDebugString("DLL_PROCESS_ATTACH\n");
+
+		// Repair engine-side defects we cannot fix in the EXE source. Must run
+		// here, before the engine constructs any of the patched objects.
+		installEngineMemoryPatches();
 
 		// Grab the reserve pool early — before the EXE has time to fragment
 		// the VA space. Static-singleton ctor runs on first reference.
