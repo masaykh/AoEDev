@@ -21,6 +21,9 @@
 #include "FProfiler.h"
 #include "CvReplayInfo.h"
 #include "CvGameTextMgr.h"
+#include <stdio.h>
+#include <string.h>
+#include <exception>
 /*************************************************************************************************/
 /**	Xienwolf Tweak							02/01/09											**/
 /**																								**/
@@ -40,6 +43,63 @@
 #include "CvDLLPythonIFaceBase.h"
 
 #include "CvSnarkoProfiler.h"
+
+// ---------------------------------------------------------------------------
+// Corrupt-save diagnostic logger + sanity caps (failure-resistant CvGame::read).
+// Robust at load time: writes via gDLL->logMsg (ini-gated) AND a direct file
+// append next to the DLL (NOT ini-gated) AND OutputDebugStringA, so a corrupt
+// AutoSave is always recorded even when in-game logging is disabled. Uses only
+// CRT/Win32 so it cannot itself throw or depend on game state.
+// ---------------------------------------------------------------------------
+namespace
+{
+	// Gross upper bounds -- only reject obvious garbage (negative / 0xFFFFFFFF),
+	// never a legitimate large save.
+	const int MAX_REPLAY_MESSAGES = 1000000;
+	const int MAX_CITY_NAME_LIST  = 100000;
+
+	// Non-variadic on purpose: a previous va_list/_vsnprintf version mis-passed
+	// %u/%d under clang -O2 (the old-style va_start macro took the address of a
+	// spilled copy of the param, so _vsnprintf read stack garbage). Direct
+	// _snprintf with fixed args formats correctly. uVal/iVal are the two numbers
+	// a caller wants on record (e.g. count + cap, or index + total); pass 0 if N/A.
+	void logCorruptSave(const char* szSection, const char* szWhat, unsigned uVal, int iVal)
+	{
+		char szLine[1152];
+
+		_snprintf(szLine, sizeof(szLine) - 1, "[CvGame::read][CORRUPT][%s] %s [%u | %d]", szSection, szWhat, uVal, iVal);
+		szLine[sizeof(szLine) - 1] = '\0';
+
+		// 1) Normal engine log (only if LoggingEnabled=1 in the ini).
+		if (gDLL != NULL)
+		{
+			gDLL->logMsg("save_corrupt.log", szLine, false, true);
+		}
+
+		// 2) Direct file append next to the DLL -- bypasses the ini gate.
+		char szPath[MAX_PATH];
+		szPath[0] = '\0';
+		if (GetModuleFileNameA(GetModuleHandleA("CvGameCoreDLL.dll"), szPath, MAX_PATH) > 0)
+		{
+			char* pSlash = strrchr(szPath, '\\');
+			if (pSlash != NULL)
+			{
+				*(pSlash + 1) = '\0';
+				strncat(szPath, "CvGameCoreDLL_corrupt_save.log", MAX_PATH - strlen(szPath) - 1);
+			}
+		}
+		FILE* fp = fopen(szPath[0] ? szPath : "CvGameCoreDLL_corrupt_save.log", "a");
+		if (fp != NULL)
+		{
+			fprintf(fp, "%s\n", szLine);
+			fclose(fp);
+		}
+
+		// 3) Debugger output -- always visible in WinDbg / DebugView.
+		OutputDebugStringA(szLine);
+		OutputDebugStringA("\n");
+	}
+}
 
 // Public Functions...
 
@@ -8554,6 +8614,8 @@ void CvGame::read(FDataStreamBase* pStream)
 {
 	int iI;
 
+	m_bLoadWasCorrupt = false;	// failure-resistant load: cleared before the read() guards run
+
 	reset(NO_HANDICAP);
 
 	uint uiFlag=0;
@@ -8672,24 +8734,64 @@ void CvGame::read(FDataStreamBase* pStream)
 
 		m_aszDestroyedCities.clear();
 		pStream->Read(&iSize);
-		for (uint i = 0; i < iSize; i++)
+		if ((int)iSize < 0 || (int)iSize > MAX_CITY_NAME_LIST)
 		{
-			pStream->ReadString(szBuffer);
-			m_aszDestroyedCities.push_back(szBuffer);
+			logCorruptSave("m_aszDestroyedCities", "count exceeds cap -- skipping list", iSize, MAX_CITY_NAME_LIST);
+			m_bLoadWasCorrupt = true;
+		}
+		else
+		{
+			try
+			{
+				for (uint i = 0; i < iSize; i++)
+				{
+					pStream->ReadString(szBuffer);
+					m_aszDestroyedCities.push_back(szBuffer);
+				}
+			}
+			catch (std::exception& e)
+			{
+				logCorruptSave("m_aszDestroyedCities", e.what(), (unsigned)m_aszDestroyedCities.size(), MAX_CITY_NAME_LIST);
+				m_bLoadWasCorrupt = true;
+			}
 		}
 
 		m_aszGreatPeopleBorn.clear();
 		pStream->Read(&iSize);
-		for (uint i = 0; i < iSize; i++)
+		if ((int)iSize < 0 || (int)iSize > MAX_CITY_NAME_LIST)
 		{
-			pStream->ReadString(szBuffer);
-			m_aszGreatPeopleBorn.push_back(szBuffer);
+			logCorruptSave("m_aszGreatPeopleBorn", "count exceeds cap -- skipping list", iSize, MAX_CITY_NAME_LIST);
+			m_bLoadWasCorrupt = true;
+		}
+		else
+		{
+			try
+			{
+				for (uint i = 0; i < iSize; i++)
+				{
+					pStream->ReadString(szBuffer);
+					m_aszGreatPeopleBorn.push_back(szBuffer);
+				}
+			}
+			catch (std::exception& e)
+			{
+				logCorruptSave("m_aszGreatPeopleBorn", e.what(), (unsigned)m_aszGreatPeopleBorn.size(), MAX_CITY_NAME_LIST);
+				m_bLoadWasCorrupt = true;
+			}
 		}
 	}
 
-	ReadStreamableFFreeListTrashArray(m_deals, pStream);
-	ReadStreamableFFreeListTrashArray(m_voteSelections, pStream);
-	ReadStreamableFFreeListTrashArray(m_votesTriggered, pStream);
+	try
+	{
+		ReadStreamableFFreeListTrashArray(m_deals, pStream);
+		ReadStreamableFFreeListTrashArray(m_voteSelections, pStream);
+		ReadStreamableFFreeListTrashArray(m_votesTriggered, pStream);
+	}
+	catch (std::exception& e)
+	{
+		logCorruptSave("FFreeListTrashArray(deals/votes)", e.what(), 0, 0);
+		m_bLoadWasCorrupt = true;
+	}
 
 	m_mapRand.read(pStream);
 	m_sorenRand.read(pStream);
@@ -8698,14 +8800,30 @@ void CvGame::read(FDataStreamBase* pStream)
 		clearReplayMessageMap();
 		ReplayMessageList::_Alloc::size_type iSize;
 		pStream->Read(&iSize);
-		for (ReplayMessageList::_Alloc::size_type i = 0; i < iSize; i++)
+		if ((int)iSize < 0 || (int)iSize > MAX_REPLAY_MESSAGES)
 		{
-			CvReplayMessage* pMessage = new CvReplayMessage(0);
-			if (NULL != pMessage)
+			logCorruptSave("m_listReplayMessages", "count exceeds cap -- skipping replay messages", (unsigned)iSize, MAX_REPLAY_MESSAGES);
+			m_bLoadWasCorrupt = true;
+		}
+		else
+		{
+			try
 			{
-				pMessage->read(*pStream);
+				for (ReplayMessageList::_Alloc::size_type i = 0; i < iSize; i++)
+				{
+					CvReplayMessage* pMessage = new CvReplayMessage(0);
+					if (NULL != pMessage)
+					{
+						pMessage->read(*pStream);
+					}
+					m_listReplayMessages.push_back(pMessage);
+				}
 			}
-			m_listReplayMessages.push_back(pMessage);
+			catch (std::exception& e)
+			{
+				logCorruptSave("m_listReplayMessages", e.what(), (unsigned)0, (int)iSize);
+				m_bLoadWasCorrupt = true;
+			}
 		}
 	}
 	// m_pReplayInfo not saved

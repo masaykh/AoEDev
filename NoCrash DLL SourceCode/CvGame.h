@@ -477,6 +477,7 @@ public:
 
 	DllExport virtual void read(FDataStreamBase* pStream);
 	DllExport virtual void write(FDataStreamBase* pStream);
+	bool wasLoadCorrupt() const { return m_bLoadWasCorrupt; }	// set by read() when sanity caps / try-catch tripped
 	DllExport virtual void writeReplay(FDataStreamBase& stream, PlayerTypes ePlayer);
 
 	DllExport virtual void AI_init() = 0;
@@ -720,6 +721,7 @@ protected:
 	unsigned int m_uiInitialTime;
 
 	bool m_bScoreDirty;
+	bool m_bLoadWasCorrupt;		// failure-resistant load: set true if read() sanity caps / try-catch tripped
 	bool m_bCircumnavigated;
 	bool m_bDebugMode;
 	bool m_bDebugModeCache;
