@@ -78,6 +78,8 @@ nmake Release</NMakeReBuildCommandLine>
     <ClCompile Include="CvFractal.cpp" />
     <ClCompile Include="CvGame.cpp" />
     <ClCompile Include="CvEngineMemoryPatch.cpp" />
+    <ClCompile Include="CvFragHeap.cpp" />
+    <ClCompile Include="CvReservePool.cpp" />
     <ClCompile Include="CvGameAI.cpp" />
     <ClCompile Include="CvGameCoreDLL.cpp" />
     <ClCompile Include="CvGameCoreUtils.cpp" />
@@ -203,6 +205,8 @@ nmake Release</NMakeReBuildCommandLine>
     <ClInclude Include="CvFractal.h" />
     <ClInclude Include="CvGame.h" />
     <ClInclude Include="CvEngineMemoryPatch.h" />
+    <ClInclude Include="CvFragHeap.h" />
+    <ClInclude Include="CvReservePool.h" />
     <ClInclude Include="CvGameAI.h" />
     <ClInclude Include="CvGameCoreDLL.h" />
     <ClInclude Include="CvGameCoreDLLDefNew.h" />

@@ -69,6 +69,12 @@
     <ClCompile Include="CvEngineMemoryPatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CvFragHeap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CvReservePool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="CvGameCoreDLL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -435,6 +441,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CvEngineMemoryPatch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CvFragHeap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CvReservePool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CvGameCoreDLL.h">

@@ -7,6 +7,8 @@
 #include "CvGlobals.h"
 #include "FProfiler.h"
 #include "CvDLLInterfaceIFaceBase.h"
+#include "CvFragHeap.h"
+#include "CvReservePool.h"
 #include "CvEngineMemoryPatch.h"
 
 //
@@ -97,6 +99,11 @@ BOOL APIENTRY DllMain(HANDLE hModule,
 		// here, before the engine constructs any of the patched objects.
 		installEngineMemoryPatches();
 
+		// Grab the reserve pool early — before the EXE has time to fragment
+		// the VA space. Static-singleton ctor runs on first reference.
+		(void) CvReservePool::get();
+		// Same for our private LFH heap (so HeapCreate happens up-front).
+		(void) CvFragHeap::get();
 
 		// set timer precision
 		MMRESULT iTimeSet = timeBeginPeriod(1);		// set timeGetTime and sleep resolution to 1 ms, otherwise it's 10-16ms
