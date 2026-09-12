@@ -1,6 +1,10 @@
-// Deliberately free of CvGameCoreDLL.h: this is the one piece of the save format
-// that can be exercised without the game, and a standalone test of it is worth more
-// than the convenience of the umbrella header.
+// CvGameCoreDLL.h has to come first. The MSVC build compiles every .cpp in this
+// directory with /Yu"CvGameCoreDLL.h" (Makefile, GLOBAL_CFLAGS) and the compiler
+// discards all text ahead of that include, so a translation unit that never includes
+// it fails with C1010 "unexpected end of file while looking for precompiled header
+// directive". This file used to leave it out so the encoder could be built without
+// the game; tests/run_taggedstream_test.py does that now, against a stub header.
+#include "CvGameCoreDLL.h"
 #include "CvTaggedStream.h"
 #include "CvSaveSizeProbe.h"
 #include <string.h>

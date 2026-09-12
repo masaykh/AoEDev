@@ -2,7 +2,11 @@
 // vector is enough, and this is the one part of the save format that can be tested that
 // way. Everything downstream trusts this encoding, so it is worth proving separately.
 //
-// build: clang++ -I"<src>" test_taggedstream.cpp "<src>/CvTaggedStream.cpp" -o t.exe
+// build + run: python tests/run_taggedstream_test.py
+//
+// CvTaggedStream.cpp includes CvGameCoreDLL.h, because the DLL build forces the
+// precompiled header onto every .cpp in that directory. The runner compiles a copy of
+// it against a stub of that header so this test still needs nothing but a compiler.
 
 // FDataStreamBase.h names std::string in its signatures without including <string>;
 // in the DLL build the umbrella header has already pulled it in.
@@ -11,8 +15,20 @@
 #include <string>
 #include <vector>
 
+#include "test_prelude.h"
 #include "FDataStreamBase.h"
 #include "CvTaggedStream.h"
+#include "CvSaveSizeProbe.h"
+
+// CvTagWriter reports every record it emits to the probe, which lives in the DLL.
+// Nothing here links the DLL, so give it a probe that counts nothing.
+namespace CvSaveSizeProbe
+{
+	bool isEnabled() { return false; }
+	void countObject(const char*) {}
+	void countTagged(const char*, int) {}
+	void flush() {}
+}
 
 static int g_iFailures = 0;
 
