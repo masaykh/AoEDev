@@ -1573,6 +1573,7 @@
 			<Image>Art/Interface/Popups/Arthendain.dds</Image>
 			<Quote>TXT_KEY_UNIT_ARTHENDAIN_STRATEGY</Quote>
 			<iAlignmentModifier>2</iAlignmentModifier>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Auric Ascended -->
 			<Class>UNITCLASS_AURIC_ASCENDED</Class>
@@ -3280,7 +3281,7 @@
 			<iDefensiveStrikeChance>45</iDefensiveStrikeChance>
 			<iDefensiveStrikeDamage>25</iDefensiveStrikeDamage>
 			<iTier>3</iTier>
-			<iWeaponTierMax>2</iWeaponTierMax>
+			<iWeaponTierMax>3</iWeaponTierMax>
 			<Image>Art/Interface/Popups/Feris.dds</Image>
 			<Quote>TXT_KEY_POPUP_FERIS_CREATION</Quote>
 		</UnitInfo>
@@ -3888,6 +3889,7 @@
 			<iDefensiveStrikeChance>30</iDefensiveStrikeChance>
 			<iDefensiveStrikeDamage>15</iDefensiveStrikeDamage>
 			<iTier>2</iTier>
+			<iWeaponTierMax>3</iWeaponTierMax>
 			<Image>Art/Interface/Popups/Gilden Silveric.dds</Image>
 			<Quote>TXT_KEY_UNIT_GILDEN_STRATEGY</Quote>
 		</UnitInfo>
@@ -5263,6 +5265,7 @@
 			</FreePromotions>
 			<iTier>4</iTier>
 			<iPowerMult>9</iPowerMult>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Loki -->
 			<Class>UNITCLASS_LOKI</Class>
@@ -7239,6 +7242,230 @@
 			<iTier>6</iTier>
 			<Image>Art/Interface/Popups/OsGabellaBanner.dds</Image>
 			<Quote>TXT_KEY_POPUP_OSGABELLA_CREATION</Quote>
+			<PyPerTurn>perTurnOsGabellaAlignment(pCaster)</PyPerTurn>
+		</UnitInfo>
+		<UnitInfo>        <!-- Os-Gabella Redeemed -->
+			<Class>UNITCLASS_OS_GABELLA</Class>
+			<Type>UNIT_OS_GABELLA_REDEEMED</Type>
+			<Combat>UNITCOMBAT_RECON</Combat>
+			<DefaultUnitAI>UNITAI_HERO</DefaultUnitAI>
+			<Description>TXT_KEY_UNIT_OS-GABELLA_UNIT_REDEEMED</Description>
+			<Civilopedia>TXT_KEY_UNIT_OS-GABELLA_UNIT_REDEEMED_PEDIA</Civilopedia>
+			<Strategy>TXT_KEY_UNIT_OS-GABELLA_UNIT_REDEEMED_STRATEGY</Strategy>
+			<Advisor>ADVISOR_MILITARY</Advisor>
+			<bMilitaryHappiness>1</bMilitaryHappiness>
+			<bMilitarySupport>1</bMilitarySupport>
+			<bMilitaryProduction>1</bMilitaryProduction>
+			<bPillage>1</bPillage>
+			<UnitAIs>
+				<UnitAI>
+					<UnitAIType>UNITAI_MAGE</UnitAIType>
+					<bUnitAI>1</bUnitAI>
+				</UnitAI>
+				<UnitAI>
+					<UnitAIType>UNITAI_WARWIZARD</UnitAIType>
+					<bUnitAI>1</bUnitAI>
+				</UnitAI>
+				<UnitAI>
+					<UnitAIType>UNITAI_MANA_UPGRADE</UnitAIType>
+					<bUnitAI>1</bUnitAI>
+				</UnitAI>
+				<UnitAI>
+					<UnitAIType>UNITAI_TERRAFORMER</UnitAIType>
+					<bUnitAI>1</bUnitAI>
+				</UnitAI>
+			</UnitAIs>
+			<NotUnitAIs>
+				<UnitAI>
+					<UnitAIType>UNITAI_WORKER</UnitAIType>
+					<bUnitAI>1</bUnitAI>
+				</UnitAI>
+			</NotUnitAIs>
+			<Builds>
+				<Build>
+					<BuildType>BUILD_MANA_CREATION</BuildType>
+					<bBuild>1</bBuild>
+				</Build>
+				<Build>
+					<BuildType>BUILD_MANA_ICE</BuildType>
+					<bBuild>1</bBuild>
+				</Build>
+				<Build>
+					<BuildType>BUILD_MANA_FORCE</BuildType>
+					<bBuild>1</bBuild>
+				</Build>
+				<Build>
+					<BuildType>BUILD_MANA_DIMENSIONAL</BuildType>
+					<bBuild>1</bBuild>
+				</Build>
+				<Build>
+					<BuildType>BUILD_MANA_AIR</BuildType>
+					<bBuild>1</bBuild>
+				</Build>
+				<Build>
+					<BuildType>BUILD_MANA_BODY</BuildType>
+					<bBuild>1</bBuild>
+				</Build>
+				<Build>
+					<BuildType>BUILD_MANA_CHAOS</BuildType>
+					<bBuild>1</bBuild>
+				</Build>
+				<Build>
+					<BuildType>BUILD_MANA_DEATH</BuildType>
+					<bBuild>1</bBuild>
+				</Build>
+				<Build>
+					<BuildType>BUILD_MANA_EARTH</BuildType>
+					<bBuild>1</bBuild>
+				</Build>
+				<Build>
+					<BuildType>BUILD_MANA_ENCHANTMENT</BuildType>
+					<bBuild>1</bBuild>
+				</Build>
+				<Build>
+					<BuildType>BUILD_MANA_ENTROPY</BuildType>
+					<bBuild>1</bBuild>
+				</Build>
+				<Build>
+					<BuildType>BUILD_MANA_FIRE</BuildType>
+					<bBuild>1</bBuild>
+				</Build>
+				<Build>
+					<BuildType>BUILD_MANA_LAW</BuildType>
+					<bBuild>1</bBuild>
+				</Build>
+				<Build>
+					<BuildType>BUILD_MANA_LIFE</BuildType>
+					<bBuild>1</bBuild>
+				</Build>
+				<Build>
+					<BuildType>BUILD_MANA_METAMAGIC</BuildType>
+					<bBuild>1</bBuild>
+				</Build>
+				<Build>
+					<BuildType>BUILD_MANA_MIND</BuildType>
+					<bBuild>1</bBuild>
+				</Build>
+				<Build>
+					<BuildType>BUILD_MANA_NATURE</BuildType>
+					<bBuild>1</bBuild>
+				</Build>
+				<Build>
+					<BuildType>BUILD_MANA_SPIRIT</BuildType>
+					<bBuild>1</bBuild>
+				</Build>
+				<Build>
+					<BuildType>BUILD_MANA_WATER</BuildType>
+					<bBuild>1</bBuild>
+				</Build>
+				<Build>
+					<BuildType>BUILD_MANA_SHADOW</BuildType>
+					<bBuild>1</bBuild>
+				</Build>
+				<Build>
+					<BuildType>BUILD_MANA_SUN</BuildType>
+					<bBuild>1</bBuild>
+				</Build>
+			</Builds>
+			<PrereqTech>TECH_NEVER</PrereqTech>
+			<Flavors>
+				<Flavor>
+					<FlavorType>FLAVOR_SCIENCE</FlavorType>
+					<iFlavor>32</iFlavor>
+				</Flavor>
+				<Flavor>
+					<FlavorType>FLAVOR_MAGIC</FlavorType>
+					<iFlavor>40</iFlavor>
+				</Flavor>
+			</Flavors>
+			<iAIWeight>50</iAIWeight>
+			<iCost>-1</iCost>
+			<iMoves>2</iMoves>
+			<iWorkRate>400</iWorkRate>
+			<iCombat>6</iCombat>
+			<bImmortal>1</bImmortal>
+			<iCultureGarrison>6</iCultureGarrison>
+			<iAsset>10</iAsset>
+			<UnitMeshGroups>
+				<iGroupSize>1</iGroupSize>
+				<iMeleeWaveSize>1</iMeleeWaveSize>
+				<iRangedWaveSize>0</iRangedWaveSize>
+				<UnitMeshGroup>
+					<iRequired>1</iRequired>
+					<EarlyArtDefineTag>ART_DEF_UNIT_OS_GABELLA_REDEEMED</EarlyArtDefineTag>
+				</UnitMeshGroup>
+			</UnitMeshGroups>
+			<FreePromotions>
+				<FreePromotion>
+					<PromotionType>PROMOTION_CHANNELING1</PromotionType>
+					<iNumApplied>1</iNumApplied>
+				</FreePromotion>
+				<FreePromotion>
+					<PromotionType>PROMOTION_CHANNELING2</PromotionType>
+					<iNumApplied>1</iNumApplied>
+				</FreePromotion>
+				<FreePromotion>
+					<PromotionType>PROMOTION_CHANNELING3</PromotionType>
+					<iNumApplied>1</iNumApplied>
+				</FreePromotion>
+				<FreePromotion>
+					<PromotionType>PROMOTION_DIMENSIONAL1</PromotionType>
+					<iNumApplied>1</iNumApplied>
+				</FreePromotion>
+				<FreePromotion>
+					<PromotionType>PROMOTION_DIMENSIONAL2</PromotionType>
+					<iNumApplied>1</iNumApplied>
+				</FreePromotion>
+				<FreePromotion>
+					<PromotionType>PROMOTION_DIMENSIONAL3</PromotionType>
+					<iNumApplied>1</iNumApplied>
+				</FreePromotion>
+				<FreePromotion>
+					<PromotionType>PROMOTION_MASTER_OF_DIMENSIONS</PromotionType>
+					<iNumApplied>1</iNumApplied>
+				</FreePromotion>
+				<FreePromotion>
+					<PromotionType>PROMOTION_MAGIC_RESISTANCE</PromotionType>
+					<iNumApplied>1</iNumApplied>
+				</FreePromotion>
+				<FreePromotion>
+					<PromotionType>PROMOTION_HERO</PromotionType>
+					<iNumApplied>1</iNumApplied>
+				</FreePromotion>
+				<FreePromotion>
+					<PromotionType>PROMOTION_SECONDARY_ARCANE</PromotionType>
+					<iNumApplied>1</iNumApplied>
+				</FreePromotion>
+				<FreePromotion>
+					<PromotionType>PROMOTION_SUBDUE_ANIMAL</PromotionType>
+					<iNumApplied>1</iNumApplied>
+				</FreePromotion>
+				<FreePromotion>
+					<PromotionType>PROMOTION_SUBDUE_BEASTS</PromotionType>
+					<iNumApplied>1</iNumApplied>
+				</FreePromotion>
+				<FreePromotion>
+					<PromotionType>PROMOTION_LORUM_DIABOLI</PromotionType>
+					<iNumApplied>1</iNumApplied>
+				</FreePromotion>
+			</FreePromotions>
+			<BonusAffinities>
+				<BonusAffinity>
+					<BonusType>BONUS_MANA_DIMENSIONAL</BonusType>
+					<iAffinity>2</iAffinity>
+				</BonusAffinity>
+			</BonusAffinities>
+			<DamageTypeCombats>
+				<DamageTypeCombat>
+					<DamageType>DAMAGE_HOLY</DamageType>
+					<iCombat>2</iCombat>
+				</DamageTypeCombat>
+			</DamageTypeCombats>
+			<bFreeXP>1</bFreeXP>
+			<iFreePromotionPick>1</iFreePromotionPick>
+			<iTier>6</iTier>
+			<Image>Art/Interface/Popups/OsgabellaAppTitan.dds</Image>
+			<Quote>TXT_KEY_POPUP_OSGABELLA_REDEEMED_CREATION</Quote>
 		</UnitInfo>
 		<UnitInfo>        <!-- PERPENTACH -->
 			<Class>UNITCLASS_PERPENTACH</Class>
@@ -7925,6 +8152,7 @@
 				</DamageTypeCombat>
 			</DamageTypeCombats>
 			<iPowerMult>4</iPowerMult>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Saverous -->
 			<Class>UNITCLASS_SAVEROUS</Class>
@@ -8388,6 +8616,7 @@
 			<Image>Art/Interface/Popups/Teutorix.dds</Image>
 			<Quote>TXT_KEY_POPUP_TEUTORIX_CREATION</Quote>
 			<iAlignmentModifier>2</iAlignmentModifier>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Thanatos -->
 			<Class>UNITCLASS_THANATOS</Class>
@@ -8536,6 +8765,7 @@
 			<Image>Art/Interface/Popups/The Black Wind.dds</Image>
 			<Quote>TXT_KEY_UNIT_BLACK_WIND_STRATEGY</Quote>
 			<iPowerMult>6</iPowerMult>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- The Risen Emperor 80-->
 			<Class>UNITCLASS_RISEN_EMPEROR</Class>
@@ -9456,6 +9686,7 @@
 			<iCommandLimit>5</iCommandLimit>
 			<iCommandRange>3</iCommandRange>
 			<iPowerMult>1</iPowerMult>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Gyre Carlin -->
 			<Class>UNITCLASS_GYRE_CARLIN</Class>
@@ -12667,7 +12898,7 @@
 			<iDefensiveStrikeChance>30</iDefensiveStrikeChance>
 			<iDefensiveStrikeDamage>15</iDefensiveStrikeDamage>
 			<iTier>3</iTier>
-			<iWeaponTierMax>2</iWeaponTierMax>
+			<iWeaponTierMax>3</iWeaponTierMax>
 			<PrereqBuildingClass>BUILDINGCLASS_FLETCHER</PrereqBuildingClass>
 		</UnitInfo>
 		<UnitInfo>        <!-- Spellsword 110-->
@@ -13873,7 +14104,7 @@
 			<iDefensiveStrikeChance>30</iDefensiveStrikeChance>
 			<iDefensiveStrikeDamage>15</iDefensiveStrikeDamage>
 			<iTier>3</iTier>
-			<iWeaponTierMax>2</iWeaponTierMax>
+			<iWeaponTierMax>3</iWeaponTierMax>
 			<PrereqBuildingClass>BUILDINGCLASS_FLETCHER</PrereqBuildingClass>
 		</UnitInfo>
 		<UnitInfo>        <!-- Traveller -->
@@ -18007,7 +18238,7 @@
 			<iDefensiveStrikeChance>30</iDefensiveStrikeChance>
 			<iDefensiveStrikeDamage>15</iDefensiveStrikeDamage>
 			<iTier>3</iTier>
-			<iWeaponTierMax>2</iWeaponTierMax>
+			<iWeaponTierMax>3</iWeaponTierMax>
 			<PrereqBuildingClass>BUILDINGCLASS_FLETCHER</PrereqBuildingClass>
 			<iPowerMult>1</iPowerMult>
 		</UnitInfo>
@@ -18797,6 +19028,7 @@
 			<iCombatDefense>13</iCombatDefense>
 			<iDefensiveStrikeChance>40</iDefensiveStrikeChance>
 			<iDefensiveStrikeDamage>20</iDefensiveStrikeDamage>
+			<iWeaponTierMax>3</iWeaponTierMax>
 			<iTier>4</iTier>
 		</UnitInfo>
 		<UnitInfo>        <!-- Spearman -->
@@ -21099,6 +21331,16 @@
 			<PrereqBuilding>BUILDING_SIEGE_WORKSHOP</PrereqBuilding>
 			<PrereqTech>TECH_BLASTING_POWDER</PrereqTech>
 			<BonusType>BONUS_GUNPOWDER</BonusType>
+			<BonusProductionModifiers>
+				<BonusProductionModifier>
+					<BonusType>BONUS_IRON</BonusType>
+					<iProductonModifier>25</iProductonModifier>
+				</BonusProductionModifier>
+				<BonusProductionModifier>
+					<BonusType>BONUS_MITHRIL</BonusType>
+					<iProductonModifier>25</iProductonModifier>
+				</BonusProductionModifier>
+			</BonusProductionModifiers>
 			<iCost>180</iCost>
 			<iMoves>1</iMoves>
 			<iAirRange>1</iAirRange>
@@ -21437,6 +21679,7 @@
 			<iDefensiveStrikeChance>20</iDefensiveStrikeChance>
 			<iDefensiveStrikeDamage>10</iDefensiveStrikeDamage>
 			<iTier>2</iTier>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Hornguard 200-->
 			<Class>UNITCLASS_KNIGHT</Class>
@@ -21556,6 +21799,7 @@
 			</FreePromotions>
 			<iTier>4</iTier>
 			<iPowerMult>7</iPowerMult>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Myconid -->
 			<Class>UNITCLASS_BEASTMASTER</Class>
@@ -21623,7 +21867,21 @@
 				</UnitAI>
 			</UnitAIs>
 			<PrereqBuilding>BUILDING_SIEGE_WORKSHOP</PrereqBuilding>
-			<PrereqTech>TECH_CONSTRUCTION</PrereqTech>
+			<PrereqTech>TECH_CONSTRUCTION</PrereqTech>	
+			<BonusProductionModifiers>
+				<BonusProductionModifier>
+					<BonusType>BONUS_OAK</BonusType>
+					<iProductonModifier>25</iProductonModifier>
+				</BonusProductionModifier>
+				<BonusProductionModifier>
+					<BonusType>BONUS_YEW</BonusType>
+					<iProductonModifier>25</iProductonModifier>
+				</BonusProductionModifier>
+				<BonusProductionModifier>
+					<BonusType>BONUS_DUSKWOOD</BonusType>
+					<iProductonModifier>25</iProductonModifier>
+				</BonusProductionModifier>
+			</BonusProductionModifiers>
 			<iCost>90</iCost>
 			<iMoves>1</iMoves>
 			<iAirRange>1</iAirRange>
@@ -21698,8 +21956,7 @@
 				<PrereqTech>TECH_ENGINEERING</PrereqTech>
 			</TechTypes>
 			<PrereqBonuses>
-				<BonusType>BONUS_IRON</BonusType>
-				<BonusType>BONUS_MITHRIL</BonusType>
+				<BonusType>BONUS_EFFLUVIUM</BonusType>
 			</PrereqBonuses>
 			<iCost>300</iCost>
 			<iAdvancedStartCost>100</iAdvancedStartCost>
@@ -21728,6 +21985,7 @@
 			<iCombatDefense>9</iCombatDefense>
 			<iTier>4</iTier>
 			<iPowerMult>3</iPowerMult>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Centaur -->
 			<Class>UNITCLASS_HORSEMAN</Class>
@@ -22655,6 +22913,12 @@
 				</UnitAI>
 			</NotUnitAIs>
 			<PrereqTech>TECH_OPTICS</PrereqTech>
+			<PrereqTech>TECH_TRADE</PrereqTech>
+			<PrereqBonuses>
+				<BonusType>BONUS_OAK</BonusType>
+				<BonusType>BONUS_YEW</BonusType>
+				<BonusType>BONUS_DUSKWOOD</BonusType>
+			</PrereqBonuses>
 			<iCost>100</iCost>
 			<iMinAreaSize>20</iMinAreaSize>
 			<iMoves>5</iMoves>
@@ -22704,6 +22968,7 @@
 			<iGoldFromCombat>15</iGoldFromCombat>
 			<iTier>3</iTier>
 			<iPowerMult>8</iPowerMult>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- War Tortoise -->
 			<Class>UNITCLASS_WAR_CHARIOT</Class>
@@ -22902,7 +23167,7 @@
 			<iDefensiveStrikeChance>40</iDefensiveStrikeChance>
 			<iDefensiveStrikeDamage>20</iDefensiveStrikeDamage>
 			<iTier>4</iTier>
-			<iWeaponTierMax>2</iWeaponTierMax>
+			<iWeaponTierMax>3</iWeaponTierMax>
 			<PrereqBuildingClass>BUILDINGCLASS_BOWYER</PrereqBuildingClass>
 		</UnitInfo>
 		<UnitInfo>        <!-- Fyrdwell -->
@@ -23669,8 +23934,16 @@
 			<iAsset>6</iAsset>
 			<BonusProductionModifiers>
 				<BonusProductionModifier>
-					<BonusType>BONUS_MANA_NATURE</BonusType>
-					<iProductonModifier>35</iProductonModifier>
+					<BonusType>BONUS_OAK</BonusType>
+					<iProductonModifier>30</iProductonModifier>
+				</BonusProductionModifier>
+				<BonusProductionModifier>
+					<BonusType>BONUS_YEW</BonusType>
+					<iProductonModifier>30</iProductonModifier>
+				</BonusProductionModifier>
+				<BonusProductionModifier>
+					<BonusType>BONUS_DUSKWOOD</BonusType>
+					<iProductonModifier>30</iProductonModifier>
 				</BonusProductionModifier>
 			</BonusProductionModifiers>
 			<UnitMeshGroups>
@@ -25191,6 +25464,7 @@
 			</FreePromotions>
 			<iTier>4</iTier>
 			<iPowerMult>8</iPowerMult>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Dirigible Fleet -->
 			<Class>UNITCLASS_QUEEN_OF_THE_LINE</Class>
@@ -25223,8 +25497,7 @@
 				<PrereqTech>TECH_ALCHEMY</PrereqTech>
 			</TechTypes>
 			<PrereqBonuses>
-				<BonusType>BONUS_IRON</BonusType>
-				<BonusType>BONUS_MITHRIL</BonusType>
+				<BonusType>BONUS_EFFLUVIUM</BonusType>
 			</PrereqBonuses>
 			<iCost>250</iCost>
 			<iMoves>5</iMoves>
@@ -25265,6 +25538,7 @@
 			</FreePromotions>
 			<iTier>4</iTier>
 			<iPowerMult>7</iPowerMult>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Dragoon -->
 			<Class>UNITCLASS_HORSE_ARCHER</Class>
@@ -25508,7 +25782,7 @@
 			<iDefensiveStrikeChance>30</iDefensiveStrikeChance>
 			<iDefensiveStrikeDamage>15</iDefensiveStrikeDamage>
 			<iTier>3</iTier>
-			<iWeaponTierMax>2</iWeaponTierMax>
+			<iWeaponTierMax>3</iWeaponTierMax>
 			<PrereqBuildingClass>BUILDINGCLASS_FLETCHER</PrereqBuildingClass>
 			<iPowerMult>2</iPowerMult>
 		</UnitInfo>
@@ -25541,6 +25815,16 @@
 			<PrereqBuilding>BUILDING_SIEGE_WORKSHOP</PrereqBuilding>
 			<PrereqTech>TECH_BLASTING_POWDER</PrereqTech>
 			<BonusType>BONUS_GUNPOWDER</BonusType>
+			<BonusProductionModifiers>
+				<BonusProductionModifier>
+					<BonusType>BONUS_IRON</BonusType>
+					<iProductonModifier>25</iProductonModifier>
+				</BonusProductionModifier>
+				<BonusProductionModifier>
+					<BonusType>BONUS_MITHRIL</BonusType>
+					<iProductonModifier>25</iProductonModifier>
+				</BonusProductionModifier>
+			</BonusProductionModifiers>
 			<iCost>260</iCost>
 			<iMoves>2</iMoves>
 			<iAirRange>2</iAirRange>
@@ -25721,7 +26005,7 @@
 			<iDefensiveStrikeChance>35</iDefensiveStrikeChance>
 			<iDefensiveStrikeDamage>30</iDefensiveStrikeDamage>
 			<iTier>4</iTier>
-			<iWeaponTierMax>2</iWeaponTierMax>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Operator -->
 			<Class>UNITCLASS_WORKER</Class>
@@ -25865,6 +26149,20 @@
 			</UnitAIs>
 			<PrereqBuilding>BUILDING_SIEGE_WORKSHOP</PrereqBuilding>
 			<PrereqTech>TECH_CONSTRUCTION</PrereqTech>
+			<BonusProductionModifiers>
+				<BonusProductionModifier>
+					<BonusType>BONUS_OAK</BonusType>
+					<iProductonModifier>25</iProductonModifier>
+				</BonusProductionModifier>
+				<BonusProductionModifier>
+					<BonusType>BONUS_YEW</BonusType>
+					<iProductonModifier>25</iProductonModifier>
+				</BonusProductionModifier>
+				<BonusProductionModifier>
+					<BonusType>BONUS_DUSKWOOD</BonusType>
+					<iProductonModifier>25</iProductonModifier>
+				</BonusProductionModifier>
+			</BonusProductionModifiers>
 			<iCost>110</iCost>
 			<iMoves>1</iMoves>
 			<iAirRange>1</iAirRange>
@@ -26150,6 +26448,7 @@
 			</FreePromotions>
 			<iTier>3</iTier>
 			<iPowerMult>4</iPowerMult>
+			<iWeaponTierMax>2</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Vulture -->
 			<Class>UNITCLASS_IMMORTAL</Class>
@@ -31713,7 +32012,7 @@
 			<iDefensiveStrikeDamage>10</iDefensiveStrikeDamage>
 			<iTier>2</iTier>
 			<PrereqBuildingClass>BUILDINGCLASS_COURTHOUSE</PrereqBuildingClass>
-			<iWeaponTierMax>3</iWeaponTierMax>
+			<iWeaponTierMax>2</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Sharpshooter -->
 			<Class>UNITCLASS_LONGBOWMAN</Class>
@@ -36560,7 +36859,7 @@
 			<iDefensiveStrikeChance>30</iDefensiveStrikeChance>
 			<iDefensiveStrikeDamage>15</iDefensiveStrikeDamage>
 			<iTier>3</iTier>
-			<iWeaponTierMax>2</iWeaponTierMax>
+			<iWeaponTierMax>3</iWeaponTierMax>
 			<DamageTypeCombats>
 				<DamageTypeCombat>
 					<DamageType>DAMAGE_POISON</DamageType>
@@ -38908,6 +39207,7 @@
 			<iDefensiveStrikeChance>20</iDefensiveStrikeChance>
 			<iDefensiveStrikeDamage>10</iDefensiveStrikeDamage>
 			<iTier>2</iTier>
+			<iWeaponTierMax>2</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Frost Giant - White Hand-->                                               <!-- END RELIGIOUS UNIQUE UNITS LIST -->
 			<Class>UNITCLASS_FROST_GIANT</Class>
@@ -41604,6 +41904,7 @@
 			<iDefensiveStrikeChance>20</iDefensiveStrikeChance>
 			<iDefensiveStrikeDamage>10</iDefensiveStrikeDamage>
 			<iTier>2</iTier>
+			<iWeaponTierMax>2</iWeaponTierMax>
 			<PrereqBuildingClass>BUILDINGCLASS_FLETCHER</PrereqBuildingClass>
 		</UnitInfo>
 		<UnitInfo>        <!-- Javelin Thrower -->
@@ -41665,6 +41966,7 @@
 			<iDefensiveStrikeChance>20</iDefensiveStrikeChance>
 			<iDefensiveStrikeDamage>10</iDefensiveStrikeDamage>
 			<iTier>2</iTier>
+			<iWeaponTierMax>2</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Longbowman -->
 			<Class>UNITCLASS_LONGBOWMAN</Class>
@@ -41722,7 +42024,7 @@
 			<iDefensiveStrikeChance>30</iDefensiveStrikeChance>
 			<iDefensiveStrikeDamage>15</iDefensiveStrikeDamage>
 			<iTier>3</iTier>
-			<iWeaponTierMax>2</iWeaponTierMax>
+			<iWeaponTierMax>3</iWeaponTierMax>
 			<PrereqBuildingClass>BUILDINGCLASS_FLETCHER</PrereqBuildingClass>
 		</UnitInfo>
 		<UnitInfo>        <!-- Marksman -->
@@ -41779,6 +42081,7 @@
 			<iDefensiveStrikeChance>40</iDefensiveStrikeChance>
 			<iDefensiveStrikeDamage>20</iDefensiveStrikeDamage>
 			<iMinLevel>6</iMinLevel>
+			<iWeaponTierMax>3</iWeaponTierMax>
 			<iTier>4</iTier>
 		</UnitInfo>
 		<UnitInfo>        <!-- Arquebus -->
@@ -41836,6 +42139,7 @@
 			<FormationType>FORMATION_TYPE_RANGED</FormationType>
 			<iDefensiveStrikeChance>30</iDefensiveStrikeChance>
 			<iDefensiveStrikeDamage>15</iDefensiveStrikeDamage>
+			<iWeaponTierMax>3</iWeaponTierMax>
 			<iTier>4</iTier>
 		</UnitInfo>
 		<UnitInfo>        <!-- Crossbowman -->
@@ -41897,6 +42201,7 @@
 			<iCombatDefense>13</iCombatDefense>
 			<iDefensiveStrikeChance>40</iDefensiveStrikeChance>
 			<iDefensiveStrikeDamage>20</iDefensiveStrikeDamage>
+			<iWeaponTierMax>3</iWeaponTierMax>
 			<iTier>4</iTier>
 			<PrereqBuildingClass>BUILDINGCLASS_BOWYER</PrereqBuildingClass>
 		</UnitInfo>
@@ -43037,6 +43342,20 @@
 			</UnitAIs>
 			<PrereqBuilding>BUILDING_SIEGE_WORKSHOP</PrereqBuilding>
 			<PrereqTech>TECH_CONSTRUCTION</PrereqTech>
+			<BonusProductionModifiers>
+				<BonusProductionModifier>
+					<BonusType>BONUS_OAK</BonusType>
+					<iProductonModifier>25</iProductonModifier>
+				</BonusProductionModifier>
+				<BonusProductionModifier>
+					<BonusType>BONUS_YEW</BonusType>
+					<iProductonModifier>25</iProductonModifier>
+				</BonusProductionModifier>
+				<BonusProductionModifier>
+					<BonusType>BONUS_DUSKWOOD</BonusType>
+					<iProductonModifier>25</iProductonModifier>
+				</BonusProductionModifier>
+			</BonusProductionModifiers>
 			<iCost>90</iCost>
 			<iMoves>1</iMoves>
 			<iAirRange>1</iAirRange>
@@ -43106,6 +43425,16 @@
 			<PrereqBuilding>BUILDING_SIEGE_WORKSHOP</PrereqBuilding>
 			<PrereqTech>TECH_BLASTING_POWDER</PrereqTech>
 			<BonusType>BONUS_GUNPOWDER</BonusType>
+			<BonusProductionModifiers>
+				<BonusProductionModifier>
+					<BonusType>BONUS_IRON</BonusType>
+					<iProductonModifier>25</iProductonModifier>
+				</BonusProductionModifier>
+				<BonusProductionModifier>
+					<BonusType>BONUS_MITHRIL</BonusType>
+					<iProductonModifier>25</iProductonModifier>
+				</BonusProductionModifier>
+			</BonusProductionModifiers>
 			<iCost>180</iCost>
 			<iMoves>1</iMoves>
 			<iAirRange>1</iAirRange>
@@ -44363,6 +44692,7 @@
 			</FreePromotions>
 			<iTier>2</iTier>
 			<iPowerMult>3</iPowerMult>
+			<iWeaponTierMax>1</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Trireme -->
 			<Class>UNITCLASS_TRIREME</Class>
@@ -44436,6 +44766,7 @@
 				</FreePromotion>
 			</FreePromotions>
 			<iTier>2</iTier>
+			<iWeaponTierMax>2</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Privateer -->
 			<Class>UNITCLASS_PRIVATEER</Class>
@@ -44472,6 +44803,12 @@
 				</UnitAI>
 			</NotUnitAIs>
 			<PrereqTech>TECH_OPTICS</PrereqTech>
+			<PrereqTech>TECH_TRADE</PrereqTech>
+			<PrereqBonuses>
+				<BonusType>BONUS_OAK</BonusType>
+				<BonusType>BONUS_YEW</BonusType>
+				<BonusType>BONUS_DUSKWOOD</BonusType>
+			</PrereqBonuses>
 			<iCost>100</iCost>
 			<iMinAreaSize>20</iMinAreaSize>
 			<iMoves>4</iMoves>
@@ -44520,6 +44857,7 @@
 			</FreePromotions>
 			<iTier>3</iTier>
 			<iPowerMult>6</iPowerMult>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Caravel -->
 			<Class>UNITCLASS_CARAVEL</Class>
@@ -44592,6 +44930,7 @@
 			</FreePromotions>
 			<iTier>3</iTier>
 			<iPowerMult>7</iPowerMult>
+			<iWeaponTierMax>2</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Carrack -->
 			<Class>UNITCLASS_CARRACK</Class>
@@ -44631,6 +44970,10 @@
 			</UnitAIs>
 			<PrereqTech>TECH_OPTICS</PrereqTech>
 			<PrereqBonuses>
+				<BonusType>BONUS_IRON</BonusType>
+				<BonusType>BONUS_MITHRIL</BonusType>
+			</PrereqBonuses>
+			<PrereqBonuses>
 			</PrereqBonuses>
 			<iCost>150</iCost>
 			<iMinAreaSize>20</iMinAreaSize>
@@ -44660,6 +45003,7 @@
 			</FreePromotions>
 			<iTier>3</iTier>
 			<iPowerMult>3</iPowerMult>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Frigate -->
 			<Class>UNITCLASS_FRIGATE</Class>
@@ -44745,6 +45089,7 @@
 			</FreePromotions>
 			<iTier>3</iTier>
 			<iPowerMult>7</iPowerMult>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Galleon -->
 			<Class>UNITCLASS_GALLEON</Class>
@@ -44776,8 +45121,9 @@
 			</UnitAIs>
 			<PrereqTech>TECH_OPTICS</PrereqTech>
 			<PrereqBonuses>
-				<BonusType>BONUS_IRON</BonusType>
-				<BonusType>BONUS_MITHRIL</BonusType>
+				<BonusType>BONUS_OAK</BonusType>
+				<BonusType>BONUS_YEW</BonusType>
+				<BonusType>BONUS_DUSKWOOD</BonusType>
 			</PrereqBonuses>
 			<iCost>150</iCost>
 			<iMinAreaSize>20</iMinAreaSize>
@@ -44804,6 +45150,7 @@
 			</FreePromotions>
 			<iTier>3</iTier>
 			<iPowerMult>7</iPowerMult>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Queen of the Line -->
 			<Class>UNITCLASS_QUEEN_OF_THE_LINE</Class>
@@ -44839,8 +45186,9 @@
 				<PrereqTech>TECH_ENGINEERING</PrereqTech>
 			</TechTypes>
 			<PrereqBonuses>
-				<BonusType>BONUS_IRON</BonusType>
-				<BonusType>BONUS_MITHRIL</BonusType>
+				<BonusType>BONUS_OAK</BonusType>
+				<BonusType>BONUS_YEW</BonusType>
+				<BonusType>BONUS_DUSKWOOD</BonusType>
 			</PrereqBonuses>
 			<iCost>225</iCost>
 			<iMinAreaSize>20</iMinAreaSize>
@@ -44867,6 +45215,7 @@
 			</FreePromotions>
 			<iTier>4</iTier>
 			<iPowerMult>3</iPowerMult>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Man O' War -->
 			<Class>UNITCLASS_MAN_O_WAR</Class>
@@ -44927,6 +45276,7 @@
 			</FreePromotions>
 			<iTier>4</iTier>
 			<iPowerMult>3</iPowerMult>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Arcane Barge -->
 			<Class>UNITCLASS_ARCANE_BARGE</Class>
@@ -45004,6 +45354,7 @@
 			<iTier>3</iTier>
 			<iPowerMult>7</iPowerMult>
 			<iMagicalPower>150</iMagicalPower>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Worker -->            <!-- CIVILIAN UNITS -->
 			<Class>UNITCLASS_WORKER</Class>
@@ -45517,6 +45868,7 @@
 				<iCommerce>0</iCommerce>
 			</CommercesFromKill>
 			<iPowerMult>3</iPowerMult>
+			<iWeaponTierMax>2</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Artisan -->
 			<Class>UNITCLASS_FABRICAFORMA_ARTISAN</Class>
@@ -51969,6 +52321,7 @@
 				</FreePromotion>
 			</FreePromotions>
 			<iTier>4</iTier>
+			<iWeaponTierMax>3</iWeaponTierMax>
 			<PythonOnDeath>postCombatTreant(pCaster)</PythonOnDeath>
 			<PyPerTurn>effectMalignantFlora(pCaster)</PyPerTurn>
 		</UnitInfo>
@@ -52043,6 +52396,7 @@
 				</FreePromotion>
 			</FreePromotions>
 			<iTier>1</iTier>
+			<iWeaponTierMax>3</iWeaponTierMax>
 			<PythonOnDeath>postCombatTreant(pCaster)</PythonOnDeath>
 		</UnitInfo>
 		<UnitInfo>        <!-- Guardian Vines -->
@@ -52327,6 +52681,7 @@
 			<iDefensiveStrikeChance>20</iDefensiveStrikeChance>
 			<iDefensiveStrikeDamage>10</iDefensiveStrikeDamage>
 			<iTier>2</iTier>
+			<iWeaponTierMax>2</iWeaponTierMax>
 			<PrereqBuildingClass>BUILDINGCLASS_FLETCHER</PrereqBuildingClass>
 		</UnitInfo>
 		<UnitInfo>        <!-- Frostling Wolf Rider -->
@@ -52653,6 +53008,7 @@
 			<iDefensiveStrikeDamage>10</iDefensiveStrikeDamage>
 			<iTier>2</iTier>
 			<iPowerMult>1</iPowerMult>
+			<iWeaponTierMax>2</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Scorpion Clan Chariot -->
 			<Class>UNITCLASS_CHARIOT</Class>
@@ -53706,6 +54062,7 @@
 			<iDefensiveStrikeChance>40</iDefensiveStrikeChance>
 			<iDefensiveStrikeDamage>20</iDefensiveStrikeDamage>
 			<iTier>4</iTier>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Highwayman -->                 <!-- End "Dungeon" Spawns -->
 			<Class>UNITCLASS_KNIGHT</Class>
@@ -53996,6 +54353,7 @@
 					<iCombat>1</iCombat>
 				</DamageTypeCombat>
 			</DamageTypeCombats>
+			<iWeaponTierMax>2</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>        <!-- Skeleton Pikeman -->
 			<Class>UNITCLASS_PIKEMAN</Class>
@@ -54959,6 +55317,7 @@
 					<iCombat>1</iCombat>
 				</DamageTypeCombat>
 			</DamageTypeCombats>
+			<iWeaponTierMax>2</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>		<!-- Muris Clan Goblin -->
 			<Class>UNITCLASS_SCOUT</Class>
@@ -55673,7 +56032,7 @@
 					<iCombat>1</iCombat>
 				</DamageTypeCombat>
 			</DamageTypeCombats>
-			<iWeaponTierMax>2</iWeaponTierMax>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>		<!-- Muris Lord -->
 			<Class>UNITCLASS_COMMANDER</Class>
@@ -55942,6 +56301,7 @@
 			<iDefensiveStrikeChance>20</iDefensiveStrikeChance>
 			<iDefensiveStrikeDamage>10</iDefensiveStrikeDamage>
 			<iTier>2</iTier>
+			<iWeaponTierMax>2</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>		  <!-- Lukos Clan Goblin -->
 			<Class>UNITCLASS_SCOUT</Class>
@@ -56455,7 +56815,7 @@
 					<iCombat>1</iCombat>
 				</DamageTypeCombat>
 			</DamageTypeCombats>
-			<iWeaponTierMax>2</iWeaponTierMax>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>		  <!-- Lukos Lord -->
 			<Class>UNITCLASS_COMMANDER</Class>
@@ -56563,6 +56923,7 @@
 			<iDefensiveStrikeChance>20</iDefensiveStrikeChance>
 			<iDefensiveStrikeDamage>10</iDefensiveStrikeDamage>
 			<iTier>2</iTier>
+			<iWeaponTierMax>2</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>		  <!-- Neith Clan Goblin -->
 			<Class>UNITCLASS_SCOUT</Class>
@@ -57069,7 +57430,7 @@
 					<iCombat>1</iCombat>
 				</DamageTypeCombat>
 			</DamageTypeCombats>
-			<iWeaponTierMax>2</iWeaponTierMax>
+			<iWeaponTierMax>3</iWeaponTierMax>
 		</UnitInfo>
 		<UnitInfo>		  <!-- Neith Lord -->
 			<Class>UNITCLASS_COMMANDER</Class>
@@ -59653,10 +60014,6 @@
 					<iNumApplied>1</iNumApplied>
 				</FreePromotion>
 				<FreePromotion>
-					<PromotionType>PROMOTION_HERO</PromotionType>
-					<iNumApplied>1</iNumApplied>
-				</FreePromotion>
-				<FreePromotion>
 					<PromotionType>PROMOTION_MONSTROUS_CREATURE</PromotionType>
 					<iNumApplied>1</iNumApplied>
 				</FreePromotion>
@@ -59755,10 +60112,6 @@
 				</FreePromotion>
 				<FreePromotion>
 					<PromotionType>PROMOTION_DRAGON</PromotionType>
-					<iNumApplied>1</iNumApplied>
-				</FreePromotion>
-				<FreePromotion>
-					<PromotionType>PROMOTION_HERO</PromotionType>
 					<iNumApplied>1</iNumApplied>
 				</FreePromotion>
 				<FreePromotion>
@@ -59864,10 +60217,6 @@
 					<iNumApplied>1</iNumApplied>
 				</FreePromotion>
 				<FreePromotion>
-					<PromotionType>PROMOTION_HERO</PromotionType>
-					<iNumApplied>1</iNumApplied>
-				</FreePromotion>
-				<FreePromotion>
 					<PromotionType>PROMOTION_MONSTROUS_CREATURE</PromotionType>
 					<iNumApplied>1</iNumApplied>
 				</FreePromotion>
@@ -59966,10 +60315,6 @@
 				</FreePromotion>
 				<FreePromotion>
 					<PromotionType>PROMOTION_DRAGON</PromotionType>
-					<iNumApplied>1</iNumApplied>
-				</FreePromotion>
-				<FreePromotion>
-					<PromotionType>PROMOTION_HERO</PromotionType>
 					<iNumApplied>1</iNumApplied>
 				</FreePromotion>
 				<FreePromotion>
@@ -60074,10 +60419,6 @@
 					<iNumApplied>1</iNumApplied>
 				</FreePromotion>
 				<FreePromotion>
-					<PromotionType>PROMOTION_HERO</PromotionType>
-					<iNumApplied>1</iNumApplied>
-				</FreePromotion>
-				<FreePromotion>
 					<PromotionType>PROMOTION_MONSTROUS_CREATURE</PromotionType>
 					<iNumApplied>1</iNumApplied>
 				</FreePromotion>
@@ -60179,10 +60520,6 @@
 					<iNumApplied>1</iNumApplied>
 				</FreePromotion>
 				<FreePromotion>
-					<PromotionType>PROMOTION_HERO</PromotionType>
-					<iNumApplied>1</iNumApplied>
-				</FreePromotion>
-				<FreePromotion>
 					<PromotionType>PROMOTION_MONSTROUS_CREATURE</PromotionType>
 					<iNumApplied>1</iNumApplied>
 				</FreePromotion>
@@ -60227,6 +60564,119 @@
 			<Quote>TXT_KEY_POPUP_ELDER_DRAGON_CREATION</Quote>
 			<iPowerAdd>200</iPowerAdd>
 			<iPowerMult>10</iPowerMult>
+		</UnitInfo>
+		<UnitInfo>	<!-- Fang Dragon -->
+			<Class>UNITCLASS_FANG_DRAGON</Class>
+			<Type>UNIT_FANG_DRAGON</Type>
+			<Combat>UNITCOMBAT_BEAST</Combat>
+			<DefaultUnitAI>UNITAI_HERO</DefaultUnitAI>
+			<Description>TXT_KEY_UNIT_FANG_DRAGON</Description>
+			<Civilopedia>TXT_KEY_UNIT_FANG_DRAGON_PEDIA</Civilopedia>
+			<Strategy>TXT_KEY_UNIT_FANG_DRAGON_STRATEGY</Strategy>
+			<Advisor>ADVISOR_MILITARY</Advisor>
+			<bMilitaryHappiness>1</bMilitaryHappiness>
+			<bMilitaryProduction>1</bMilitaryProduction>
+			<bPillage>1</bPillage>
+			<bNoDefensiveBonus>1</bNoDefensiveBonus>
+			<bCanMoveImpassable>1</bCanMoveImpassable>
+			<bIgnoreTerrainCost>1</bIgnoreTerrainCost>
+			<UnitAIs>
+				<UnitAI>
+					<UnitAIType>UNITAI_PILLAGE</UnitAIType>
+					<bUnitAI>1</bUnitAI>
+				</UnitAI>
+				<UnitAI>
+					<UnitAIType>UNITAI_ATTACK</UnitAIType>
+					<bUnitAI>1</bUnitAI>
+				</UnitAI>
+				<UnitAI>
+					<UnitAIType>UNITAI_ATTACK_CITY</UnitAIType>
+					<bUnitAI>1</bUnitAI>
+				</UnitAI>
+				<UnitAI>
+					<UnitAIType>UNITAI_HERO</UnitAIType>
+					<bUnitAI>1</bUnitAI>
+				</UnitAI>
+			</UnitAIs>
+			<Flavors>
+				<Flavor>
+					<FlavorType>FLAVOR_MILITARY</FlavorType>
+					<iFlavor>30</iFlavor>
+				</Flavor>
+			</Flavors>
+			<iCost>-1</iCost>
+			<iMoves>4</iMoves>
+			<iCombat>35</iCombat>
+			<iDropRange>4</iDropRange>
+			<iCombatDefense>30</iCombatDefense>
+			<iXPValueAttack>100</iXPValueAttack>
+			<iXPValueDefense>50</iXPValueDefense>
+			<!-- Collateral -->
+			<iCollateralDamage>100</iCollateralDamage>
+			<iCollateralDamageLimit>100</iCollateralDamageLimit>
+			<iCollateralDamageMaxUnits>6</iCollateralDamageMaxUnits>
+			<!-- /Collateral -->
+			<iCultureGarrison>16</iCultureGarrison>
+			<iAsset>42</iAsset>
+			<PrereqTech>TECH_NEVER</PrereqTech>
+			<UnitMeshGroups>
+				<iGroupSize>1</iGroupSize>
+				<iMeleeWaveSize>1</iMeleeWaveSize>
+				<iRangedWaveSize>0</iRangedWaveSize>
+				<UnitMeshGroup>
+					<iRequired>1</iRequired>
+					<EarlyArtDefineTag>ART_DEF_UNIT_FANG_DRAGON</EarlyArtDefineTag>
+				</UnitMeshGroup>
+			</UnitMeshGroups>
+			<FreePromotions>
+				<FreePromotion>
+					<PromotionType>PROMOTION_MAGIC_IMMUNE</PromotionType>
+					<iNumApplied>1</iNumApplied>
+				</FreePromotion>
+				<FreePromotion>
+					<PromotionType>PROMOTION_DRAGON</PromotionType>
+					<iNumApplied>1</iNumApplied>
+				</FreePromotion>
+				<FreePromotion>
+					<PromotionType>PROMOTION_MONSTROUS_CREATURE</PromotionType>
+					<iNumApplied>1</iNumApplied>
+				</FreePromotion>
+				<FreePromotion>
+					<PromotionType>PROMOTION_MAGNETIC_FIELD</PromotionType>
+					<iNumApplied>1</iNumApplied>
+				</FreePromotion>
+				<FreePromotion>
+					<PromotionType>PROMOTION_CHANNELING1</PromotionType>
+					<iNumApplied>1</iNumApplied>
+				</FreePromotion>
+				<FreePromotion>
+					<PromotionType>PROMOTION_CHANNELING2</PromotionType>
+					<iNumApplied>1</iNumApplied>
+				</FreePromotion>
+				<FreePromotion>
+					<PromotionType>PROMOTION_CHANNELING3</PromotionType>
+					<iNumApplied>1</iNumApplied>
+				</FreePromotion>
+			</FreePromotions>
+			<TerrainImpassables>
+				<TerrainImpassable>
+					<TerrainType>TERRAIN_OCEAN</TerrainType>
+					<bTerrainImpassable>1</bTerrainImpassable>
+				</TerrainImpassable>
+				<TerrainImpassable>
+					<TerrainType>TERRAIN_OCEAN_DEEP</TerrainType>
+					<bTerrainImpassable>1</bTerrainImpassable>
+				</TerrainImpassable>
+			</TerrainImpassables>
+			<DenyPromotions>
+				<Promotion>PROMOTION_TAME</Promotion>
+			</DenyPromotions>
+			<bCanClimbPeaks>1</bCanClimbPeaks>
+			<iTier>4</iTier>
+			<Image>Art/Interface/Popups/FangDragonBorder.dds</Image>
+			<iPowerAdd>200</iPowerAdd>
+			<iPowerMult>10</iPowerMult>
+			<Quote>TXT_KEY_UNIT_FANG_DRAGON_CREATION</Quote>
 		</UnitInfo>
 		<UnitInfo>        <!-- Dracolich -->
 			<Class>UNITCLASS_DRACOLICH</Class>

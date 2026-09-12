@@ -427,8 +427,8 @@
 			<Type>BUILD_LUMBERMILL</Type>
 			<Description>TXT_KEY_BUILD_LUMBERMILL</Description>
 			<Help>TXT_KEY_BUILD_LUMBERMILL_HELP</Help>
-			<PrereqTech>TECH_SMELTING</PrereqTech>
-			<iTime>3500</iTime>
+			<PrereqTech>TECH_ARCHERY</PrereqTech>
+			<iTime>2500</iTime>
 			<iCost>0</iCost>
 			<bKill>0</bKill>
 			<ImprovementType>IMPROVEMENTCLASS_LUMBERMILL</ImprovementType>
@@ -443,8 +443,12 @@
 			<Button>,Art/Interface/Buttons/Builds/BuildLumberMill.dds,Art/Interface/Buttons/Actions_Builds_LeaderHeads_Specialists_Atlas.dds,5,7</Button>
 			<TechBuildDiscounts>
 				<TechBuildDiscount>
-					<TechType>TECH_IRON_WORKING</TechType>
-					<iDiscount>1750</iDiscount>
+					<TechType>TECH_WOOD_WORKING</TechType>
+					<iDiscount>625</iDiscount>
+				</TechBuildDiscount>
+				<TechBuildDiscount>
+					<TechType>TECH_BOWYERS</TechType>
+					<iDiscount>625</iDiscount>
 				</TechBuildDiscount>
 			</TechBuildDiscounts>
 		</BuildInfo>
@@ -1200,7 +1204,7 @@
 			<Type>BUILD_REMOVE_FOREST</Type>
 			<Description>TXT_KEY_BUILD_REMOVE_FOREST</Description>
 			<Help/>
-			<PrereqTech>TECH_BRONZE_WORKING</PrereqTech>
+			<PrereqTech>TECH_ARCHERY</PrereqTech>
 			<iTime>0</iTime>
 			<iCost>0</iCost>
 			<bKill>0</bKill>
