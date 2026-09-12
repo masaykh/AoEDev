@@ -2342,6 +2342,7 @@ public:
 	//Magic Rework
 	int getMagicalPowerPrereq() const;
 	bool isSpellClass(int i) const;
+	int getPrereqSpellClassMagicalPower(int i) const;
 
 	DllExport void read(FDataStreamBase* stream);
 	DllExport void write(FDataStreamBase* stream);
@@ -2524,6 +2525,7 @@ protected:
 	//Magic Rework
 	int m_iMagicalPowerPrereq;
 	bool* m_pbSpellClass;
+	int* m_piPrereqSpellClassMagicalPower;
 
 };
 //FfH: End Add
@@ -7284,6 +7286,7 @@ public:
 	int getMaintenanceModifier() const;
 	int getMutateChance() const;
 	int getResearchModifier() const;
+	int getCrimeChange() const;
 	bool readPass3();
 //FfH: End Add
 /*************************************************************************************************/
@@ -7390,6 +7393,7 @@ protected:
 	int m_iMaintenanceModifier;
 	int m_iMutateChance;
 	int m_iResearchModifier;
+	int m_iCrimeChange;
 //FfH: End Add
 
 	// Arrays

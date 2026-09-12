@@ -605,6 +605,7 @@ public:
 	float getProximityFood() const;
 	float getProximityFreeXP() const;
 	float getProximityGold() const;
+	float getProximityScience() const;
 	float getProximityGPP() const;
 	float getProximityHappy() const;
 	float getProximityHealth() const;

@@ -3474,18 +3474,18 @@ void CvPlayer::setHasTrait(TraitTypes eTrait, bool bNewValue)
 /*************************************************************************************************/
 /**	Miner Trait 	 	Orbis from Sanguo Mod		18/02/09	Ahwaric		**/
 /*************************************************************************************************/
-	for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
-	{
-		int iJ;
-		for (int iJ = 0; iJ < NUM_YIELD_TYPES; iJ++)
-		{
-			changeSpecialistClassExtraYield((SpecialistClassTypes)iI, (YieldTypes)iJ, GC.getTraitInfo(eTrait).getSpecialistClassYieldChange(iI, iJ) * iChange);
-		}
-		for (int iJ = 0; iJ < NUM_COMMERCE_TYPES; iJ++)
-		{
-			changeSpecialistClassExtraCommerce((SpecialistClassTypes)iI, (CommerceTypes)iJ, GC.getTraitInfo(eTrait).getSpecialistClassCommerceChange(iI, iJ) * iChange);
-		}
-	}
+//	for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
+//	{
+//		int iJ;
+//		for (int iJ = 0; iJ < NUM_YIELD_TYPES; iJ++)
+//		{
+//			changeSpecialistClassExtraYield((SpecialistClassTypes)iI, (YieldTypes)iJ, GC.getTraitInfo(eTrait).getSpecialistClassYieldChange(iI, iJ) * iChange);
+//		}
+//		for (int iJ = 0; iJ < NUM_COMMERCE_TYPES; iJ++)
+//		{
+//			changeSpecialistClassExtraCommerce((SpecialistClassTypes)iI, (CommerceTypes)iJ, GC.getTraitInfo(eTrait).getSpecialistClassCommerceChange(iI, iJ) * iChange);
+//		}
+//	}
 	if (GET_TEAM(getTeam()).getAtWarCount(true) == 0)
 	{
 		int iPeaceCommerceModifier;

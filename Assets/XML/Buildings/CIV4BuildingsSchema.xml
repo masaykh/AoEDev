@@ -27,6 +27,7 @@
 	<ElementType name="iPerCrimeEffectHappy" content="textOnly" dt:type="int"/>
 	<ElementType name="iPerCrimeEffectHealth" content="textOnly" dt:type="int"/>
 	<ElementType name="fCulture" content="textOnly" dt:type="float"/>
+	<ElementType name="fScience" content="textOnly" dt:type="float"/>
 	<ElementType name="fCrime" content="textOnly" dt:type="float"/>
 	<ElementType name="fDefense" content="textOnly" dt:type="float"/>
 	<ElementType name="fDiplo" content="textOnly" dt:type="float"/>
@@ -45,7 +46,8 @@
 	<ElementType name="fTrainXPCap" content="textOnly" dt:type="float"/>
 	<ElementType name="fTrainXPRate" content="textOnly" dt:type="float"/>
 	<ElementType name="PerPopBonus" content="eltOnly" order="many">
-			<element type="fCulture"/>
+		<element type="fCulture"/>
+		<element type="fScience"/>
 		<element type="fCrime"/>
 		<element type="fDefense"/>
 		<element type="fDiplo"/>

@@ -2597,6 +2597,10 @@ float CyCity::getProximityGold() const
 {
 	return m_pCity ? m_pCity->getProximityGold(): 0;
 }
+float CyCity::getProximityScience() const
+{
+	return m_pCity ? m_pCity->getProximityScience() : 0;
+}
 
 float CyCity::getProximityGPP() const
 {

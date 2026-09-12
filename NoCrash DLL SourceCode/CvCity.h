@@ -1218,6 +1218,7 @@ public:
 	float getProximityFood() const;
 	float getProximityFreeXP() const;
 	float getProximityGold() const;
+	float getProximityScience() const;
 	float getProximityGPP() const;
 	float getProximityHappy() const;
 	float getProximityHealth() const;
@@ -1236,6 +1237,7 @@ public:
 	void changeProximityFood(float fChange);
 	void changeProximityFreeXP(float fChange);
 	void changeProximityGold(float fChange);
+	void changeProximityScience(float fChange);
 	void changeProximityGPP(float fChange);
 	void changeProximityHappy(float fChange);
 	void changeProximityHealth(float fChange);
@@ -1271,6 +1273,7 @@ public:
 	float getPerPopDefense() const;
 	float getPerPopFood() const;
 	float getPerPopCrimePerTurn() const;
+	float getPerPopScience() const;
 	float getPerPopFreeXP() const;
 	float getPerPopGold() const;
 	float getPerPopGPP() const;
@@ -1290,6 +1293,7 @@ public:
 	void changePerPopDefense(float fChange);
 	void changePerPopFood(float fChange);
 	void changePerPopCrimePerTurn(float fChange);
+	void changePerPopScience(float fChange);
 	void changePerPopFreeXP(float fChange);
 	void changePerPopGold(float fChange);
 	void changePerPopGPP(float fChange);
@@ -1741,6 +1745,7 @@ protected:
 	float m_fProximityFood;
 	float m_fProximityFreeXP;
 	float m_fProximityGold;
+	float m_fProximityScience;
 	float m_fProximityGPP;
 	float m_fProximityHappy;
 	float m_fProximityHealth;
@@ -1784,6 +1789,7 @@ protected:
 	float m_fPerPopDefense;
 	float m_fPerPopFood;
 	float m_fPerPopCrimePerTurn;
+	float m_fPerPopScience;
 	float m_fPerPopFreeXP;
 	float m_fPerPopGold;
 	float m_fPerPopGPP;

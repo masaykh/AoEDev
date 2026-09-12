@@ -22,16 +22,24 @@
 	<ElementType name="bTargeted" content="textOnly" dt:type="boolean"/>
 	<ElementType name="SpellClassType" content="textOnly"/>
 	<ElementType name="bSpellClass" content="textOnly" dt:type="boolean"/>
+	<ElementType name="iMagicalPowerPrereq" content="textOnly" dt:type="int"/>
+	<ElementType name="iSpellClassMagicalPowerPrereq" content="textOnly" dt:type="int"/>
 	<ElementType name="SpellClass" content="eltOnly">
 		<element type="SpellClassType"/>
 		<element type="bSpellClass"/>
+	</ElementType>	
+	<ElementType name="PrereqSpellClassMagicalPower" content="eltOnly">
+		<element type="SpellClassType"/>
+		<element type="iSpellClassMagicalPowerPrereq"/>
 	</ElementType>
 	<ElementType name="SpellClasses" content="eltOnly">
 		<element type="SpellClass" minOccurs="0" maxOccurs="*"/>
 	</ElementType>
+	<ElementType name="PrereqSpellClassMagicalPowers" content="eltOnly">
+		<element type="PrereqSpellClassMagicalPower" minOccurs="0" maxOccurs="*"/>
+	</ElementType>
 	
 	
-	<ElementType name="iMagicalPowerPrereq" content="textOnly" dt:type="int"/>
 	<ElementType name="iPrereqExtraPower" content="textOnly" dt:type="int"/>
 	<ElementType name="iExtraDamage" content="textOnly" dt:type="int"/>
 	<ElementType name="iExtraMaxDamage" content="textOnly" dt:type="int"/>
@@ -227,6 +235,7 @@
 		<element type="bCityAction"/>
 		<element type="bTargeted"/>
 		<element type="SpellClasses"/>
+		<element type="PrereqSpellClassMagicalPowers"/>
 		<element type="iMagicalPowerPrereq"/>
 		<element type="iCrimePrereq"/>
 		<element type="PromotionPrereq1"/>

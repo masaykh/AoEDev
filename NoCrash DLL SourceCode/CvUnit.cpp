@@ -23372,6 +23372,13 @@ bool CvUnit::canCast(int spell, bool bTestVisible, CvPlot* pTargetPlot)
 			return false;
 		}
 	}
+	for (int i = 0; i < GC.getNumSpellClassInfos(); i++)
+	{
+		if (GC.getSpellInfo(eSpell).getPrereqSpellClassMagicalPower(i) > 0 && GC.getSpellInfo(eSpell).getPrereqSpellClassMagicalPower(i) > getSpellClassMagicalPower(i))
+		{
+			false;
+		}
+	}
 	if (GC.getSpellInfo(eSpell).getCrimePrereq() != 0)
 	{
 		if (!plot()->isCity())
@@ -33085,6 +33092,7 @@ void CvUnit::applyCityBonus(CityBonuses cbTemp, CvCity* pCheckCity, int iChange,
 	if (cbTemp.fFood != 0) pCheckCity->changeProximityFood(iChange * (cbTemp.fFood + iDistance*cbTemp.fDecayRate));
 	if (cbTemp.fFreeXP != 0) pCheckCity->changeProximityFreeXP(iChange * (cbTemp.fFreeXP + iDistance*cbTemp.fDecayRate));
 	if (cbTemp.fGold != 0) pCheckCity->changeProximityGold(iChange * (cbTemp.fGold + iDistance*cbTemp.fDecayRate));
+	if (cbTemp.fScience != 0) pCheckCity->changeProximityScience(iChange * (cbTemp.fScience + iDistance * cbTemp.fDecayRate));
 	if (cbTemp.fGPP != 0) pCheckCity->changeProximityGPP(iChange * (cbTemp.fGPP + iDistance*cbTemp.fDecayRate));
 	if (cbTemp.fHappy != 0) pCheckCity->changeProximityHappy(iChange * (cbTemp.fHappy + iDistance*cbTemp.fDecayRate));
 	if (cbTemp.fHealth != 0) pCheckCity->changeProximityHealth(iChange * (cbTemp.fHealth + iDistance*cbTemp.fDecayRate));
@@ -34709,6 +34717,12 @@ int CvUnit::getSpellMagicalPower(int spell) const
 			res += getExtraSpellClassPower((SpellClassTypes)i);
 		}
 	}
+	return res;
+}
+int CvUnit::getSpellClassMagicalPower(int spellclass) const
+{
+	int res= getMagicalPower();
+	res += getExtraSpellClassPower((SpellClassTypes)spellclass);
 	return res;
 }
 

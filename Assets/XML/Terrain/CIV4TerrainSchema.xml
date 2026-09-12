@@ -298,6 +298,7 @@
 	<ElementType name="iHealChangeEnemy" content="textOnly" dt:type="int"/>
 	<ElementType name="iMaintenanceModifier" content="textOnly" dt:type="int"/>
 	<ElementType name="iMutateChance" content="textOnly" dt:type="int"/>
+	<ElementType name="iCrimeChance" content="textOnly" dt:type="int"/>
 	<ElementType name="iResearchModifier" content="textOnly" dt:type="int"/>
 	<ElementType name="iCommerce" content="textOnly" dt:type="int"/>
 	<ElementType name="CommerceModifiers" content="eltOnly">
@@ -359,6 +360,7 @@
 		<element type="iHealChangeEnemy"/>
 		<element type="iMaintenanceModifier"/>
 		<element type="iMutateChance"/>
+		<element type="iCrimeChance"/>
 		<element type="iResearchModifier"/>
 		<element type="CommerceModifiers"/>
 		<element type="YieldModifiers"/>

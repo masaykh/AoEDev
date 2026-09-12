@@ -1769,6 +1769,7 @@ public:
 	//Magic Rework
 	int getMagicalPower() const;
 	int getSpellMagicalPower(int spell) const;
+	int getSpellClassMagicalPower(int spellclass) const;
 	//int getDominionCapacity() const;
 	int getExtraMagicalPower() const;
 	void changeExtraMagicalPower(int iNewValue);

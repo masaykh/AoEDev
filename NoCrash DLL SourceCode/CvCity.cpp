@@ -910,6 +910,7 @@ void CvCity::reset(int iID, PlayerTypes eOwner, int iX, int iY, bool bConstructo
 	m_fProximityFood = 0;
 	m_fProximityFreeXP = 0;
 	m_fProximityGold = 0;
+	m_fProximityScience = 0;
 	m_fProximityGPP = 0;
 	m_fProximityHappy = 0;
 	m_fProximityHealth = 0;
@@ -972,6 +973,7 @@ void CvCity::reset(int iID, PlayerTypes eOwner, int iX, int iY, bool bConstructo
 	m_fPerPopDefense = 0;
 	m_fPerPopFood = 0;
 	m_fPerPopCrimePerTurn = 0;
+	m_fPerPopScience = 0;
 	m_fPerPopFreeXP = 0;
 	m_fPerPopGold = 0;
 	m_fPerPopGPP = 0;
@@ -6140,6 +6142,7 @@ void CvCity::processBuilding(BuildingTypes eBuilding, int iChange, bool bObsolet
 		CityBonuses cbTemp = GC.getBuildingInfo(eBuilding).getPerPopBonus(iI);
 
 		if (cbTemp.fCulture != 0) changePerPopCulture(getOwner(), iChange * (cbTemp.fCulture));
+		if (cbTemp.fScience != 0) changePerPopScience( iChange * (cbTemp.fScience));
 		if (cbTemp.fCrime != 0) changePerPopCrimePerTurn(iChange * (cbTemp.fCrime));
 		if (cbTemp.fDefense != 0) changePerPopDefense(iChange * (cbTemp.fDefense));
 		if (cbTemp.fFood != 0) changePerPopFood(iChange * (cbTemp.fFood));
@@ -9362,6 +9365,10 @@ float CvCity::getProximityGold() const
 {
 	return m_fProximityGold;
 }
+float CvCity::getProximityScience() const
+{
+	return m_fProximityScience;
+}
 float CvCity::getProximityGPP() const
 {
 	return m_fProximityGPP;
@@ -9434,6 +9441,11 @@ void CvCity::changeProximityGold(float fChange)
 	m_fProximityGold = m_fProximityGold + fChange;
 	updateCommerce();
 	updateMaintenance();
+}
+void CvCity::changeProximityScience(float fChange)
+{
+	m_fProximityScience = m_fProximityScience + fChange;
+	updateCommerce();
 }
 void CvCity::changeProximityGPP(float fChange)
 {
@@ -12225,6 +12237,12 @@ int CvCity::getBaseCommerceRateTimes100(CommerceTypes eIndex) const
 	if (eIndex == COMMERCE_CULTURE) {
 		iBaseCommerceRate += 100 * getProximityCulture();
 		iBaseCommerceRate += 100 * getPerPopCulture() * getPopulation();
+	}
+	if (eIndex == COMMERCE_RESEARCH)
+	{
+		iBaseCommerceRate += 100 * getProximityScience();
+		iBaseCommerceRate += 100 * getPerPopScience() * getPopulation();
+
 	}
 
 	return iBaseCommerceRate;
@@ -17386,6 +17404,7 @@ void CvCity::read(FDataStreamBase* pStream)
 	pStream->Read(&m_fProximityFood);
 	pStream->Read(&m_fProximityFreeXP);
 	pStream->Read(&m_fProximityGold);
+	pStream->Read(&m_fProximityScience);
 	pStream->Read(&m_fProximityGPP);
 	pStream->Read(&m_fProximityHappy);
 	pStream->Read(&m_fProximityHealth);
@@ -17601,6 +17620,7 @@ void CvCity::read(FDataStreamBase* pStream)
 	pStream->Read(&m_fPerPopDefense);
 	pStream->Read(&m_fPerPopFood);
 	pStream->Read(&m_fPerPopCrimePerTurn);
+	pStream->Read(&m_fPerPopScience);
 	pStream->Read(&m_fPerPopFreeXP);
 	pStream->Read(&m_fPerPopGold);
 	pStream->Read(&m_fPerPopGPP);
@@ -17830,6 +17850,7 @@ void CvCity::write(FDataStreamBase* pStream)
 	pStream->Write(m_fProximityFood);
 	pStream->Write(m_fProximityFreeXP);
 	pStream->Write(m_fProximityGold);
+	pStream->Write(m_fProximityScience);
 	pStream->Write(m_fProximityGPP);
 	pStream->Write(m_fProximityHappy);
 	pStream->Write(m_fProximityHealth);
@@ -18028,6 +18049,7 @@ void CvCity::write(FDataStreamBase* pStream)
 	pStream->Write(m_fPerPopDefense);
 	pStream->Write(m_fPerPopFood);
 	pStream->Write(m_fPerPopCrimePerTurn);
+	pStream->Write(m_fPerPopScience);
 	pStream->Write(m_fPerPopFreeXP);
 	pStream->Write(m_fPerPopGold);
 	pStream->Write(m_fPerPopGPP);
@@ -20105,8 +20127,12 @@ int CvCity::getCrimePerTurn() const
 	}
 	int iCrimePerTurn = m_iCrimePerTurn;
 	iCrimePerTurn += GC.getCRIME_RATE_PER_POP() * getPopulation(); //Population Effect
-	iCrimePerTurn -= 2 * getNumBonuses((BonusTypes)GC.getInfoTypeForString("BONUS_MANA_LAW")); //Bonus Effects unhardcode
-	iCrimePerTurn += 2 * getNumBonuses((BonusTypes)GC.getInfoTypeForString("BONUS_MANA_CHAOS"));
+	for (int i = 0; i < GC.getNumBonusInfos(); i++)
+	{
+		iCrimePerTurn += GC.getBonusInfo((BonusTypes)i).getCrimeChange() * getNumBonuses((BonusTypes)i);
+	}
+//	iCrimePerTurn -= 2 * getNumBonuses((BonusTypes)GC.getInfoTypeForString("BONUS_MANA_LAW")); //Bonus Effects unhardcode
+//	iCrimePerTurn += 2 * getNumBonuses((BonusTypes)GC.getInfoTypeForString("BONUS_MANA_CHAOS"));
 	iCrimePerTurn += (int)getProximityCrime(); //Unit Effect
 	iCrimePerTurn += (int)getPerPopCrimePerTurn() * getPopulation(); //PerPop Effect
 	iCrimePerTurn -= (happyLevel() - unhappyLevel())*(1+getExtraCrimePerUnhappy()); //Happiness Effect
@@ -22614,6 +22640,10 @@ float CvCity::getPerPopCrimePerTurn() const
 {
 	return m_fPerPopCrimePerTurn;
 }
+float CvCity::getPerPopScience() const
+{
+	return m_fPerPopScience;
+}
 float CvCity::getPerPopFreeXP() const
 {
 	return m_fPerPopFreeXP;
@@ -22693,6 +22723,10 @@ void CvCity::changePerPopFood(float fChange)
 void CvCity::changePerPopCrimePerTurn(float fChange)
 {
 	m_fPerPopCrimePerTurn = m_fPerPopCrimePerTurn + fChange;
+}
+void CvCity::changePerPopScience(float fChange)
+{
+	m_fPerPopScience = m_fPerPopScience + fChange;
 }
 void CvCity::changePerPopFreeXP(float fChange)
 {

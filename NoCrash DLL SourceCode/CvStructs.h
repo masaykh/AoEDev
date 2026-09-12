@@ -507,6 +507,7 @@ struct CityBonuses
 	bool bApplySelf;
 	bool bApplyTeam;
 	float fCulture;
+	float fScience;
 	float fCrime;
 	float fDefense;
 	float fDiplo;

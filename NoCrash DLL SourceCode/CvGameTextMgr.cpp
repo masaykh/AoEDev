@@ -1939,6 +1939,29 @@ void CvGameTextMgr::setUnitHelp(CvWStringBuffer &szString, const CvUnit* pUnit, 
 					szTempBuffer += gDLL->getText(szBonusString.GetCString());
 					szTempBuffer += CvWString::format(L"%c", GC.getCommerceInfo(COMMERCE_CULTURE).getChar());
 				}
+				fValue = cbTemp.fScience;
+				if (fValue != 0)
+				{
+					if (fValue == int(fValue))
+					{
+						szBonusString.Format(L"%.0f", fValue);
+					}
+					else
+					{
+						szBonusString.Format(L"%.2f", fValue);
+					}
+
+					if (!bFirst)
+					{
+						szTempBuffer += L", ";
+					}
+					else
+					{
+						bFirst = false;
+					}
+					szTempBuffer += gDLL->getText(szBonusString.GetCString());
+					szTempBuffer += CvWString::format(L"%c", GC.getCommerceInfo(COMMERCE_RESEARCH).getChar());
+				}
 				fValue = cbTemp.fCrime;
 				if (fValue != 0)
 				{
@@ -7481,13 +7504,13 @@ void CvGameTextMgr::parseTraits(CvWStringBuffer &szHelpString, TraitTypes eTrait
 			{
 				szHelpString.append(gDLL->getText("TXT_KEY_TRAIT_SPECIALIST_CRIME_CHANGE", GC.getSpecialistInfo(eSpecialist).getDescription(), GC.getTraitInfo(eTrait).getSpecialistClassCrimeChange(iI)));
 			}
-			for (int iJ = 0; iJ < NUM_YIELD_TYPES; ++iJ)
+			for (int iJ = 0; iJ < NUM_YIELD_TYPES; iJ++)
 			{
-				if (GC.getTraitInfo(eTrait).getSpecialistClassYieldChange(iI, iJ) > 0)
+				if (GC.getTraitInfo(eTrait).getSpecialistClassYieldChange(iI, iJ) != 0)
 				{
 					szHelpString.append(gDLL->getText("TXT_KEY_TRAIT_SPECIALIST_YIELD_CHANGE", GC.getSpecialistInfo(eSpecialist).getDescription(), GC.getYieldInfo((YieldTypes)iJ).getChar(), GC.getTraitInfo(eTrait).getSpecialistClassYieldChange(iI, iJ)));
 				}
-				if (GC.getTraitInfo(eTrait).getSpecialistClassCommerceChange(iI, iJ) > 0)
+				if (GC.getTraitInfo(eTrait).getSpecialistClassCommerceChange(iI, iJ) != 0)
 				{
 					szHelpString.append(gDLL->getText("TXT_KEY_TRAIT_SPECIALIST_COMMERCE_CHANGE", GC.getSpecialistInfo(eSpecialist).getDescription(), GC.getCommerceInfo((CommerceTypes)iJ).getChar(), GC.getTraitInfo(eTrait).getSpecialistClassCommerceChange(iI, iJ)));
 				}
@@ -12945,6 +12968,29 @@ void CvGameTextMgr::parsePromotionHelp(CvWStringBuffer &szBuffer, PromotionTypes
 			szTempBuffer += gDLL->getText(szBonusString.GetCString());
 			szTempBuffer += CvWString::format(L"%c", GC.getCommerceInfo(COMMERCE_CULTURE).getChar());
 		}
+		fValue = cbTemp.fScience;
+		if (fValue != 0)
+		{
+			if (fValue == int(fValue))
+			{
+				szBonusString.Format(L"%.0f", fabs(fValue));
+			}
+			else
+			{
+				szBonusString.Format(L"%.2f", fabs(fValue));
+			}
+
+			if (!bFirst)
+			{
+				szTempBuffer += L", ";
+			}
+			else
+			{
+				bFirst = false;
+			}
+			szTempBuffer += gDLL->getText(szBonusString.GetCString());
+			szTempBuffer += CvWString::format(L"%c", GC.getCommerceInfo(COMMERCE_RESEARCH).getChar());
+		}
 		fValue = cbTemp.fCrime;
 		if (fValue != 0)
 		{
@@ -14497,7 +14543,15 @@ void CvGameTextMgr::parseSpellHelp(CvWStringBuffer &szBuffer, SpellTypes eSpell,
 		szBuffer.append(pcNewline);
 		szBuffer.append(gDLL->getText("TXT_KEY_PREREQ_MAGICAL_POWER", GC.getSpellInfo(eSpell).getMagicalPowerPrereq()));
 	}
+	for (int i = 0; i < GC.getNumSpellClassInfos(); i++)
+	{
+		if (GC.getSpellInfo(eSpell).getPrereqSpellClassMagicalPower(i) > 0)
+		{
+			szBuffer.append(pcNewline);
+			szBuffer.append(gDLL->getText("TXT_KEY_PREREQ_MAGICAL_POWER_SPELLCLASS", GC.getSpellInfo(eSpell).getPrereqSpellClassMagicalPower(i),GC.getSpellClassInfo((SpellClassTypes)i).getDescription()));
 
+		}
+	}
 	if (GC.getSpellInfo(eSpell).getCrimePrereq() != 0)
 	{
 		szBuffer.append(pcNewline);
@@ -21808,6 +21862,29 @@ void CvGameTextMgr::setBuildingHelp(CvWStringBuffer &szBuffer, BuildingTypes eBu
 			szTempBuffer += gDLL->getText(szBonusString.GetCString());
 			szTempBuffer += CvWString::format(L"%c", GC.getCommerceInfo(COMMERCE_CULTURE).getChar());
 		}
+		fValue = cbTemp.fScience;
+		if (fValue != 0)
+		{
+			if (fValue == int(fValue))
+			{
+				szBonusString.Format(L"%.0f", fValue);
+			}
+			else
+			{
+				szBonusString.Format(L"%.2f", fValue);
+			}
+
+			if (!bFirst)
+			{
+				szTempBuffer += L", ";
+			}
+			else
+			{
+				bFirst = false;
+			}
+			szTempBuffer += gDLL->getText(szBonusString.GetCString());
+			szTempBuffer += CvWString::format(L"%c", GC.getCommerceInfo(COMMERCE_RESEARCH).getChar());
+		}
 
 		fValue = cbTemp.fCrime;
 		if (fValue != 0)
@@ -24792,6 +24869,11 @@ void CvGameTextMgr::setBonusHelp(CvWStringBuffer &szBuffer, BonusTypes eBonus, b
 	{
 		szBuffer.append(NEWLINE);
 		szBuffer.append(gDLL->getText("TXT_KEY_BONUS_RESEARCH_MODIFIER", GC.getBonusInfo(eBonus).getResearchModifier()));
+	}
+	if (GC.getBonusInfo(eBonus).getCrimeChange() != 0)
+	{
+		szBuffer.append(NEWLINE);
+		szBuffer.append(gDLL->getText("TXT_KEY_BONUS_CRIME_CHANGE", GC.getBonusInfo(eBonus).getCrimeChange()));
 	}
 	if (GC.getBonusInfo(eBonus).isModifierPerBonus())
 	{
@@ -28917,6 +28999,23 @@ void CvGameTextMgr::setCommerceHelp(CvWStringBuffer &szBuffer, CvCity& city, Com
 			iBaseCommerceRate += 100 * ProxiCommerce;
 		}
 		int CrimeCommerce = city.getPerPopGold() * city.getPopulation();
+		if (0 != CrimeCommerce)
+		{
+			szBuffer.append(gDLL->getText("TXT_KEY_MISC_HELP_YIELD_POPULATION", CrimeCommerce, info.getChar()));
+			szBuffer.append(NEWLINE);
+			iBaseCommerceRate += 100 * CrimeCommerce;
+		}
+	}
+	if (eCommerceType == COMMERCE_RESEARCH)
+	{
+		int ProxiCommerce = city.getProximityScience();
+		if (0 != ProxiCommerce)
+		{
+			szBuffer.append(gDLL->getText("TXT_KEY_MISC_HELP_YIELD_PROXIMITY", ProxiCommerce, info.getChar()));
+			szBuffer.append(NEWLINE);
+			iBaseCommerceRate += 100 * ProxiCommerce;
+		}
+		int CrimeCommerce = city.getPerPopScience() * city.getPopulation();
 		if (0 != CrimeCommerce)
 		{
 			szBuffer.append(gDLL->getText("TXT_KEY_MISC_HELP_YIELD_POPULATION", CrimeCommerce, info.getChar()));
@@ -34790,18 +34889,28 @@ void CvGameTextMgr::setCrimeHelp(CvWStringBuffer& szBuffer, CvCity& city)
 		szBuffer.append(NEWLINE);
 
 	}
-	if (city.getNumBonuses((BonusTypes)GC.getInfoTypeForString("BONUS_MANA_LAW")) > 0)
+	for (int i = 0; i < GC.getNumBonusInfos(); i++)
 	{
-		szBuffer.append(gDLL->getText("TXT_KEY_MISC_HELP_CRIME_BONUS", -2 * city.getNumBonuses((BonusTypes)GC.getInfoTypeForString("BONUS_MANA_LAW")), GC.getBonusInfo((BonusTypes)GC.getInfoTypeForString("BONUS_MANA_LAW")).getDescription()));
-		szBuffer.append(NEWLINE);
+		if (city.getNumBonuses((BonusTypes)i) > 0 && GC.getBonusInfo((BonusTypes)i).getCrimeChange()!=0)
+		{
+			szBuffer.append(gDLL->getText("TXT_KEY_MISC_HELP_CRIME_BONUS", GC.getBonusInfo((BonusTypes)i).getCrimeChange() * city.getNumBonuses((BonusTypes)i) > 0, GC.getBonusInfo((BonusTypes)i).getDescription()));
+			szBuffer.append(NEWLINE);
+
+		}
 
 	}
-	if (city.getNumBonuses((BonusTypes)GC.getInfoTypeForString("BONUS_MANA_CHAOS")) > 0)
-	{
-		szBuffer.append(gDLL->getText("TXT_KEY_MISC_HELP_CRIME_BONUS", 2 * city.getNumBonuses((BonusTypes)GC.getInfoTypeForString("BONUS_MANA_CHAOS")), GC.getBonusInfo((BonusTypes)GC.getInfoTypeForString("BONUS_MANA_CHAOS")).getDescription()));
-		szBuffer.append(NEWLINE);
-
-	}
+//	if (city.getNumBonuses((BonusTypes)GC.getInfoTypeForString("BONUS_MANA_LAW")) > 0)
+//	{
+//		szBuffer.append(gDLL->getText("TXT_KEY_MISC_HELP_CRIME_BONUS", -2 * city.getNumBonuses((BonusTypes)GC.getInfoTypeForString("BONUS_MANA_LAW")), GC.getBonusInfo((BonusTypes)GC.getInfoTypeForString("BONUS_MANA_LAW")).getDescription()));
+//		szBuffer.append(NEWLINE);
+//
+//	}
+//	if (city.getNumBonuses((BonusTypes)GC.getInfoTypeForString("BONUS_MANA_CHAOS")) > 0)
+//	{
+//		szBuffer.append(gDLL->getText("TXT_KEY_MISC_HELP_CRIME_BONUS", 2 * city.getNumBonuses((BonusTypes)GC.getInfoTypeForString("BONUS_MANA_CHAOS")), GC.getBonusInfo((BonusTypes)GC.getInfoTypeForString("BONUS_MANA_CHAOS")).getDescription()));
+//		szBuffer.append(NEWLINE);
+//
+//	}
 	if (city.getProximityCrime() != 0)
 	{
 		szBuffer.append(gDLL->getText("TXT_KEY_MISC_HELP_CRIME_UNIT", (int)city.getProximityCrime()));

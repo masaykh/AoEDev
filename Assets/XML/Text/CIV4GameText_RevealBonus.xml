@@ -1284,6 +1284,14 @@
 		<Spanish>[NEWLINE][ICON_BULLET]Requires %d1 Power</Spanish>
 	</TEXT>
 	<TEXT>
+		<Tag>TXT_KEY_PREREQ_MAGICAL_POWER_SPELLCLASS</Tag>
+		<English>[NEWLINE][ICON_BULLET]Requires %d1 Power for %s2 Spells</English>
+		<French>[NEWLINE][ICON_BULLET]Nécessite %d1 de puissance pour les sorts %s2</French>
+		<German>[NEWLINE][ICON_BULLET]Requires %d1 Power for %s2 Spells</German>
+		<Italian>[NEWLINE][ICON_BULLET]Requires %d1 Power for %s2 Spells</Italian>
+		<Spanish>[NEWLINE][ICON_BULLET]Requires %d1 Power for %s2 Spells</Spanish>
+	</TEXT>
+	<TEXT>
 		<Tag>TXT_KEY_PREREQ_CRIME_CITY</Tag>
 		<English>[NEWLINE][ICON_BULLET]Requires to be in a city with %d1 Crime</English>
 		<French>[NEWLINE][ICON_BULLET]Requires to be in a city with  %d1 Crime</French>

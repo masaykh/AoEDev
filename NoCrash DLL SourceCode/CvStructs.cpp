@@ -588,6 +588,7 @@ void CityBonuses::read(FDataStreamBase* pStream)
 	pStream->Read(&bApplySelf);
 	pStream->Read(&bApplyTeam);
 	pStream->Read(&fCulture);
+	pStream->Read(&fScience);
 	pStream->Read(&fCrime);
 	pStream->Read(&fDefense);
 	pStream->Read(&fDiplo);
@@ -617,6 +618,7 @@ void CityBonuses::write(FDataStreamBase* pStream)
 	pStream->Write(bApplySelf);
 	pStream->Write(bApplyTeam);
 	pStream->Write(fCulture);
+	pStream->Write(fScience);
 	pStream->Write(fCrime);
 	pStream->Write(fDefense);
 	pStream->Write(fDiplo);
@@ -647,6 +649,7 @@ bool CityBonuses::compare(CityBonuses cbTemp)
 	else if (bApplySelf != cbTemp.bApplySelf) bSame = false;
 	else if (bApplyTeam != cbTemp.bApplyTeam) bSame = false;
 	else if (fCulture != cbTemp.fCulture) bSame = false;
+	else if (fScience != cbTemp.fScience) bSame = false;
 	else if (fCrime != cbTemp.fCrime) bSame = false;
 	else if (fDefense != cbTemp.fDefense) bSame = false;
 	else if (fDiplo != cbTemp.fDiplo) bSame = false;

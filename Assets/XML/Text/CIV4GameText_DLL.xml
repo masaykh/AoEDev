@@ -123,6 +123,14 @@
 		<Spanish>[ICON_BULLET]%D1% a la investigación</Spanish>
 	</TEXT>
 	<TEXT>
+		<Tag>TXT_KEY_BONUS_CRIME_CHANGE</Tag>
+		<English>[ICON_BULLET]%D1 change to crime</English>
+		<French>[ICON_BULLET]%D1 change to crime</French>
+		<German>[ICON_BULLET]%D1 change to crime</German>
+		<Italian>[ICON_BULLET]%D1 change to crime</Italian>
+		<Spanish>[ICON_BULLET]%D1 change to crime</Spanish>
+	</TEXT>
+	<TEXT>
 		<Tag>TXT_KEY_BUILDING_AIRLIFT</Tag>
 		<English>[ICON_BULLET]Can Transport %d1_Num Land [NUM1:Unit:Units] per Turn</English>
 		<French>[ICON_BULLET]Peut déplacer %d1_Num [NUM1:unité terrestre:unités terrestres] par tour</French>

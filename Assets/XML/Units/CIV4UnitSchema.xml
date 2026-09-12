@@ -1306,6 +1306,7 @@
 	<ElementType name="bApplyTeam" content="textOnly" dt:type="boolean"/>
 	<ElementType name="bFullMap" content="textOnly" dt:type="boolean"/>
 	<ElementType name="fCulture" content="textOnly" dt:type="float"/>
+	<ElementType name="fScience" content="textOnly" dt:type="float"/>
 	<ElementType name="fCrime" content="textOnly" dt:type="float"/>
 	<ElementType name="fDefense" content="textOnly" dt:type="float"/>
 	<ElementType name="fDiplo" content="textOnly" dt:type="float"/>
@@ -1332,6 +1333,7 @@
 		<element type="bApplyTeam"/>
 		<element type="bFullMap"/>
 		<element type="fCulture"/>
+		<element type="fScience"/>
 		<element type="fCrime"/>
 		<element type="fDefense"/>
 		<element type="fDiplo"/>

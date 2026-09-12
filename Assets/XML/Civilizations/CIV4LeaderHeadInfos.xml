@@ -27788,7 +27788,7 @@
 			<Description>TXT_KEY_LEADER_JAMAL</Description>
 			<Civilopedia>TXT_KEY_LEADER_JAMAL_PEDIA</Civilopedia>
 			<DefeatQuote>TXT_KEY_POPUP_DEFEATED_JAMAL</DefeatQuote>
-			<Image>Art/Civs/Mekara/DahkarPop.dds</Image>
+			<Image>Art/Civs/Mekara/DahkarPop2.dds</Image>
 			<ArtDefineTag>ART_DEF_LEADER_JAMAL</ArtDefineTag>
 			<iWonderConstructRand>15</iWonderConstructRand>
 			<iBaseAttitude>0</iBaseAttitude>
@@ -35440,7 +35440,7 @@
 			<Description>TXT_KEY_LEADER_MIHUATL</Description>
 			<Civilopedia>TXT_KEY_LEADER_MIHUATL_PEDIA</Civilopedia>
 			<DefeatQuote>TXT_KEY_POPUP_DEFEATED_MIHUATL</DefeatQuote>
-			<Image>art/interface/popups/mihuatlpop.dds</Image>
+			<Image>art/civs/MinorLeaders/mihuatlpop.dds</Image>
 			<ArtDefineTag>ART_DEF_LEADER_MIHUATL</ArtDefineTag>
 			<iWonderConstructRand>0</iWonderConstructRand>
 			<iBaseAttitude>0</iBaseAttitude>

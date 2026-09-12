@@ -8022,6 +8022,7 @@ bool CvPromotionInfo::read(CvXMLLoadUtility* pXML)
 					pXML->GetChildXmlValByName(&(cbTemp.bApplySelf), "bApplySelf", false);
 					pXML->GetChildXmlValByName(&(cbTemp.bApplyTeam), "bApplyTeam", false);
 					pXML->GetChildXmlValByName(&(cbTemp.fCulture), "fCulture", 0.0f);
+					pXML->GetChildXmlValByName(&(cbTemp.fScience), "fScience", 0.0f);
 					pXML->GetChildXmlValByName(&(cbTemp.fCrime), "fCrime", 0.0f);
 					pXML->GetChildXmlValByName(&(cbTemp.fDefense), "fDefense", 0.0f);
 					pXML->GetChildXmlValByName(&(cbTemp.fDiplo), "fDiplo", 0.0f);
@@ -11340,7 +11341,8 @@ m_szSound(NULL),
 m_iCommandType(NO_COMMAND),
 //Magic Rework
 m_iMagicalPowerPrereq(0),
-m_pbSpellClass(NULL)
+m_pbSpellClass(NULL),
+m_piPrereqSpellClassMagicalPower(NULL)
 {
 }
 
@@ -11978,6 +11980,12 @@ bool CvSpellInfo::isSpellClass(int i) const
 	FAssertMsg(i > -1, "Index out of bounds");
 	return m_pbSpellClass ? m_pbSpellClass[i] : false;
 }
+int CvSpellInfo::getPrereqSpellClassMagicalPower(int i) const
+{
+	FAssertMsg(i < GC.getNumSpellClassInfos(), "Index out of bounds");
+	FAssertMsg(i > -1, "Index out of bounds");
+	return m_piPrereqSpellClassMagicalPower ? m_piPrereqSpellClassMagicalPower[i] : 0;
+}
 
 void CvSpellInfo::read(FDataStreamBase* stream)
 {
@@ -12190,6 +12198,10 @@ void CvSpellInfo::read(FDataStreamBase* stream)
 	m_pbSpellClass = new bool[GC.getNumSpellClassInfos()];
 	stream->Read(GC.getNumSpellClassInfos(), m_pbSpellClass);
 
+	SAFE_DELETE_ARRAY(m_piPrereqSpellClassMagicalPower);
+	m_piPrereqSpellClassMagicalPower = new int[GC.getNumSpellClassInfos()];
+	stream->Read(GC.getNumSpellClassInfos(), m_piPrereqSpellClassMagicalPower);
+
 
 }
 
@@ -12386,6 +12398,7 @@ void CvSpellInfo::write(FDataStreamBase* stream)
 	//Magic Rework
 	stream->Write(m_iMagicalPowerPrereq);
 	stream->Write(GC.getNumSpellClassInfos(), m_pbSpellClass);
+	stream->Write(GC.getNumSpellClassInfos(), m_piPrereqSpellClassMagicalPower);
 }
 
 bool CvSpellInfo::read(CvXMLLoadUtility* pXML)
@@ -12656,6 +12669,7 @@ bool CvSpellInfo::read(CvXMLLoadUtility* pXML)
 	//Magic Rework
 	pXML->GetChildXmlValByName(&m_iMagicalPowerPrereq, "iMagicalPowerPrereq");
 	pXML->SetVariableListTagPair(&m_pbSpellClass, "SpellClasses", sizeof(GC.getSpellClassInfo((SpellClassTypes)0)), GC.getNumSpellClassInfos());
+	pXML->SetVariableListTagPair(&m_piPrereqSpellClassMagicalPower, "PrereqSpellClassMagicalPowers", sizeof(GC.getSpellClassInfo((SpellClassTypes)0)), GC.getNumSpellClassInfos());
 
 	return true;
 }
@@ -12858,6 +12872,7 @@ void CvSpellInfo::copyNonDefaults(CvSpellInfo* pClassInfo, CvXMLLoadUtility* pXM
 	for (int i = 0; i < GC.getNumSpellClassInfos(); ++i)
 	{
 		if (isSpellClass(i) == false)				m_pbSpellClass[i] = pClassInfo->isSpellClass(i);
+		if (getPrereqSpellClassMagicalPower(i) == 0)				m_piPrereqSpellClassMagicalPower[i] = pClassInfo->getPrereqSpellClassMagicalPower(i);
 	}
 	
 	if (getBuildingClassOwnedPrereq()	== NO_BUILDINGCLASS)	m_iBuildingClassOwnedPrereq		= pClassInfo->getBuildingClassOwnedPrereq();
@@ -26255,6 +26270,7 @@ bool CvBuildingInfo::read(CvXMLLoadUtility* pXML)
 					//	pXML->GetChildXmlValByName(&(cbTemp.bApplySelf), "bApplySelf", false);
 					//	pXML->GetChildXmlValByName(&(cbTemp.bApplyTeam), "bApplyTeam", false);
 					pXML->GetChildXmlValByName(&(cbTemp.fCulture), "fCulture", 0.0f);
+					pXML->GetChildXmlValByName(&(cbTemp.fScience), "fScience", 0.0f);
 					pXML->GetChildXmlValByName(&(cbTemp.fCrime), "fCrime", 0.0f);
 					pXML->GetChildXmlValByName(&(cbTemp.fDefense), "fDefense", 0.0f);
 					pXML->GetChildXmlValByName(&(cbTemp.fDiplo), "fDiplo", 0.0f);
@@ -34428,7 +34444,8 @@ m_iHealChange(0),
 m_iHealChangeEnemy(0),
 m_iMaintenanceModifier(0),
 m_iMutateChance(0),
-m_iResearchModifier(0)
+m_iResearchModifier(0),
+m_iCrimeChange(0)
 //FfH: End Add
 
 {
@@ -34693,6 +34710,10 @@ int CvBonusInfo::getResearchModifier() const
 {
 	return m_iResearchModifier;
 }
+int CvBonusInfo::getCrimeChange() const
+{
+	return m_iCrimeChange;
+}
 //FfH: End Add
 /*************************************************************************************************/
 /**	New Tag Defs	(BonusInfos)			05/31/09								Xienwolf	**/
@@ -34856,6 +34877,7 @@ void CvBonusInfo::read(FDataStreamBase* stream)
 	stream->Read(&m_iMaintenanceModifier);
 	stream->Read(&m_iMutateChance);
 	stream->Read(&m_iResearchModifier);
+	stream->Read(&m_iCrimeChange);
 //FfH: End Add
 
 	// Arrays
@@ -34949,6 +34971,7 @@ void CvBonusInfo::write(FDataStreamBase* stream)
 	stream->Write(m_iMaintenanceModifier);
 	stream->Write(m_iMutateChance);
 	stream->Write(m_iResearchModifier);
+	stream->Write(m_iCrimeChange);
 //FfH: End Add
 
 	// Arrays
@@ -35073,6 +35096,7 @@ bool CvBonusInfo::read(CvXMLLoadUtility* pXML)
 	pXML->GetChildXmlValByName(&m_iMaintenanceModifier, "iMaintenanceModifier");
 	pXML->GetChildXmlValByName(&m_iMutateChance, "iMutateChance");
 	pXML->GetChildXmlValByName(&m_iResearchModifier, "iResearchModifier");
+	pXML->GetChildXmlValByName(&m_iCrimeChange, "iCrimeChange");
 	pXML->GetChildXmlValByName( szTextVal, "DamageType");
 	m_iDamageType = pXML->FindInInfoClass(szTextVal);
 //FfH: End Add
@@ -35142,6 +35166,7 @@ void CvBonusInfo::copyNonDefaults(CvBonusInfo* pClassInfo, CvXMLLoadUtility* pXM
 	if (getMaintenanceModifier()	== 0)				m_iMaintenanceModifier		= pClassInfo->getMaintenanceModifier();
 	if (getMutateChance()			== 0)				m_iMutateChance				= pClassInfo->getMutateChance();
 	if (getResearchModifier()		== 0)				m_iResearchModifier			= pClassInfo->getResearchModifier();
+	if (getCrimeChange() == 0)				m_iCrimeChange = pClassInfo->getCrimeChange();
 	if (getAITradeModifier()		== 0)				m_iAITradeModifier			= pClassInfo->getAITradeModifier();
 	if (getAIObjective()			== 0)				m_iAIObjective				= pClassInfo->getAIObjective();
 	if (getHealth()					== 0)				m_iHealth					= pClassInfo->getHealth();
