@@ -17525,14 +17525,8 @@ void CvCity::read(FDataStreamBase* pStream)
 
 	pStream->Read(NUM_YIELD_TYPES, m_aiSeaPlotYield);
 	pStream->Read(NUM_YIELD_TYPES, m_aiRiverPlotYield);
-	for (int iI = 0; iI < GC.getNumTerrainInfos(); iI++)
-	{
-		pStream->Read(NUM_YIELD_TYPES, m_paaiLocalTerrainYield[iI]);
-	}
-	for (int iI = 0; iI < GC.getNumFeatureInfos(); iI++)
-	{
-		pStream->Read(NUM_YIELD_TYPES, m_paaiLocalFeatureYield[iI]);
-	}
+	CvSaveManifest::readRows(pStream, CvSaveManifest::CONTENT_TERRAIN, m_paaiLocalTerrainYield, NUM_YIELD_TYPES);
+	CvSaveManifest::readRows(pStream, CvSaveManifest::CONTENT_FEATURE, m_paaiLocalFeatureYield, NUM_YIELD_TYPES);
 	pStream->Read(NUM_YIELD_TYPES, m_aiBaseYieldRate);
 	pStream->Read(NUM_YIELD_TYPES, m_aiYieldRateModifier);
 	pStream->Read(NUM_YIELD_TYPES, m_aiPowerYieldRateModifier);
@@ -17598,14 +17592,8 @@ void CvCity::read(FDataStreamBase* pStream)
 /**	GWSLocalSpecialist																	Milaga	**/
 /** Buildings can change give bonuses to specialists in only one city							**/
 /*************************************************************************************************/
-	for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
-	{
-		pStream->Read(NUM_YIELD_TYPES, m_paaiLocalSpecialistYield[iI]);
-	}
-	for (int iI = 0; iI < GC.getNumSpecialistClassInfos(); iI++)
-	{
-		pStream->Read(NUM_COMMERCE_TYPES, m_paaiLocalSpecialistCommerce[iI]);
-	}
+	CvSaveManifest::readRows(pStream, CvSaveManifest::CONTENT_SPECIALIST_CLASS, m_paaiLocalSpecialistYield, NUM_YIELD_TYPES);
+	CvSaveManifest::readRows(pStream, CvSaveManifest::CONTENT_SPECIALIST_CLASS, m_paaiLocalSpecialistCommerce, NUM_COMMERCE_TYPES);
 	CvSaveManifest::readArray(pStream, CvSaveManifest::CONTENT_SPECIALIST_CLASS, m_paiLocalSpecialistHappiness);
 	CvSaveManifest::readArray(pStream, CvSaveManifest::CONTENT_SPECIALIST_CLASS, m_paiLocalSpecialistHealth);
 	CvSaveManifest::readArray(pStream, CvSaveManifest::CONTENT_SPECIALIST_CLASS, m_paiLocalSpecialistCrime);
