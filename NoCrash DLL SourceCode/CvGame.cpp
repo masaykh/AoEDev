@@ -8887,7 +8887,7 @@ void CvGame::read(FDataStreamBase* pStream)
 	// earlier load in the same session. Skipping it for a save with no manifest would
 	// leave the previous game's tables in place and silently permute this one.
 	CvSaveSizeProbe::flush();
-	CvSaveManifest::beginRead();
+	CvSaveManifest::beginRead(uiFlag);
 
 	// The manifest sits immediately after the flag, at the very top of the compressed
 	// body, so it is read before any content-sized array has had a chance to desync.

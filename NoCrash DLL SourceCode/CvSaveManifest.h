@@ -46,8 +46,9 @@
 //   2     NoBonus bans stored per vote source
 //   3     a content manifest follows the flag
 //   4     CvGame's own fields are a tagged record
+//   5     CvCity's science floats and CityBonuses::fScience are present
 //
-const unsigned int SAVE_FORMAT_VERSION = 4;
+const unsigned int SAVE_FORMAT_VERSION = 5;
 
 // First version that carries a manifest. Saves below this are read exactly as before.
 // Deliberately NOT raised with SAVE_FORMAT_VERSION: a version 3 save has a manifest
@@ -56,6 +57,17 @@ const unsigned int SAVE_FORMAT_VERSION_MANIFEST = 3;
 
 // First version whose CvGame fields are tagged.
 const unsigned int SAVE_FORMAT_VERSION_TAGGED = 4;
+
+// First version carrying CvCity::m_fProximityScience, CvCity::m_fPerPopScience and
+// CityBonuses::fScience.
+//
+// Those three were added to POSITIONAL runs with no gate and no flag bump, so every
+// save written before them is 8 bytes short per city and 4 short per CityBonuses
+// record. The reader consumed them anyway and walked off the end of the first city,
+// which surfaces much later as a null-array write in a freelist load. Reads of these
+// fields are gated on this; writes are unconditional, because a write is always at
+// SAVE_FORMAT_VERSION.
+const unsigned int SAVE_FORMAT_VERSION_SCIENCE = 5;
 
 namespace CvSaveManifest
 {
@@ -206,7 +218,13 @@ namespace CvSaveManifest
 
 	// Call at the top of CvGame::read, UNCONDITIONALLY -- including for saves with no
 	// manifest -- so remap state cannot leak from an earlier load in the same session.
-	void beginRead();
+	// uiSaveVersion is CvGame's own flag, which IS the save format version.
+	void beginRead(unsigned int uiSaveVersion);
+
+	// The format version of the save being read, for gating a field that has not always
+	// existed. Zero outside a load, which reads as "older than everything" and so takes
+	// the conservative branch.
+	unsigned int saveVersion();
 
 	// Logged after the engine's LAST call into the DLL for a load, so the log always
 	// says whether our half of the load finished.

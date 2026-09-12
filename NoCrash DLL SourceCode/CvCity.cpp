@@ -17497,7 +17497,11 @@ void CvCity::read(FDataStreamBase* pStream)
 	pStream->Read(&m_fProximityFood);
 	pStream->Read(&m_fProximityFreeXP);
 	pStream->Read(&m_fProximityGold);
-	pStream->Read(&m_fProximityScience);
+	// Added mid-format with no gate; absent from every save below this version.
+	if (CvSaveManifest::saveVersion() >= SAVE_FORMAT_VERSION_SCIENCE)
+	{
+		pStream->Read(&m_fProximityScience);
+	}
 	pStream->Read(&m_fProximityGPP);
 	pStream->Read(&m_fProximityHappy);
 	pStream->Read(&m_fProximityHealth);
@@ -17701,7 +17705,11 @@ void CvCity::read(FDataStreamBase* pStream)
 	pStream->Read(&m_fPerPopDefense);
 	pStream->Read(&m_fPerPopFood);
 	pStream->Read(&m_fPerPopCrimePerTurn);
-	pStream->Read(&m_fPerPopScience);
+	// Added mid-format with no gate; absent from every save below this version.
+	if (CvSaveManifest::saveVersion() >= SAVE_FORMAT_VERSION_SCIENCE)
+	{
+		pStream->Read(&m_fPerPopScience);
+	}
 	pStream->Read(&m_fPerPopFreeXP);
 	pStream->Read(&m_fPerPopGold);
 	pStream->Read(&m_fPerPopGPP);
